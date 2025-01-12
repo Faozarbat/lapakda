@@ -7,6 +7,7 @@ import {
   User
 } from 'firebase/auth';
 import { auth } from '@/config/firebase';
+import { createUserProfile } from '@/lib/firebase/services';
 
 // Rate limiting
 const RATE_LIMIT_DURATION = 60000; // 1 minute
@@ -83,15 +84,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string) => {
-    const sanitizedEmail = sanitizeInput(email);
-    
-    if (!isStrongPassword(password)) {
-      throw new Error(
-        'Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, angka, dan karakter khusus'
-      );
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Create user profile
+      await createUserProfile({
+        uid: userCredential.user.uid,
+        email: userCredential.user.email!,
+        role: 'user', // default role
+        createdAt: new Date(),
+      });
+  
+      return userCredential;
+    } catch (error) {
+      console.error('Error signing up:', error);
+      throw error;
     }
-
-    await createUserWithEmailAndPassword(auth, sanitizedEmail, password);
   };
 
   const logout = async () => {

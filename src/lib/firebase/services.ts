@@ -10,7 +10,8 @@ import {
   updateDoc,
   deleteDoc,
   Timestamp,
-  orderBy
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { UserProfile, Product, CartItem, Order } from '@/types';
@@ -33,25 +34,67 @@ export const getUserProfile = async (uid: string) => {
   try {
     const userRef = doc(db, 'users', uid);
     const userSnap = await getDoc(userRef);
-    return userSnap.exists() ? userSnap.data() as UserProfile : null;
+    
+    if (userSnap.exists()) {
+      return {
+        ...userSnap.data(),
+        uid: userSnap.id
+      };
+    }
+    
+    // Return default profile if not found
+    return {
+      displayName: '',
+      email: '',
+      phoneNumber: '',
+      photoURL: '',
+      address: '',
+      uid: uid,
+      createdAt: Timestamp.now()
+    };
   } catch (error) {
     console.error('Error getting user profile:', error);
     throw error;
   }
 };
 
-export const updateUserProfile = async (uid: string, data: Partial<UserProfile>) => {
+export const uploadProfileImage = async (uid: string, file: File): Promise<string> => {
+  try {
+    const storageRef = ref(storage, `users/${uid}/profile.jpg`);
+    const snapshot = await uploadBytes(storageRef, file);
+    return await getDownloadURL(snapshot.ref);
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (uid: string, profileData: any) => {
   try {
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, {
-      ...data,
-      updatedAt: Timestamp.now()
-    });
+    // Cek apakah user sudah ada
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      // Update existing user
+      await updateDoc(userRef, {
+        ...profileData,
+        updatedAt: Timestamp.now()
+      });
+    } else {
+      // Create new user profile
+      await setDoc(userRef, {
+        ...profileData,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      });
+    }
   } catch (error) {
     console.error('Error updating user profile:', error);
     throw error;
   }
 };
+
 
 // Product Services
 export const addProduct = async (product: Omit<Product, 'id'>) => {
@@ -124,6 +167,10 @@ export const deleteProduct = async (productId: string) => {
 // Cart Services
 export const addToCart = async (userId: string, productId: string, quantity: number) => {
   try {
+    // Cek stock produk dulu
+    const product = await getProduct(productId);
+    if (!product) throw new Error('Produk tidak ditemukan');
+
     // Cek apakah produk sudah ada di cart
     const cartRef = collection(db, 'cart');
     const q = query(
@@ -138,14 +185,25 @@ export const addToCart = async (userId: string, productId: string, quantity: num
       // Update quantity jika produk sudah ada
       const cartItem = querySnapshot.docs[0];
       const currentQuantity = cartItem.data().quantity;
+      const newQuantity = currentQuantity + quantity;
+
+      // Validasi total quantity dengan stock
+      if (newQuantity > product.stock) {
+        throw new Error(`Jumlah melebihi stock yang tersedia (${product.stock})`);
+      }
+
       await updateDoc(cartItem.ref, {
-        quantity: currentQuantity + quantity,
+        quantity: newQuantity,
         updatedAt: Timestamp.now()
       });
       return cartItem.id;
     }
 
     // Tambah item baru jika belum ada
+    if (quantity > product.stock) {
+      throw new Error(`Jumlah melebihi stock yang tersedia (${product.stock})`);
+    }
+
     const newCartItem = {
       userId,
       productId,
@@ -218,7 +276,8 @@ export const getUserAddresses = async (userId: string) => {
     const q = query(
       addressesRef, 
       where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      orderBy('createdAt', 'desc'),
+      limit(10)
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
@@ -325,6 +384,56 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
     });
   } catch (error) {
     console.error('Error updating order status:', error);
+    throw error;
+  }
+};
+
+export const updateAddress = async (addressId: string, data: any) => {
+  try {
+    const addressRef = doc(db, 'addresses', addressId);
+    await updateDoc(addressRef, {
+      ...data,
+      updatedAt: Timestamp.now()
+    });
+  } catch (error) {
+    console.error('Error updating address:', error);
+    throw error;
+  }
+};
+
+export const getAllOrders = async () => {
+  try {
+    const ordersRef = collection(db, 'orders');
+    const q = query(ordersRef, orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error getting all orders:', error);
+    throw error;
+  }
+};
+
+// Tambahkan fungsi ini
+export const getProductsByUser = async (userId: string) => {
+  try {
+    const productsRef = collection(db, 'products');
+    // Hapus orderBy sementara
+    const q = query(
+      productsRef, 
+      where('sellerId', '==', userId)
+      // orderBy('createdAt', 'desc') // comment ini dulu
+    );
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error getting user products:', error);
     throw error;
   }
 };

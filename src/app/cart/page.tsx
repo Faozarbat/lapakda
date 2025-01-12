@@ -99,15 +99,25 @@ export default function CartPage() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="p-4 border-b last:border-b-0">
                     <div className="flex gap-4">
+                    <Link
+                    href={`/products/${item.product.id}`}
+                    className="w-24 h-24 flex-shrink-0"
+                    >
                       <img
                         src={item.product.images[0] || '/images/GambarKosong.png'}
                         alt={item.product.name}
                         className="w-24 h-24 object-cover rounded-lg"
                       />
+                      </Link>
                       <div className="flex-1">
+                      <Link
+                      href={`/products/${item.product.id}`}
+                      className="font-medium text-gray-900 hover:text-indigo-600"
+                      >
                         <h3 className="font-medium text-gray-900">
                           {item.product.name}
                         </h3>
+                        </Link>
                         <p className="text-sm text-gray-500 mt-1">
                           Rp {item.product.price.toLocaleString('id-ID')}
                         </p>

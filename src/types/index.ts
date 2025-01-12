@@ -7,10 +7,11 @@ export interface UserProfile {
     address?: {
       street: string;
       city: string;
-      district: string; // Kecamatan
+      district: string;
       postalCode: string;
     };
-    role: 'buyer' | 'seller';
+    shopName?: string;       // Nama toko (opsional)
+    shopDescription?: string;// Deskripsi toko (opsional)
     createdAt: Date;
   }
   
@@ -60,4 +61,12 @@ export interface UserProfile {
     paymentStatus: 'pending' | 'paid' | 'failed';
     createdAt: Date;
     updatedAt: Date;
+  }
+
+  export interface UserProfile {
+    uid: string;
+    email: string;
+    role: 'admin' | 'user';
+    createdAt: Date;
+    updatedAt?: Date;
   }

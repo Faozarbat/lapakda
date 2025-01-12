@@ -5,11 +5,19 @@ import { getProducts } from '@/lib/firebase/services';
 import { Product } from '@/types';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { DISTRICTS } from '@/constants/districts';
+import { CATEGORIES, getCategoryName } from '@/constants/categories';
 
 export default function ProductsPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  // Filter states
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -26,6 +34,22 @@ export default function ProductsPage() {
     loadProducts();
   }, []);
 
+  // Filter products based on location
+  const filteredProducts = products.filter(product => {
+    // Filter by search
+    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    // Filter by category
+    if (selectedCategory && product.category !== selectedCategory) {
+      return false;
+    }
+    // Filter by location
+    if (selectedDistrict && product.district !== selectedDistrict) return false;
+    if (selectedSubdistrict && product.subdistrict !== selectedSubdistrict) return false;
+    return true;
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-16">
@@ -39,6 +63,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Semua Produk</h1>
           {user && (
@@ -51,13 +76,100 @@ export default function ProductsPage() {
           )}
         </div>
 
-        {products.length === 0 ? (
+        {/* Filter Section */}
+
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+  {/* Search */}
+  <div className="mb-4">
+    <input
+      type="text"
+      placeholder="Cari produk..."
+      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {/* Kategori */}
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Filter Kategori
+      </label>
+      <select
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+      >
+        <option value="">Semua Kategori</option>
+        {CATEGORIES.map((category) => (
+          <option key={category.id} value={category.id}>
+            {category.name}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Kecamatan dan Kelurahan yang sudah ada tetap sama */}
+  </div>
+</div>
+        <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Filter Kecamatan
+              </label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={selectedDistrict}
+                onChange={(e) => {
+                  setSelectedDistrict(e.target.value);
+                  setSelectedSubdistrict('');
+                }}
+              >
+                <option value="">Semua Kecamatan</option>
+                {Object.keys(DISTRICTS).map((district) => (
+                  <option key={district} value={district}>
+                    {district}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Filter Kelurahan
+              </label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={selectedSubdistrict}
+                onChange={(e) => setSelectedSubdistrict(e.target.value)}
+                disabled={!selectedDistrict}
+              >
+                <option value="">Semua Kelurahan</option>
+                {selectedDistrict &&
+                  DISTRICTS[selectedDistrict as keyof typeof DISTRICTS].map((subdistrict) => (
+                    <option key={subdistrict} value={subdistrict}>
+                      {subdistrict}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Products Grid */}
+        {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">Belum ada produk yang tersedia</p>
+            <p className="text-gray-500">
+              {products.length === 0 
+                ? "Belum ada produk yang tersedia"
+                : "Tidak ada produk di lokasi ini"}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <Link 
                 href={`/products/${product.id}`} 
                 key={product.id}
@@ -86,9 +198,15 @@ export default function ProductsPage() {
                       Stok: {product.stock}
                     </span>
                   </div>
+                  <div className="mt-2 text-sm text-gray-500">
+                    Lokasi: {product.district}, {product.subdistrict}
+                  </div>
                   <div className="mt-4 flex justify-between items-center">
                     <span className="text-sm text-gray-500">
                       {product.condition === 'new' ? 'Baru' : 'Bekas'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {getCategoryName(product.category)}
                     </span>
                     <button
                       onClick={(e) => {

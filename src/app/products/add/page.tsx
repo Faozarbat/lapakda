@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/lib/firebase/services';
+import { DISTRICTS } from '@/constants/districts'; // Import districts
+import { CATEGORIES, getCategoryName } from '@/constants/categories';
 
 export default function AddProductPage() {
   const { user } = useAuth();
@@ -12,57 +14,48 @@ export default function AddProductPage() {
   const [error, setError] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
     stock: '',
-    category: 'other',
+    category: '',
     condition: 'new',
-    weight: ''
+    weight: '',
+    district: '',
+    subdistrict: ''
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
-      setImages(prevImages => [...prevImages, ...newImages]);
       
-      // Create preview URLs
+      if (images.length + newImages.length > 5) {
+        setError('Maksimal 5 gambar');
+        return;
+      }
+
+      setImages(prev => [...prev, ...newImages]);
+      
       const urls = newImages.map(file => URL.createObjectURL(file));
-      setImageUrls(prevUrls => [...prevUrls, ...urls]);
+      setImageUrls(prev => [...prev, ...urls]);
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages(prevImages => prevImages.filter((_, i) => i !== index));
-    setImageUrls(prevUrls => {
-      URL.revokeObjectURL(prevUrls[index]); // Cleanup URL
-      return prevUrls.filter((_, i) => i !== index);
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setImageUrls(prev => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
     });
-  };
-
-  const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to upload image');
-    }
-
-    const data = await response.json();
-    return data.secure_url;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    setLoading(true);
 
     try {
       if (!user) throw new Error('Anda harus login terlebih dahulu');
@@ -70,11 +63,11 @@ export default function AddProductPage() {
 
       // Upload images
       const uploadPromises = images.map(file => uploadImage(file));
-      const imageUrls = await Promise.all(uploadPromises);
+      const uploadedImages = await Promise.all(uploadPromises);
 
-      // Add product with image URLs
       const productData = {
         sellerId: user.uid,
+        sellerName: user.displayName || 'Unnamed Seller',
         name: formData.name,
         description: formData.description,
         price: Number(formData.price),
@@ -82,7 +75,9 @@ export default function AddProductPage() {
         category: formData.category,
         condition: formData.condition as 'new' | 'used',
         weight: Number(formData.weight),
-        images: imageUrls,
+        district: formData.district,
+        subdistrict: formData.subdistrict,
+        images: uploadedImages,
         status: 'active' as const,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -109,6 +104,7 @@ export default function AddProductPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
+          {/* Nama Produk */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nama Produk
@@ -122,6 +118,7 @@ export default function AddProductPage() {
             />
           </div>
 
+          {/* Deskripsi */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Deskripsi
@@ -135,6 +132,7 @@ export default function AddProductPage() {
             />
           </div>
 
+          {/* Harga dan Stok */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -165,29 +163,35 @@ export default function AddProductPage() {
             </div>
           </div>
 
+          {/* Kategori */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Kategori
             </label>
             <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            >
-              <option value="other">Pilih Kategori</option>
-              <option value="electronics">Elektronik</option>
-              <option value="fashion">Fashion</option>
-              <option value="food">Makanan</option>
-              <option value="hobby">Hobi</option>
-            </select>
+  required
+  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  value={formData.category}
+  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+>
+  <option value="">Pilih Kategori</option>
+  {CATEGORIES.map((category) => (
+    <option key={category.id} value={category.id}>
+      {category.name}
+    </option>
+  ))}
+</select>
+            
           </div>
 
+          {/* Kondisi dan Berat */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Kondisi
               </label>
               <select
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={formData.condition}
                 onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
@@ -212,6 +216,53 @@ export default function AddProductPage() {
             </div>
           </div>
 
+          {/* Lokasi */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Kecamatan
+              </label>
+              <select
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={selectedDistrict}
+                onChange={(e) => {
+                  setSelectedDistrict(e.target.value);
+                  setFormData({ ...formData, district: e.target.value, subdistrict: '' });
+                }}
+              >
+                <option value="">Pilih Kecamatan</option>
+                {Object.keys(DISTRICTS).map((district) => (
+                  <option key={district} value={district}>
+                    {district}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Kelurahan
+              </label>
+              <select
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.subdistrict}
+                onChange={(e) => setFormData({ ...formData, subdistrict: e.target.value })}
+                disabled={!selectedDistrict}
+              >
+                <option value="">Pilih Kelurahan</option>
+                {selectedDistrict &&
+                  DISTRICTS[selectedDistrict as keyof typeof DISTRICTS].map((subdistrict) => (
+                    <option key={subdistrict} value={subdistrict}>
+                      {subdistrict}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Upload Gambar */}
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">
               Foto Produk (maksimal 5 foto)
@@ -255,6 +306,7 @@ export default function AddProductPage() {
             )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}

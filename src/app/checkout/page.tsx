@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getCartItems, getUserAddresses, createOrder } from '@/lib/firebase/services';
+import { getCartItems, getUserAddresses, createOrder, deleteAddress } from '@/lib/firebase/services';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -11,13 +11,13 @@ const SHIPPING_METHODS = [
     id: 'kurirda', 
     name: 'Kurirda', 
     price: 10000, 
-    description: 'Pengiriman dalam area Batam' 
+    description: 'Pengiriman dalam area Batam'
   },
   { 
     id: 'meetup', 
     name: 'Cek di lokasi', 
     price: 0, 
-    description: 'Saling Jumpa di lokasi kesepakatan' 
+    description: 'Saling Jumpa di lokasi kesepakatan'
   }
 ];
 
@@ -36,7 +36,7 @@ const PAYMENT_METHODS = [
     id: 'ewallet', 
     name: 'E-Wallet', 
     description: 'GoPay, OVO, DANA' 
-  },
+  }
 ];
 
 export default function CheckoutPage() {
@@ -67,13 +67,13 @@ export default function CheckoutPage() {
         setCartItems(items);
 
         // Load user addresses
-        const addresses = await getUserAddresses(user.uid);
-        if (addresses.length === 0) {
+        const addressList = await getUserAddresses(user.uid);
+        if (addressList.length === 0) {
           router.push('/address/add');
           return;
         }
-        setAddresses(addresses);
-        setSelectedAddress(addresses[0].id);
+        setAddresses(addressList);
+        setSelectedAddress(addressList[0].id);
       } catch (error) {
         console.error('Error loading checkout data:', error);
         setError('Gagal memuat data checkout');
@@ -105,7 +105,8 @@ export default function CheckoutPage() {
         items: cartItems.map(item => ({
           productId: item.product.id,
           quantity: item.quantity,
-          price: item.product.price
+          price: item.product.price,
+          name: item.product.name
         })),
         shippingAddress: {
           receiverName: selectedAddr.receiverName,
@@ -128,7 +129,7 @@ export default function CheckoutPage() {
       };
 
       const orderId = await createOrder(orderData);
-      router.push(`/orders/${orderId}`);
+      router.push(`/orders/success?id=${orderId}`);
     } catch (error: any) {
       console.error('Error creating order:', error);
       setError(error.message || 'Gagal membuat pesanan');
@@ -168,42 +169,76 @@ export default function CheckoutPage() {
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-medium text-gray-900">Alamat Pengiriman</h2>
-                <Link
-                  href="/address/add"
-                  className="text-indigo-600 hover:text-indigo-500 text-sm"
-                >
-                  Buat Alamat Baru
-                </Link>
+                {addresses.length < 10 && (
+                  <Link
+                    href="/address/add"
+                    className="text-indigo-600 hover:text-indigo-500 text-sm"
+                  >
+                    Buat Alamat Baru
+                  </Link>
+                )}
               </div>
               
               <div className="space-y-4">
                 {addresses.map((address) => (
-                  <label
+                  <div
                     key={address.id}
-                    className={`block p-4 border rounded-lg cursor-pointer ${
+                    className={`block p-4 border rounded-lg ${
                       selectedAddress === address.id
                         ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-gray-200 hover:border-indigo-200'
+                        : 'border-gray-200'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="radio"
-                        name="address"
-                        value={address.id}
-                        checked={selectedAddress === address.id}
-                        onChange={() => setSelectedAddress(address.id)}
-                        className="h-4 w-4 text-indigo-600"
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium">{address.receiverName}</p>
-                        <p className="text-sm text-gray-500">{address.phone}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {address.address}, {address.subdistrict}, {address.district}
-                        </p>
+                    <div className="flex justify-between items-start">
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="address"
+                          value={address.id}
+                          checked={selectedAddress === address.id}
+                          onChange={() => setSelectedAddress(address.id)}
+                          className="h-4 w-4 text-indigo-600"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium">{address.receiverName}</p>
+                          <p className="text-sm text-gray-500">{address.phone}</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {address.address}, {address.subdistrict}, {address.district}
+                          </p>
+                        </div>
+                      </label>
+                      <div className="flex space-x-2">
+                        <Link
+                          href={`/address/edit/${address.id}`}
+                          className="text-sm text-indigo-600 hover:text-indigo-500"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (window.confirm('Yakin ingin menghapus alamat ini?')) {
+                              try {
+                                await deleteAddress(address.id);
+                                // Refresh addresses
+                                const updatedAddresses = await getUserAddresses(user!.uid);
+                                setAddresses(updatedAddresses);
+                                if (selectedAddress === address.id) {
+                                  setSelectedAddress(updatedAddresses[0]?.id || '');
+                                }
+                              } catch (error) {
+                                console.error('Error deleting address:', error);
+                                setError('Gagal menghapus alamat');
+                              }
+                            }
+                          }}
+                          className="text-sm text-red-600 hover:text-red-500"
+                        >
+                          Hapus
+                        </button>
                       </div>
                     </div>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>

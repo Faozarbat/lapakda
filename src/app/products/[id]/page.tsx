@@ -6,6 +6,7 @@ import { getProduct, addToCart } from '@/lib/firebase/services';
 import { Product } from '@/types';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import Link from 'next/link';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const productId = React.use(params).id;
@@ -14,6 +15,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [currentImage, setCurrentImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -39,12 +41,22 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       return;
     }
 
+    setLoading(true);
+    setError('');
     try {
       await addToCart(user.uid, productId, quantity);
-      router.push('/cart');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      setError('Gagal menambahkan ke keranjang');
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/cart');
+      }, 1500);
+    } catch (error: any) {
+      if (error.message.includes('stock')) {
+        setError('Maaf, jumlah yang Anda pilih melebihi stock yang tersedia dengan jumlah di keranjang Anda. Cek Keranjang ');
+      } else {
+        setError('Maaf, terjadi kesalahan. Silakan coba lagi.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,11 +82,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
-      {error && (
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <div className="bg-red-50 text-red-700 p-4 rounded-lg">{error}</div>
-        </div>
-      )}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Image Gallery */}
@@ -151,6 +158,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 </label>
                 <div className="flex items-center border border-gray-300 rounded-lg">
                   <button
+                    type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-l-lg"
                   >
@@ -170,6 +178,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                     className="w-16 text-center border-x border-gray-300 py-1 focus:outline-none"
                   />
                   <button
+                    type="button"
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                     className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-r-lg"
                   >
@@ -181,9 +190,12 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <div className="flex gap-4">
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+                  disabled={loading || product.stock === 0}
+                  className={`flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors
+                    ${(loading || product.stock === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  Tambah ke Keranjang
+                  {product.stock === 0 ? 'Stok Habis' : 
+                    loading ? 'Menambahkan...' : 'Tambah ke Keranjang'}
                 </button>
                 <button
                   onClick={() => {
@@ -193,7 +205,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                     }
                     // Handle buy now
                   }}
-                  className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                  disabled={loading || product.stock === 0}
+                  className={`flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors
+                    ${(loading || product.stock === 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   Beli Sekarang
                 </button>
@@ -202,6 +216,25 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
         </div>
       </div>
+
+      {/* Toast Messages */}
+      {error && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-md z-50">
+          <p className="flex items-center">
+            <span className="mr-2">⚠️</span>
+            {error}
+          </p>
+        </div>
+      )}
+
+      {success && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md z-50">
+          <p className="flex items-center">
+            <span className="mr-2">✅</span>
+            Produk berhasil ditambahkan ke keranjang
+          </p>
+        </div>
+      )}
     </div>
   );
 }
