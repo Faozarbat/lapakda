@@ -2,23 +2,20 @@
 export interface UserProfile {
     uid: string;
     email: string;
-    displayName?: string;
-    phoneNumber?: string;
-    address?: {
-      street: string;
-      city: string;
-      district: string;
-      postalCode: string;
-    };
-    shopName?: string;       // Nama toko (opsional)
-    shopDescription?: string;// Deskripsi toko (opsional)
+    displayName: string;
+    phoneNumber: string;
+    photoURL: string | null;
+    address: string;
     createdAt: Date;
+    updatedAt?: Date;
   }
+  
   
   // Product
   export interface Product {
     id: string;
     sellerId: string;
+    sellerName: string;   // Nama toko penjual
     name: string;
     description: string;
     price: number;
@@ -26,7 +23,7 @@ export interface UserProfile {
     category: string;
     images: string[];
     condition: 'new' | 'used';
-    weight: number; // dalam gram
+    weight: number;
     status: 'active' | 'inactive';
     createdAt: Date;
     updatedAt: Date;

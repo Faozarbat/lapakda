@@ -1,36 +1,26 @@
-// src/app/(auth)/profile/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { storage } from '@/config/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getUserProfile, updateUserProfile, uploadProfileImage } from '@/lib/firebase/services';
+import { UserProfile } from '@/types';
 import Link from 'next/link';
-import { getUserProfile, updateUserProfile } from '@/lib/firebase/services';
-
-interface UserProfile {
-  displayName: string;
-  email: string;
-  phoneNumber: string;
-  photoURL: string;
-  address: string;
-  uid: string;
-}
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<UserProfile>({
-    displayName: '',
+    uid: '',
     email: '',
+    displayName: '',
     phoneNumber: '',
-    photoURL: '',
+    photoURL: null,
     address: '',
-    uid: ''
+    createdAt: new Date()
   });
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -38,41 +28,43 @@ export default function ProfilePage() {
   }, [user]);
 
   const fetchUserProfile = async () => {
+    if (!user) return;
+    
     try {
       const userProfileData = await getUserProfile(user.uid);
-      if (userProfileData) {
-        setProfile({
-          ...userProfileData as UserProfile,
-          email: user.email || '',
-          uid: user.uid
-        });
-      }
-      setLoading(false);
+      setProfile({
+        ...userProfileData,
+        email: user.email || userProfileData.email || ''
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
       setError('Gagal memuat profil');
+    } finally {
       setLoading(false);
     }
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
+    setError('');
+    setUploading(true);
+
     try {
       let photoURL = profile.photoURL;
       
       if (file) {
-        const storageRef = ref(storage, `users/${user.uid}/profile.jpg`);
-        await uploadBytes(storageRef, file);
-        photoURL = await getDownloadURL(storageRef);
+        photoURL = await uploadProfileImage(user.uid, file);
       }
 
-      const updatedProfile = {
+      const updateData = {
         ...profile,
         photoURL
       };
 
-      await updateUserProfile(user.uid, updatedProfile);
-      setProfile(updatedProfile); // Update local state
+      await updateUserProfile(user.uid, updateData);
+      setProfile(updateData);
       alert('Profil berhasil diperbarui!');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -140,7 +132,7 @@ export default function ProfilePage() {
                       type="text"
                       value={profile.displayName}
                       onChange={(e) => setProfile({ ...profile, displayName: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
@@ -165,7 +157,7 @@ export default function ProfilePage() {
                       type="tel"
                       value={profile.phoneNumber}
                       onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="Masukkan nomor telepon"
                     />
                   </div>
@@ -178,22 +170,22 @@ export default function ProfilePage() {
                       value={profile.address}
                       onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="Masukkan alamat lengkap"
                     />
                   </div>
                 </div>
 
                 <div className="flex justify-end">
-                <button
-    type="submit"
-    disabled={uploading}
-    className={`px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors ${
-      uploading ? 'opacity-50 cursor-not-allowed' : ''
-    }`}
-  >
-    {uploading ? 'Menyimpan...' : 'Simpan Perubahan'}
-  </button>
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className={`px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors ${
+                      uploading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {uploading ? 'Menyimpan...' : 'Simpan Perubahan'}
+                  </button>
                 </div>
               </form>
             </div>

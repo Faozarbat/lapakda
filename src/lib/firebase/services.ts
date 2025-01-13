@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { UserProfile, Product, CartItem, Order } from '@/types';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // User Services
 export const createUserProfile = async (userProfile: UserProfile) => {
@@ -36,21 +37,24 @@ export const getUserProfile = async (uid: string) => {
     const userSnap = await getDoc(userRef);
     
     if (userSnap.exists()) {
+      const data = userSnap.data();
       return {
-        ...userSnap.data(),
-        uid: userSnap.id
+        ...data,
+        uid: userSnap.id,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate()
       };
     }
     
     // Return default profile if not found
     return {
-      displayName: '',
-      email: '',
-      phoneNumber: '',
-      photoURL: '',
-      address: '',
       uid: uid,
-      createdAt: Timestamp.now()
+      email: '',
+      displayName: '',
+      phoneNumber: '',
+      photoURL: null,
+      address: '',
+      createdAt: new Date()
     };
   } catch (error) {
     console.error('Error getting user profile:', error);
@@ -69,24 +73,22 @@ export const uploadProfileImage = async (uid: string, file: File): Promise<strin
   }
 };
 
-export const updateUserProfile = async (uid: string, profileData: any) => {
+export const updateUserProfile = async (uid: string, data: Partial<UserProfile>) => {
   try {
     const userRef = doc(db, 'users', uid);
-    // Cek apakah user sudah ada
     const userSnap = await getDoc(userRef);
     
+    const updateData = {
+      ...data,
+      updatedAt: Timestamp.now()
+    };
+
     if (userSnap.exists()) {
-      // Update existing user
-      await updateDoc(userRef, {
-        ...profileData,
-        updatedAt: Timestamp.now()
-      });
+      await updateDoc(userRef, updateData);
     } else {
-      // Create new user profile
       await setDoc(userRef, {
-        ...profileData,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
+        ...updateData,
+        createdAt: Timestamp.now()
       });
     }
   } catch (error) {
