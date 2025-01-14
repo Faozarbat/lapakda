@@ -12,11 +12,11 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<UserProfile>({
-    uid: '',
-    email: '',
+    uid: user?.uid || '',
+    email: user?.email || '',
     displayName: '',
     phoneNumber: '',
-    photoURL: null,
+    photoURL: '',  // ubah dari null ke string kosong
     address: '',
     createdAt: new Date()
   });
@@ -32,10 +32,15 @@ export default function ProfilePage() {
     
     try {
       const userProfileData = await getUserProfile(user.uid);
-      setProfile({
+      setProfile(prevProfile => ({
+        ...prevProfile,
         ...userProfileData,
-        email: user.email || userProfileData.email || ''
-      });
+        email: user.email || userProfileData.email || '',
+        photoURL: userProfileData.photoURL || '',  // pastikan selalu string
+        displayName: userProfileData.displayName || '',
+        phoneNumber: userProfileData.phoneNumber || '',
+        address: userProfileData.address || ''
+      }));
     } catch (error) {
       console.error('Error fetching profile:', error);
       setError('Gagal memuat profil');
@@ -52,10 +57,13 @@ export default function ProfilePage() {
     setUploading(true);
 
     try {
+      console.log('Starting profile update...', profile); // tambahkan ini  
       let photoURL = profile.photoURL;
       
       if (file) {
+        console.log('Uploading new photo...'); // tambahkan ini
         photoURL = await uploadProfileImage(user.uid, file);
+        console.log('Photo uploaded:', photoURL); // tambahkan ini
       }
 
       const updateData = {
@@ -63,10 +71,14 @@ export default function ProfilePage() {
         photoURL
       };
 
+      console.log('Updating profile with data:', updateData);
       await updateUserProfile(user.uid, updateData);
+      console.log('Profile updated successfully!');
+
       setProfile(updateData);
       alert('Profil berhasil diperbarui!');
     } catch (error) {
+      console.error('Error detail:', error); // tambahkan ini untuk melihat detail error
       console.error('Error updating profile:', error);
       setError('Gagal mengupdate profil');
     } finally {
@@ -130,7 +142,7 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="text"
-                      value={profile.displayName}
+                      value={profile.displayName || ''}
                       onChange={(e) => setProfile({ ...profile, displayName: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="Masukkan nama lengkap"
@@ -155,7 +167,7 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="tel"
-                      value={profile.phoneNumber}
+                      value={profile.phoneNumber || ''}
                       onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="Masukkan nomor telepon"
@@ -167,7 +179,7 @@ export default function ProfilePage() {
                       Alamat
                     </label>
                     <textarea
-                      value={profile.address}
+                      value={profile.address || ''}
                       onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"

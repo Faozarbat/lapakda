@@ -15,7 +15,8 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { UserProfile, Product, CartItem, Order } from '@/types';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from './storage';
+import { uploadImage } from './storage';
 
 // User Services
 export const createUserProfile = async (userProfile: UserProfile) => {
@@ -64,9 +65,8 @@ export const getUserProfile = async (uid: string) => {
 
 export const uploadProfileImage = async (uid: string, file: File): Promise<string> => {
   try {
-    const storageRef = ref(storage, `users/${uid}/profile.jpg`);
-    const snapshot = await uploadBytes(storageRef, file);
-    return await getDownloadURL(snapshot.ref);
+    const path = `users/${uid}/profile.jpg`;
+    return await uploadImage(file, path);
   } catch (error) {
     console.error('Error uploading profile image:', error);
     throw error;
@@ -75,6 +75,7 @@ export const uploadProfileImage = async (uid: string, file: File): Promise<strin
 
 export const updateUserProfile = async (uid: string, data: Partial<UserProfile>) => {
   try {
+    console.log('Starting updateUserProfile with data:', data); // tambahkan ini
     const userRef = doc(db, 'users', uid);
     const userSnap = await getDoc(userRef);
     
@@ -83,16 +84,20 @@ export const updateUserProfile = async (uid: string, data: Partial<UserProfile>)
       updatedAt: Timestamp.now()
     };
 
+    console.log('Final update data:', updateData); // tambahkan ini
+
     if (userSnap.exists()) {
       await updateDoc(userRef, updateData);
+      console.log('Profile updated in Firestore'); // tambahkan ini
     } else {
       await setDoc(userRef, {
         ...updateData,
         createdAt: Timestamp.now()
       });
+      console.log('New profile created in Firestore'); // tambahkan ini
     }
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    console.error('Error in updateUserProfile:', error); // tambahkan ini
     throw error;
   }
 };
