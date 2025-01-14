@@ -15,7 +15,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { UserProfile, Product, CartItem, Order } from '@/types';
-import { ref, uploadBytes, getDownloadURL } from './storage';
 import { uploadImage } from './storage';
 
 // User Services

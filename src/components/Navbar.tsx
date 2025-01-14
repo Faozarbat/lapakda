@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
-import { Menu, X, ShoppingCart, User } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
+
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -54,14 +55,18 @@ export default function Navbar() {
             <Link href="/products" className="text-gray-700 hover:text-indigo-600">
               Produk
             </Link>
-            <Link href="/categories" className="text-gray-700 hover:text-indigo-600">
-              Kategori
-            </Link>
+            
             
             {user ? (
               <>
+                <Link href="/shop" className="text-gray-700 hover:text-indigo-600">
+                        Toko_Ku
+                       </Link>
                 <Link href="/cart" className="text-gray-700 hover:text-indigo-600">
                   <ShoppingCart className="h-6 w-6" />
+                </Link>
+                <Link href="/chat" className="text-gray-700 hover:text-indigo-600">
+                  <MessageSquare className="h-6 w-6" />
                 </Link>
                 <div className="relative">
                   <button
@@ -83,6 +88,7 @@ export default function Navbar() {
                       >
                         Profil
                       </Link>
+                      
                       <Link 
                         href="/orders" 
                         className="block px-4 py-2 text-gray-700 hover:bg-indigo-50"
@@ -135,11 +141,12 @@ export default function Navbar() {
               Produk
             </Link>
             <Link
-              href="/categories"
+              href="/shop"
               className="block px-3 py-2 rounded-md text-gray-700 hover:bg-indigo-50"
             >
-              Kategori
+              Toko_Ku
             </Link>
+            
             {user ? (
               <>
                 <Link
@@ -148,6 +155,7 @@ export default function Navbar() {
                 >
                   Keranjang
                 </Link>
+                
                 <Link
                   href="/profile"
                   className="block px-3 py-2 rounded-md text-gray-700 hover:bg-indigo-50"
@@ -160,6 +168,7 @@ export default function Navbar() {
                 >
                   Pesanan
                 </Link>
+                
                 <button
                   onClick={() => logout()}
                   className="block w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-indigo-50"

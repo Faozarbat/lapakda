@@ -2,7 +2,8 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from '@/context/AuthContext';
-import Navbar from '@/components/Navbar'; // Tambah ini
+import { ChatProvider } from '@/context/ChatContext';
+import Navbar from '@/components/Navbar';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,8 +27,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <Navbar /> {/* Tambah ini */}
-          {children}
+          <ChatProvider>
+            <Navbar />
+            {children}
+          </ChatProvider>
         </AuthProvider>
       </body>
     </html>

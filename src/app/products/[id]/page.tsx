@@ -1,3 +1,4 @@
+// app/(auth)/products/[id]/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +8,7 @@ import { Product } from '@/types';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import Link from 'next/link';
+import ChatSellerButton from '@/components/chat/ChatSellerButton';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const productId = React.use(params).id;
@@ -51,7 +53,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       }, 1500);
     } catch (error: any) {
       if (error.message.includes('stock')) {
-        setError('Maaf, jumlah yang Anda pilih melebihi stock yang tersedia dengan jumlah di keranjang Anda. Cek Keranjang ');
+        setError('Maaf, jumlah yang Anda pilih melebihi stock yang tersedia');
       } else {
         setError('Maaf, terjadi kesalahan. Silakan coba lagi.');
       }
@@ -86,7 +88,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Image Gallery */}
           <div className="space-y-4">
-            {/* Main Image */}
             <div className="w-full h-[400px] overflow-hidden rounded-lg">
               <img
                 src={product.images[currentImage] || '/images/GambarKosong.png'}
@@ -95,7 +96,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               />
             </div>
 
-            {/* Thumbnail Images */}
             <div className="flex gap-2 overflow-x-auto pb-2">
               {product.images.map((image, index) => (
                 <button
@@ -188,6 +188,15 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </div>
 
               <div className="flex gap-4">
+                {user?.uid !== product.sellerId && (
+                  <ChatSellerButton
+                    sellerId={product.sellerId}
+                    productId={product.id}
+                    productName={product.name}
+                  />
+                )}
+
+              <div className="flex gap-4">
                 <button
                   onClick={handleAddToCart}
                   disabled={loading || product.stock === 0}
@@ -211,6 +220,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 >
                   Beli Sekarang
                 </button>
+              </div>
               </div>
             </div>
           </div>
