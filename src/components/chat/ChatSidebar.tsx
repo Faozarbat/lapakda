@@ -61,6 +61,7 @@ export default function ChatSidebar() {
       <ChatSearch rooms={chatRooms} onSearch={setFilteredRooms} />
       <div className="overflow-y-auto h-[calc(100vh-8rem)]">
         {filteredRooms.map((room) => (
+          
           <div
             key={room.id}
             onClick={() => setActiveChatRoom(room)}
@@ -74,6 +75,7 @@ export default function ChatSidebar() {
                   <span className="text-gray-500">U</span>
                 </div>
               </div>
+              
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center">
                   <p className="text-sm font-medium text-gray-900 truncate">
@@ -130,6 +132,15 @@ export default function ChatSidebar() {
                               Hapus Chat
                             </button>
                           </div>
+                          <div className={`flex-1 min-w-0 ${
+                             room.lastMessage && 
+                              room.lastMessage.receiverId === user?.uid && 
+                              !room.lastMessage.read ? 'font-bold' : ''
+                            }`}>
+                             <p className="mt-1 text-sm text-gray-500 truncate">
+                                    {room.lastMessage.content}
+                                  </p>
+                                </div>
                         </div>
                       )}
                     </div>

@@ -2,8 +2,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Image as ImageIcon, Send, X } from 'lucide-react';
-import { useDebounce } from '@/hooks/useDebounce';
+import { Image as ImageIcon, Send, X  } from 'lucide-react';
 import ImagePreview from './ImagePreview';
 
 interface ChatInputProps {

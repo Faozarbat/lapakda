@@ -4,9 +4,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useChat } from '@/context/ChatContext';
 import { useAuth } from '@/context/AuthContext';
-import { subscribeToChatRoom, sendMessage,  } from '@/lib/firebase/chatService';
+import { subscribeToChatRoom, sendMessage,markRoomAsRead  } from '@/lib/firebase/chatService';
 import ChatInput from './ChatInput';
-import MessageBubble from './MessageBubble';  // Tambah import ini
+import MessageBubble from './MessageBubble';
+import { uploadImage } from '@/lib/firebase/storage';
 
 export default function ChatWindow() {
   const { activeChatRoom, messages, setMessages } = useChat();
@@ -28,7 +29,14 @@ export default function ChatWindow() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
+  useEffect(() => {
+    if (activeChatRoom && user) {
+      console.log('Marking room as read:', activeChatRoom.id);
+      markRoomAsRead(activeChatRoom.id, user.uid)
+        .then(() => console.log('Room marked as read'))
+        .catch(console.error);
+    }
+  }, [activeChatRoom, user]);
   const handleSendMessage = async (content: string, image?: File) => {
     if (!activeChatRoom || !user || (!content.trim() && !image)) return;
 
@@ -80,7 +88,25 @@ export default function ChatWindow() {
         <div ref={messagesEndRef} />
       </div>
 
-      <ChatInput onSend={handleSendMessage} />
+      <ChatInput
+        onSend={async (content, image) => {
+          try {
+            let imageUrl;
+            if (image) {
+              imageUrl = await uploadImage(image, `chats/${activeChatRoom.id}/${Date.now()}-${image.name}`);
+            }
+            
+            await sendMessage(activeChatRoom.id, {
+              senderId: user!.uid,
+              receiverId: activeChatRoom.participants.find(id => id !== user!.uid) || '',
+              content,
+              imageUrl
+            });
+          } catch (error) {
+            console.error('Error sending message:', error);
+          }
+        }}
+      />
     </div>
   );
 }

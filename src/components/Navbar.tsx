@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
 import { Menu, X, ShoppingCart, User, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
+import { useChat } from '@/context/ChatContext';
 
 
 export default function Navbar() {
@@ -13,6 +14,7 @@ export default function Navbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
+  const { unreadCount } = useChat();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -55,18 +57,23 @@ export default function Navbar() {
             <Link href="/products" className="text-gray-700 hover:text-indigo-600">
               Produk
             </Link>
-            
-            
-            {user ? (
-              <>
-                <Link href="/shop" className="text-gray-700 hover:text-indigo-600">
+            <Link href="/shop" className="text-gray-700 hover:text-indigo-600">
                         Toko_Ku
                        </Link>
                 <Link href="/cart" className="text-gray-700 hover:text-indigo-600">
                   <ShoppingCart className="h-6 w-6" />
                 </Link>
-                <Link href="/chat" className="text-gray-700 hover:text-indigo-600">
+            
+            {user ? (
+              <>
+                
+                <Link href="/chat" className="relative">
                   <MessageSquare className="h-6 w-6" />
+                  {unreadCount > 0 && (
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {unreadCount}
+                    </div>
+                  )}
                 </Link>
                 <div className="relative">
                   <button
@@ -149,6 +156,14 @@ export default function Navbar() {
             
             {user ? (
               <>
+              <Link href="/chat" className="relative">
+                  <MessageSquare className="h-6 w-6" />
+                  {unreadCount > 0 && (
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {unreadCount}
+                    </div>
+                  )}
+                </Link>
                 <Link
                   href="/cart"
                   className="block px-3 py-2 rounded-md text-gray-700 hover:bg-indigo-50"

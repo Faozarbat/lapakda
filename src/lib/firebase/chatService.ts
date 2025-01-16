@@ -2,8 +2,6 @@
 import {
     collection,
     doc,
-    setDoc,
-    getDoc,
     getDocs,
     query,
     where,
@@ -11,6 +9,7 @@ import {
     onSnapshot,
     updateDoc,
     Timestamp,
+    writeBatch,
     addDoc
   } from 'firebase/firestore';
   import { db } from '@/config/firebase';
@@ -55,9 +54,11 @@ import {
       const messagesRef = collection(db, `chatRooms/${roomId}/messages`);
       const messageData = {
         ...message,
+        imageUrl: message.imageUrl || null, // ubah undefined jadi null
         createdAt: Timestamp.now(),
         read: false
       };
+      
   
       await addDoc(messagesRef, messageData);
       
@@ -74,14 +75,20 @@ import {
   
   export const markMessageAsRead = async (roomId: string, messageId: string) => {
     try {
+      // Update message
       const messageRef = doc(db, `chatRooms/${roomId}/messages/${messageId}`);
       await updateDoc(messageRef, { read: true });
+      
+      // Update last message in chat room juga
+      const roomRef = doc(db, 'chatRooms', roomId);
+      await updateDoc(roomRef, {
+        'lastMessage.read': true
+      });
     } catch (error) {
       console.error('Error marking message as read:', error);
       throw error;
     }
-  };
-  
+  }
   export const getChatRooms = async (userId: string) => {
     try {
       const chatRoomsRef = collection(db, 'chatRooms');
@@ -172,6 +179,35 @@ import {
       console.log('Chat room deleted successfully');
     } catch (error) {
       console.error('Error deleting chat room:', error);
+      throw error;
+    }
+  };
+  export const markRoomAsRead = async (roomId: string, userId: string) => {
+    try {
+      const messagesRef = collection(db, `chatRooms/${roomId}/messages`);
+      const q = query(
+        messagesRef, 
+        where('receiverId', '==', userId),
+        where('read', '==', false)
+      );
+  
+      const snapshot = await getDocs(q);
+      const batch = writeBatch(db);
+  
+      snapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { read: true });
+      });
+  
+      // Update last message
+      const roomRef = doc(db, 'chatRooms', roomId);
+      batch.update(roomRef, {
+        'lastMessage.read': true
+      });
+  
+      await batch.commit();
+      console.log('Room marked as read successfully');
+    } catch (error) {
+      console.error('Error marking room as read:', error);
       throw error;
     }
   };

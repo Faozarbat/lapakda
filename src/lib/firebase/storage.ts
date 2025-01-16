@@ -1,3 +1,6 @@
+import { storage } from '@/config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 
 export const uploadImage = async (file: File, path: string): Promise<string> => {
     const formData = new FormData();

@@ -1,4 +1,9 @@
 // /components/chat/ImagePreview.tsx
+'use client';
+
+import { X } from 'lucide-react'; // Tambah ini
+import Image from 'next/image';
+
 interface ImagePreviewProps {
     file: File;
     onRemove: () => void;

@@ -1,4 +1,3 @@
-// /context/ChatContext.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -32,6 +31,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [activeChatRoom, setActiveChatRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
+  // Subscribe to chat rooms
   useEffect(() => {
     if (!user) return;
 
@@ -42,26 +42,38 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      // Update chat rooms
       const rooms = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       } as ChatRoom));
-
       setChatRooms(rooms);
 
       // Calculate unread messages
       let count = 0;
       rooms.forEach(room => {
+        console.log('Room:', room.id, 'Last message:', room.lastMessage);
         if (room.lastMessage && 
             room.lastMessage.receiverId === user.uid && 
             !room.lastMessage.read) {
           count++;
         }
       });
+      console.log('New unread count:', count);
       setUnreadCount(count);
     });
 
     return () => unsubscribe();
+  }, [user]);
+
+  // Reset states when user logs out
+  useEffect(() => {
+    if (!user) {
+      setChatRooms([]);
+      setActiveChatRoom(null);
+      setMessages([]);
+      setUnreadCount(0);
+    }
   }, [user]);
 
   return (
@@ -70,9 +82,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         unreadCount, 
         chatRooms, 
         activeChatRoom, 
-        setActiveChatRoom,
-        messages,
-        setMessages
+        setActiveChatRoom, 
+        messages, 
+        setMessages 
       }}
     >
       {children}
@@ -80,4 +92,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useChat = () => useContext(ChatContext);
+export const useChat = () => {
+  const context = useContext(ChatContext);
+  if (!context) {
+    throw new Error('useChat must be used within a ChatProvider');
+  }
+  return context;
+};
