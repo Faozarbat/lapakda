@@ -80,11 +80,50 @@
                                 </div>
                             </div>
                             
-                            <!-- Status Badge -->
-                            <span class="bg-green-50 text-green-700 text-[10px] font-bold px-2 py-1 rounded-md border border-green-100">
-                                Aktif
-                            </span>
+                            <!-- Status Badge (Klik menuju halaman tagihan) -->
+                            @if($store->subscription_status === 'trial')
+                                <a href="{{ route('dashboard.subscription.index') }}" class="bg-yellow-50 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded-md border border-yellow-100 hover:bg-yellow-100 transition-colors">
+                                    Masa Trial
+                                </a>
+                            @elseif($store->subscription_status === 'active')
+                                <a href="{{ route('dashboard.subscription.index') }}" class="bg-green-50 text-green-700 text-[10px] font-bold px-2 py-1 rounded-md border border-green-100 hover:bg-green-100 transition-colors">
+                                    Aktif
+                                </a>
+                            @elseif($store->subscription_status === 'archived')
+                                <a href="{{ route('dashboard.subscription.index') }}" class="bg-red-50 text-red-700 text-[10px] font-bold px-2 py-1 rounded-md border border-red-100 hover:bg-red-100 transition-colors">
+                                    Diarsipkan
+                                </a>
+                            @else
+                                <a href="{{ route('dashboard.subscription.index') }}" class="bg-gray-50 text-gray-700 text-[10px] font-bold px-2 py-1 rounded-md border border-gray-100 hover:bg-gray-100 transition-colors">
+                                    {{ $store->subscription_status }}
+                                </a>
+                            @endif
                         </div>
+
+                        <!-- Warning Tagihan / Expiry -->
+                        @php
+                            $hasPendingBill = $store->subscriptions()->where('status', 'pending')->exists();
+                            $isExpired = $store->active_until && $store->active_until->isPast();
+                            $isExpiringSoon = $store->active_until && $store->active_until->isFuture() && $store->active_until->diffInDays(now()) <= 7;
+                        @endphp
+
+                        @if($hasPendingBill || $isExpired || $isExpiringSoon)
+                            <div class="mb-3 p-3 bg-red-50 border border-red-100 rounded-xl flex items-start gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-red-800">
+                                        @if($hasPendingBill)
+                                            Ada tagihan yang belum dibayar.
+                                        @elseif($isExpired)
+                                            Masa aktif telah berakhir.
+                                        @else
+                                            Masa aktif akan berakhir dalam {{ (int) ceil($store->active_until->diffInDays(now())) }} hari.
+                                        @endif
+                                    </p>
+                                    <a href="{{ route('dashboard.subscription.index') }}" class="text-[10px] font-bold text-[#B9232D] underline mt-1 inline-block hover:text-red-800">Lihat Tagihan &rarr;</a>
+                                </div>
+                            </div>
+                        @endif
 
                         <!-- Menu Grid (Aksi Cepat) -->
                         <div class="grid grid-cols-4 gap-2">

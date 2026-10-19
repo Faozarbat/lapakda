@@ -11,9 +11,6 @@ class PublicStoreController extends Controller
     {
         $kecamatanModel = Kecamatan::where('slug', $kecamatan)->firstOrFail();
 
-        // Dicari TANPA scopeAktif() dulu, supaya kita bisa bedakan antara
-        // "toko benar-benar tidak ada" (404 biasa) vs "toko ada tapi nonaktif"
-        // (pesan ramah, bukan 404 polos) — sesuai PRODUCT_SPEC.md bagian 12.3.
         $store = Store::where('kecamatan_id', $kecamatanModel->id)
             ->where('slug', $toko)
             ->with([
@@ -22,7 +19,8 @@ class PublicStoreController extends Controller
             ])
             ->firstOrFail();
 
-        if (! $store->status_aktif) {
+        // Cek apakah toko dinonaktifkan manual, belum lunas biaya buka, atau sudah diarsipkan sistem
+        if (! $store->status_aktif || ! $store->open_fee_paid || $store->subscription_status === 'archived') {
             return view('store.nonaktif', compact('store'));
         }
 

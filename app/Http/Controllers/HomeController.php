@@ -18,7 +18,7 @@ class HomeController extends Controller
 
         foreach ($kategoriList as $slug => &$kategori) {
             if ($kategori['aktif'] && $kategori['kategori_db']) {
-                $kategori['jumlah'] = Store::aktif()->where('kategori', $kategori['kategori_db'])->count();
+                $kategori['jumlah'] = Store::tampilDiPublik()->where('kategori', $kategori['kategori_db'])->count();
             }
         }
         unset($kategori);

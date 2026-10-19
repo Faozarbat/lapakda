@@ -138,10 +138,18 @@
                     <a href="{{ route('store.show', [$store->kecamatan->slug, $store->slug]) }}" class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group flex flex-col">
                         
                         <!-- Thumbnail (Aspect Ratio 4:3 agar proporsional) -->
-                        <div class="w-full aspect-[4/3] bg-gradient-to-br from-red-50 to-red-100 relative overflow-hidden flex items-center justify-center">
-                            <span class="text-4xl opacity-40 group-hover:scale-110 group-hover:opacity-60 transition-all duration-500">
-                                {{ $kategori['icon'] }}
-                            </span>
+                        <div class="w-full aspect-[4/3] bg-gray-100 relative overflow-hidden flex items-center justify-center">
+                            @if($store->foto_profil)
+                                <img src="{{ Storage::url($store->foto_profil) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $store->nama }}">
+                            @elseif($store->foto_background)
+                                <img src="{{ Storage::url($store->foto_background) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $store->nama }}">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+                                    <span class="text-4xl opacity-40 group-hover:scale-110 group-hover:opacity-60 transition-all duration-500">
+                                        {{ $kategori['icon'] }}
+                                    </span>
+                                </div>
+                            @endif
                             
                             <!-- Status Buka -->
                             <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-700 flex items-center gap-1 shadow-sm">

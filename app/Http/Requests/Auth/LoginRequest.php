@@ -43,7 +43,7 @@ class LoginRequest extends FormRequest
             if (! \Illuminate\Support\Facades\Hash::check($this->password, $user->password)) {
                 RateLimiter::hit($this->throttleKey());
                 throw ValidationException::withMessages([
-                    'password' => 'Password admin salah.',
+                    'password' => 'Password salah.',
                 ]);
             }
         }

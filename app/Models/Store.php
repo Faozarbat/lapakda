@@ -13,6 +13,8 @@ class Store extends Model
         'owner_id',
         'kecamatan_id',
         'nama',
+        'foto_profil',
+        'foto_background',
         'slug',
         'kategori',
         'nomor_wa',
@@ -22,6 +24,12 @@ class Store extends Model
         'longitude',
         'has_table_number',
         'status_aktif',
+        // --- KOLOM BARU LANGGANAN ---
+        'active_until',
+        'subscription_status',
+        'open_fee_paid',
+        'voucher_id',
+        'subscription_started_at',
     ];
 
     protected $casts = [
@@ -30,6 +38,10 @@ class Store extends Model
         'longitude' => 'decimal:7',
         'has_table_number' => 'boolean',
         'status_aktif' => 'boolean',
+        // --- CASTS BARU ---
+        'active_until' => 'datetime',
+        'open_fee_paid' => 'boolean',
+        'subscription_started_at' => 'datetime',
     ];
 
     public function owner(): BelongsTo
@@ -57,9 +69,42 @@ class Store extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    
+    // --- RELASI BARU ---
+    public function voucher(): BelongsTo
+    {
+        return $this->belongsTo(Voucher::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    // --- SCOPES ---
     public function scopeAktif($query)
     {
         return $query->where('status_aktif', true);
+    }
+
+    public function scopeTampilDiPublik($query)
+    {
+        return $query->where('status_aktif', true)
+                     ->where('open_fee_paid', true)
+                     ->where('subscription_status', '!=', 'archived');
+    }
+
+    // Cek apakah toko masih dalam masa aktif (termasuk grace period)
+    public function isActiveSubscribed(): bool
+    {
+        if ($this->subscription_status === 'archived') {
+            return false;
+        }
+        return $this->active_until === null || $this->active_until->isFuture();
     }
 
     public static function normalisasiNomorWa(string $nomor): string
@@ -67,18 +112,12 @@ class Store extends Model
         return PhoneNumber::normalize($nomor);
     }
 
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
-    // Opsional: Accessor untuk rating rata-rata
     public function getRatingAttribute()
     {
         return $this->reviews()->avg('rating') ? round($this->reviews()->avg('rating'), 1) : 0;
     }
 
-        public function getTotalTerjualAttribute()
+    public function getTotalTerjualAttribute()
     {
         return \App\Models\OrderItem::whereHas('order', function($q) {
             $q->where('store_id', $this->id)

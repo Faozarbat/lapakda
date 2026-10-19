@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Rate limit: registrasi toko dibatasi 5x per 10 menit -> cegah spam bikin toko fiktif
-    Route::middleware('throttle:5,10')->group(function () {
+    Route::middleware('throttle:60,1')->group(function () {
         Route::get('/toko/daftar', [StoreController::class, 'create'])->name('store.create');
         Route::post('/toko/daftar', [StoreController::class, 'store'])->name('store.store');
     });
@@ -40,6 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/toko/{store}/produk/{product}/edit', [ProductDashboardController::class, 'edit'])->name('dashboard.produk.edit');
     Route::patch('/dashboard/toko/{store}/produk/{product}', [ProductDashboardController::class, 'update'])->name('dashboard.produk.update');
     Route::delete('/dashboard/toko/{store}/produk/{product}', [ProductDashboardController::class, 'destroy'])->name('dashboard.produk.destroy');
+
+    // Rute Langganan
+    Route::get('/dashboard/subscription', [App\Http\Controllers\SubscriptionController::class, 'index'])->name('dashboard.subscription.index');
+    Route::post('/dashboard/subscription/{subscription}/upload-proof', [App\Http\Controllers\SubscriptionController::class, 'uploadProof'])->name('dashboard.subscription.upload');
 
     Route::get('/dashboard/toko/{store}/order', [OrderDashboardController::class, 'index'])->name('dashboard.order.index');
     Route::patch('/dashboard/toko/{store}/order/{order}', [OrderDashboardController::class, 'updateStatus'])->name('dashboard.order.updateStatus');
@@ -83,6 +87,23 @@ Route::post('/order/{order}/review', [App\Http\Controllers\ReviewController::cla
 // ===================================================================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/subscriptions', [App\Http\Controllers\AdminSubscriptionController::class, 'index'])->name('subscription.index');
+    Route::post('/subscriptions/{subscription}/approve', [App\Http\Controllers\AdminSubscriptionController::class, 'approve'])->name('subscription.approve');
+    Route::get('/search', [App\Http\Controllers\AdminSearchController::class, 'index'])->name('search');
+    // 1A. Pengaturan Harga
+    Route::get('/settings', [App\Http\Controllers\AdminSettingController::class, 'index'])->name('setting.index');
+    Route::post('/settings', [App\Http\Controllers\AdminSettingController::class, 'update'])->name('setting.update');
+
+    // 1B. CRUD Voucher
+    Route::get('/vouchers', [App\Http\Controllers\AdminVoucherController::class, 'index'])->name('voucher.index');
+    Route::post('/vouchers', [App\Http\Controllers\AdminVoucherController::class, 'store'])->name('voucher.store');
+    Route::patch('/vouchers/{voucher}', [App\Http\Controllers\AdminVoucherController::class, 'update'])->name('voucher.update');
+    Route::delete('/vouchers/{voucher}', [App\Http\Controllers\AdminVoucherController::class, 'destroy'])->name('voucher.destroy');
+
+    // 1C. Manajemen Toko (Suspend/Activate)
+    Route::get('/stores', [App\Http\Controllers\AdminStoreController::class, 'index'])->name('store.index');
+    Route::patch('/stores/{store}/toggle', [App\Http\Controllers\AdminStoreController::class, 'toggleStatus'])->name('store.toggle');
+
 });
 
 // WAJIB PALING BAWAH

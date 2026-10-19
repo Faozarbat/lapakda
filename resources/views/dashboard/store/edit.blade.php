@@ -3,10 +3,12 @@
             showToast: false, 
             toastMessage: '', 
             hasTableNumber: {{ $store->has_table_number ? 'true' : 'false' }},
-            statusAktif: {{ $store->status_aktif ? 'true' : 'false' }} 
+            statusAktif: {{ $store->status_aktif ? 'true' : 'false' }},
+            profilPreview: null, 
+            bgPreview: null
          }"
          @show-toast.window="toastMessage = $event.detail.message; showToast = true; setTimeout(() => showToast = false, 3000)"
-         class="pb-24"> <!-- Padding bottom agar tidak tertutup nav -->
+         class="pb-24">
 
         <!-- Header -->
         <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100">
@@ -19,14 +21,59 @@
             </div>
         </header>
 
-        <!-- Form -->
         <div class="max-w-3xl mx-auto px-4 pt-6">
-            <form method="POST" action="{{ route('store.update', $store->id) }}">
+            <form method="POST" action="{{ route('store.update', $store->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
 
                 <div class="space-y-5">
                     
+                    <!-- Section: Visual Toko -->
+                    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
+                        <h3 class="font-extrabold text-gray-900 text-sm">Visual Toko</h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Foto Profil -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1.5">Foto Profil (Logo)</label>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 flex-shrink-0">
+                                        <!-- Tampilkan Preview Baru Jika Dipilih, Jika Tidak Tampilkan Yang Lama -->
+                                        <template x-if="profilPreview"><img :src="profilPreview" class="w-full h-full object-cover"></template>
+                                        <template x-if="!profilPreview">
+                                            @if($store->foto_profil)
+                                                <img src="{{ Storage::url($store->foto_profil) }}" class="w-full h-full object-cover">
+                                            @else
+                                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            @endif
+                                        </template>
+                                    </div>
+                                    <input type="file" name="foto_profil" accept="image/*" @change="const file = $event.target.files[0]; if(file) profilPreview = URL.createObjectURL(file)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-[#B9232D] hover:file:bg-red-100 transition">
+                                </div>
+                                @error('foto_profil') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Foto Background -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1.5">Foto Sampul (Background)</label>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-24 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 flex-shrink-0">
+                                        <template x-if="bgPreview"><img :src="bgPreview" class="w-full h-full object-cover"></template>
+                                        <template x-if="!bgPreview">
+                                            @if($store->foto_background)
+                                                <img src="{{ Storage::url($store->foto_background) }}" class="w-full h-full object-cover">
+                                            @else
+                                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            @endif
+                                        </template>
+                                    </div>
+                                    <input type="file" name="foto_background" accept="image/*" @change="const file = $event.target.files[0]; if(file) bgPreview = URL.createObjectURL(file)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-[#B9232D] hover:file:bg-red-100 transition">
+                                </div>
+                                @error('foto_background') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Section: Info Dasar -->
                     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
                         <h3 class="font-extrabold text-gray-900 text-sm">Informasi Dasar</h3>
@@ -50,7 +97,7 @@
                         <div class="flex items-center justify-between mb-1">
                             <h3 class="font-extrabold text-gray-900 text-sm">Titik Lokasi Peta</h3>
                             <button type="button" id="btnLokasiSaya" class="text-xs font-bold text-[#B9232D] bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors">
-                                📍 Lokasi Saya
+                                Lokasi Saya
                             </button>
                         </div>
                         
@@ -147,7 +194,6 @@
             const startLat = {{ $store->latitude }};
             const startLng = {{ $store->longitude }};
 
-            // Inisialisasi Peta
             const map = L.map('map').setView([startLat, startLng], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
             const marker = L.marker([startLat, startLng], { draggable: true }).addTo(map);

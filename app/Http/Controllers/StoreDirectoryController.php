@@ -24,7 +24,7 @@ class StoreDirectoryController extends Controller
             return view('jelajah.segera-hadir', compact('kategoriSlug', 'kategori'));
         }
 
-        $query = Store::aktif()->with('kecamatan')->where('kategori', $kategori['kategori_db']);
+        $query = Store::tampilDiPublik()->with('kecamatan')->where('kategori', $kategori['kategori_db']);
 
         if ($request->filled('kecamatan_id')) {
             $query->where('kecamatan_id', $request->kecamatan_id);

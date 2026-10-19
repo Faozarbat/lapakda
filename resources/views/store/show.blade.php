@@ -51,7 +51,7 @@
     <header :class="scrolled ? 'shadow-sm bg-white/95' : 'bg-white/90'" class="backdrop-blur-md sticky {{ (isset($isPreview) && $isPreview) ? 'top-[32px]' : 'top-0' }} z-40 border-b border-gray-100 transition-shadow duration-300">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             
-            <a href="{{ (isset($isPreview) && $isPreview) ? route('dashboard') : url()->previous() }}" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors">
+            <a href="{{ (isset($isPreview) && $isPreview) ? route('dashboard') : route('jelajah', $store->kategori) }}" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                 </svg>
@@ -92,9 +92,14 @@
         <!-- Cover & Info Resto -->
         <div class="relative mb-6">
             <div class="h-48 w-full bg-gray-300 overflow-hidden relative group">
-                @if($ogFoto)
-                    <img src="{{ asset('storage/' . $ogFoto) }}" class="w-full h-full object-contain bg-gray-50 p-1 group-hover:scale-105 transition-transform duration-700" alt="Cover">
+                @if($store->foto_background)
+                    <!-- Prioritas 1: Background Toko -->
+                    <img src="{{ Storage::url($store->foto_background) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Cover">
+                @elseif($ogFoto)
+                    <!-- Prioritas 2: Foto Produk Pertama (Fallback lama) -->
+                    <img src="{{ asset('storage/' . $ogFoto) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Cover">
                 @else
+                    <!-- Prioritas 3: Placeholder Teks -->
                     <div class="w-full h-full bg-gradient-to-r from-gray-800 to-gray-600 flex items-center justify-center">
                         <span class="text-white/30 text-4xl font-extrabold tracking-widest uppercase">{{ $store->nama }}</span>
                     </div>
@@ -103,8 +108,19 @@
             </div>
             
             <div class="px-4 -mt-12 relative z-10">
-                <div class="bg-white rounded-2xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100">
-                    <div class="flex justify-between items-start mb-2">
+                <div class="bg-white rounded-2xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 relative">
+                    
+                    <!-- FOTO PROFIL TOKO -->
+                    <div class="absolute -top-10 left-6 w-20 h-20 rounded-full border-4 border-white bg-gray-50 shadow-sm overflow-hidden flex items-center justify-center z-20">
+                        @if($store->foto_profil)
+                            <img src="{{ Storage::url($store->foto_profil) }}" class="w-full h-full object-cover">
+                        @else
+                            <span class="text-2xl font-extrabold text-[#B9232D]">{{ substr($store->nama, 0, 1) }}</span>
+                        @endif
+                    </div>
+
+                    <!-- Menambahkan padding-top agar teks tidak tertutup foto profil -->
+                    <div class="flex justify-between items-start mb-2 pt-8 sm:pt-4">
                         <div>
                             <h2 class="text-xl font-extrabold text-gray-900">{{ $store->nama }}</h2>
                             

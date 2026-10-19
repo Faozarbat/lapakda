@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             KecamatanSeeder::class,
             DemoDataSeeder::class,
+            SettingSeeder::class,
+            VoucherSeeder::class,
         ]);
         
     }

@@ -12,6 +12,7 @@ D:.
 ¦   CLAUDE.md
 ¦   composer.json
 ¦   composer.lock
+¦   LapakDA - Handover & Project Guide.html
 ¦   nomor_wa)])
 ¦   package-lock.json
 ¦   package.json
@@ -25,8 +26,10 @@ D:.
 +---app
 ¦   +---Http
 ¦   ¦   +---Controllers
+¦   ¦   ¦   ¦   AdminDashboardController.php
 ¦   ¦   ¦   ¦   CartController.php
 ¦   ¦   ¦   ¦   Controller.php
+¦   ¦   ¦   ¦   GuestAuthController.php
 ¦   ¦   ¦   ¦   HomeController.php
 ¦   ¦   ¦   ¦   OrderController.php
 ¦   ¦   ¦   ¦   OrderDashboardController.php
@@ -34,6 +37,7 @@ D:.
 ¦   ¦   ¦   ¦   ProductDashboardController.php
 ¦   ¦   ¦   ¦   ProfileController.php
 ¦   ¦   ¦   ¦   PublicStoreController.php
+¦   ¦   ¦   ¦   ReviewController.php
 ¦   ¦   ¦   ¦   StoreController.php
 ¦   ¦   ¦   ¦   StoreDirectoryController.php
 ¦   ¦   ¦   ¦   
@@ -48,6 +52,9 @@ D:.
 ¦   ¦   ¦           RegisteredUserController.php
 ¦   ¦   ¦           VerifyEmailController.php
 ¦   ¦   ¦           
+¦   ¦   +---Middleware
+¦   ¦   ¦       IsAdmin.php
+¦   ¦   ¦       
 ¦   ¦   +---Requests
 ¦   ¦       ¦   ProfileUpdateRequest.php
 ¦   ¦       ¦   
@@ -61,6 +68,7 @@ D:.
 ¦   ¦       Order.php
 ¦   ¦       OrderItem.php
 ¦   ¦       Product.php
+¦   ¦       Review.php
 ¦   ¦       Store.php
 ¦   ¦       User.php
 ¦   ¦       
@@ -125,6 +133,11 @@ D:.
 ¦   ¦       2026_09_24_000006_create_orders_table.php
 ¦   ¦       2026_09_24_000007_create_order_items_table.php
 ¦   ¦       2026_09_26_000001_add_nomor_hp_to_users_table.php
+¦   ¦       2026_10_19_044937_add_session_id_to_orders_table.php
+¦   ¦       2026_10_19_053353_add_user_id_to_orders_table.php
+¦   ¦       2026_10_19_055204_add_delivery_address_to_users_table.php
+¦   ¦       2026_10_19_074249_create_reviews_table.php
+¦   ¦       2026_10_19_101737_add_is_admin_to_users_table.php
 ¦   ¦       
 ¦   +---seeders
 ¦           DatabaseSeeder.php
@@ -509,6 +522,9 @@ D:.
 ¦   ¦           types.d.ts
 ¦   ¦           
 ¦   +---@rolldown
+¦   ¦   +---.binding-win32-x64-msvc-hyHVfh4x
+¦   ¦   ¦       rolldown-binding.win32-x64-msvc.node
+¦   ¦   ¦       
 ¦   ¦   +---binding-win32-x64-msvc
 ¦   ¦   ¦       package.json
 ¦   ¦   ¦       README.md
@@ -2092,62 +2108,126 @@ D:.
 ¦   ¦   ¦   types.d.ts
 ¦   ¦   ¦   
 ¦   ¦   +---lib
-¦   ¦       ¦   AliasFieldPlugin.js
-¦   ¦       ¦   AliasPlugin.js
-¦   ¦       ¦   AliasUtils.js
-¦   ¦       ¦   AppendPlugin.js
-¦   ¦       ¦   CachedInputFileSystem.js
-¦   ¦       ¦   CloneBasenamePlugin.js
-¦   ¦       ¦   ConditionalPlugin.js
-¦   ¦       ¦   createInnerContext.js
-¦   ¦       ¦   DescriptionFilePlugin.js
-¦   ¦       ¦   DescriptionFileUtils.js
-¦   ¦       ¦   DirectoryExistsPlugin.js
-¦   ¦       ¦   ExportsFieldPlugin.js
-¦   ¦       ¦   ExtensionAliasPlugin.js
-¦   ¦       ¦   FileExistsPlugin.js
-¦   ¦       ¦   forEachBail.js
-¦   ¦       ¦   getInnerRequest.js
-¦   ¦       ¦   getPaths.js
-¦   ¦       ¦   ImportsFieldPlugin.js
-¦   ¦       ¦   index.js
-¦   ¦       ¦   JoinRequestPartPlugin.js
-¦   ¦       ¦   JoinRequestPlugin.js
-¦   ¦       ¦   LogInfoPlugin.js
-¦   ¦       ¦   MainFieldPlugin.js
-¦   ¦       ¦   ModulesInHierachicDirectoriesPlugin.js
-¦   ¦       ¦   ModulesInHierarchicalDirectoriesPlugin.js
-¦   ¦       ¦   ModulesInRootPlugin.js
-¦   ¦       ¦   ModulesUtils.js
-¦   ¦       ¦   NextPlugin.js
-¦   ¦       ¦   ParsePlugin.js
-¦   ¦       ¦   PnpPlugin.js
-¦   ¦       ¦   Resolver.js
-¦   ¦       ¦   ResolverFactory.js
-¦   ¦       ¦   RestrictionsPlugin.js
-¦   ¦       ¦   ResultPlugin.js
-¦   ¦       ¦   RootsPlugin.js
-¦   ¦       ¦   SelfReferencePlugin.js
-¦   ¦       ¦   SymlinkPlugin.js
-¦   ¦       ¦   SyncAsyncFileSystemDecorator.js
-¦   ¦       ¦   TryNextPlugin.js
-¦   ¦       ¦   TsconfigPathsPlugin.js
-¦   ¦       ¦   UnsafeCachePlugin.js
-¦   ¦       ¦   UseFilePlugin.js
+¦   ¦   ¦   ¦   AliasFieldPlugin.js
+¦   ¦   ¦   ¦   AliasPlugin.js
+¦   ¦   ¦   ¦   AliasUtils.js
+¦   ¦   ¦   ¦   AppendPlugin.js
+¦   ¦   ¦   ¦   CachedInputFileSystem.js
+¦   ¦   ¦   ¦   CloneBasenamePlugin.js
+¦   ¦   ¦   ¦   ConditionalPlugin.js
+¦   ¦   ¦   ¦   createInnerContext.js
+¦   ¦   ¦   ¦   DescriptionFilePlugin.js
+¦   ¦   ¦   ¦   DescriptionFileUtils.js
+¦   ¦   ¦   ¦   DirectoryExistsPlugin.js
+¦   ¦   ¦   ¦   ExportsFieldPlugin.js
+¦   ¦   ¦   ¦   ExtensionAliasPlugin.js
+¦   ¦   ¦   ¦   FileExistsPlugin.js
+¦   ¦   ¦   ¦   forEachBail.js
+¦   ¦   ¦   ¦   getInnerRequest.js
+¦   ¦   ¦   ¦   getPaths.js
+¦   ¦   ¦   ¦   ImportsFieldPlugin.js
+¦   ¦   ¦   ¦   index.js
+¦   ¦   ¦   ¦   JoinRequestPartPlugin.js
+¦   ¦   ¦   ¦   JoinRequestPlugin.js
+¦   ¦   ¦   ¦   LogInfoPlugin.js
+¦   ¦   ¦   ¦   MainFieldPlugin.js
+¦   ¦   ¦   ¦   ModulesInHierachicDirectoriesPlugin.js
+¦   ¦   ¦   ¦   ModulesInHierarchicalDirectoriesPlugin.js
+¦   ¦   ¦   ¦   ModulesInRootPlugin.js
+¦   ¦   ¦   ¦   ModulesUtils.js
+¦   ¦   ¦   ¦   NextPlugin.js
+¦   ¦   ¦   ¦   PackageMapPlugin.js
+¦   ¦   ¦   ¦   ParsePlugin.js
+¦   ¦   ¦   ¦   PnpPlugin.js
+¦   ¦   ¦   ¦   Resolver.js
+¦   ¦   ¦   ¦   ResolverFactory.js
+¦   ¦   ¦   ¦   RestrictionsPlugin.js
+¦   ¦   ¦   ¦   ResultPlugin.js
+¦   ¦   ¦   ¦   RootsPlugin.js
+¦   ¦   ¦   ¦   SelfReferencePlugin.js
+¦   ¦   ¦   ¦   SymlinkPlugin.js
+¦   ¦   ¦   ¦   SyncAsyncFileSystemDecorator.js
+¦   ¦   ¦   ¦   TryNextPlugin.js
+¦   ¦   ¦   ¦   TsconfigPathsPlugin.js
+¦   ¦   ¦   ¦   UnsafeCachePlugin.js
+¦   ¦   ¦   ¦   UseFilePlugin.js
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---util
+¦   ¦   ¦           entrypoints.js
+¦   ¦   ¦           fileURLToPath.js
+¦   ¦   ¦           fs.js
+¦   ¦   ¦           graceful-fs-browser.js
+¦   ¦   ¦           identifier.js
+¦   ¦   ¦           memoize.js
+¦   ¦   ¦           module-browser.js
+¦   ¦   ¦           packageMap.js
+¦   ¦   ¦           path-browser.js
+¦   ¦   ¦           path.js
+¦   ¦   ¦           pathToFileURL.js
+¦   ¦   ¦           process-browser.js
+¦   ¦   ¦           strip-json-comments.js
+¦   ¦   ¦           url-browser.js
+¦   ¦   ¦           
+¦   ¦   +---types
+¦   ¦       ¦   AliasFieldPlugin.d.ts
+¦   ¦       ¦   AliasPlugin.d.ts
+¦   ¦       ¦   AliasUtils.d.ts
+¦   ¦       ¦   AppendPlugin.d.ts
+¦   ¦       ¦   CachedInputFileSystem.d.ts
+¦   ¦       ¦   CloneBasenamePlugin.d.ts
+¦   ¦       ¦   ConditionalPlugin.d.ts
+¦   ¦       ¦   createInnerContext.d.ts
+¦   ¦       ¦   DescriptionFilePlugin.d.ts
+¦   ¦       ¦   DescriptionFileUtils.d.ts
+¦   ¦       ¦   DirectoryExistsPlugin.d.ts
+¦   ¦       ¦   ExportsFieldPlugin.d.ts
+¦   ¦       ¦   ExtensionAliasPlugin.d.ts
+¦   ¦       ¦   FileExistsPlugin.d.ts
+¦   ¦       ¦   forEachBail.d.ts
+¦   ¦       ¦   getInnerRequest.d.ts
+¦   ¦       ¦   getPaths.d.ts
+¦   ¦       ¦   ImportsFieldPlugin.d.ts
+¦   ¦       ¦   index.d.ts
+¦   ¦       ¦   JoinRequestPartPlugin.d.ts
+¦   ¦       ¦   JoinRequestPlugin.d.ts
+¦   ¦       ¦   LogInfoPlugin.d.ts
+¦   ¦       ¦   MainFieldPlugin.d.ts
+¦   ¦       ¦   ModulesInHierachicDirectoriesPlugin.d.ts
+¦   ¦       ¦   ModulesInHierarchicalDirectoriesPlugin.d.ts
+¦   ¦       ¦   ModulesInRootPlugin.d.ts
+¦   ¦       ¦   ModulesUtils.d.ts
+¦   ¦       ¦   NextPlugin.d.ts
+¦   ¦       ¦   PackageMapPlugin.d.ts
+¦   ¦       ¦   ParsePlugin.d.ts
+¦   ¦       ¦   PnpPlugin.d.ts
+¦   ¦       ¦   Resolver.d.ts
+¦   ¦       ¦   ResolverFactory.d.ts
+¦   ¦       ¦   RestrictionsPlugin.d.ts
+¦   ¦       ¦   ResultPlugin.d.ts
+¦   ¦       ¦   RootsPlugin.d.ts
+¦   ¦       ¦   SelfReferencePlugin.d.ts
+¦   ¦       ¦   SymlinkPlugin.d.ts
+¦   ¦       ¦   SyncAsyncFileSystemDecorator.d.ts
+¦   ¦       ¦   TryNextPlugin.d.ts
+¦   ¦       ¦   TsconfigPathsPlugin.d.ts
+¦   ¦       ¦   UnsafeCachePlugin.d.ts
+¦   ¦       ¦   UseFilePlugin.d.ts
 ¦   ¦       ¦   
 ¦   ¦       +---util
-¦   ¦               entrypoints.js
-¦   ¦               fileURLToPath.js
-¦   ¦               fs.js
-¦   ¦               graceful-fs-browser.js
-¦   ¦               identifier.js
-¦   ¦               memoize.js
-¦   ¦               module-browser.js
-¦   ¦               path-browser.js
-¦   ¦               path.js
-¦   ¦               process-browser.js
-¦   ¦               strip-json-comments.js
-¦   ¦               url-browser.js
+¦   ¦               entrypoints.d.ts
+¦   ¦               fileURLToPath.d.ts
+¦   ¦               fs.d.ts
+¦   ¦               graceful-fs-browser.d.ts
+¦   ¦               identifier.d.ts
+¦   ¦               memoize.d.ts
+¦   ¦               module-browser.d.ts
+¦   ¦               packageMap.d.ts
+¦   ¦               path-browser.d.ts
+¦   ¦               path.d.ts
+¦   ¦               pathToFileURL.d.ts
+¦   ¦               process-browser.d.ts
+¦   ¦               strip-json-comments.d.ts
+¦   ¦               url-browser.d.ts
 ¦   ¦               
 ¦   +---es-errors
 ¦   ¦   ¦   .eslintrc
@@ -2596,6 +2676,7 @@ D:.
 ¦   ¦   ¦       index.browser.cjs
 ¦   ¦   ¦       index.browser.js
 ¦   ¦   ¦       index.cjs
+¦   ¦   ¦       index.d.cts
 ¦   ¦   ¦       index.d.ts
 ¦   ¦   ¦       index.js
 ¦   ¦   ¦       index.native.js
@@ -2881,10 +2962,6 @@ D:.
 ¦   ¦   ¦   SECURITY.md
 ¦   ¦   ¦   sync.js
 ¦   ¦   ¦   
-¦   ¦   +---.claude
-¦   ¦   ¦       notes.md
-¦   ¦   ¦       settings.local.json
-¦   ¦   ¦       
 ¦   ¦   +---.github
 ¦   ¦   ¦       FUNDING.yml
 ¦   ¦   ¦       INCIDENT_RESPONSE_PROCESS.md
@@ -3109,10 +3186,8 @@ D:.
 ¦   ¦       ¦   cli.mjs
 ¦   ¦       ¦   config.d.mts
 ¦   ¦       ¦   config.mjs
-¦   ¦       ¦   experimental-default-runtime.mjs
 ¦   ¦       ¦   experimental-index.d.mts
 ¦   ¦       ¦   experimental-index.mjs
-¦   ¦       ¦   experimental-runtime-base.mjs
 ¦   ¦       ¦   experimental-runtime-types.d.ts
 ¦   ¦       ¦   experimental-runtime.d.ts
 ¦   ¦       ¦   experimental-runtime.mjs
@@ -3134,28 +3209,28 @@ D:.
 ¦   ¦       ¦   utils-index.mjs
 ¦   ¦       ¦   
 ¦   ¦       +---shared
-¦   ¦               binding-BTa6BPQe.d.mts
-¦   ¦               binding-BY0qR5iS.mjs
-¦   ¦               bindingify-input-options-XrReX_BJ.mjs
-¦   ¦               constructors-DuOq7MqW.d.mts
-¦   ¦               constructors-xEvVj3lN.mjs
-¦   ¦               create-bundler-option-YGKfBl_D.mjs
-¦   ¦               define-config-C7HCoqY8.d.mts
+¦   ¦               binding-CUpfdq6A.mjs
+¦   ¦               binding-CwA4xu8x.d.mts
+¦   ¦               bindingify-input-options-UCGox0BH.mjs
+¦   ¦               constructors-BDv3zGhp.mjs
+¦   ¦               constructors-D9cRAoTT.d.mts
+¦   ¦               create-bundler-option-DH74Qvg7.mjs
+¦   ¦               define-config-BLptERXo.d.mts
 ¦   ¦               define-config-Demdg3_4.mjs
 ¦   ¦               dist-DKbukT1H.mjs
-¦   ¦               error-C7pxws0W.mjs
+¦   ¦               error-CBG33oNV.mjs
 ¦   ¦               get-log-filter-AjBknEEO.d.mts
-¦   ¦               load-config-iYtRcbXn.mjs
+¦   ¦               load-config-BPjzQNro.mjs
 ¦   ¦               logging-xuHO4mAy.d.mts
 ¦   ¦               logs-D6uA606S.mjs
 ¦   ¦               misc-DOSKtd97.mjs
-¦   ¦               normalize-string-or-regex-F14uvr6D.mjs
-¦   ¦               parse-WKtEKiA6.mjs
+¦   ¦               normalize-string-or-regex-COVDiCTB.mjs
+¦   ¦               parse-BFmj01mi.mjs
 ¦   ¦               prompt-CH6TK0bC.mjs
-¦   ¦               resolve-tsconfig-DHwpIs5e.mjs
-¦   ¦               rolldown-CgWItHdG.mjs
-¦   ¦               transform-DK_nCt9j.d.mts
-¦   ¦               watch-DUTFlQ6u.mjs
+¦   ¦               resolve-tsconfig-CQ3UD0Ax.mjs
+¦   ¦               rolldown-BYX6bV3R.mjs
+¦   ¦               transform-BH7GdGwN.d.mts
+¦   ¦               watch-CILbYpHY.mjs
 ¦   ¦               
 ¦   +---run-parallel
 ¦   ¦       index.js
@@ -5616,8 +5691,6 @@ D:.
 ¦   ¦           package.json
 ¦   ¦           
 ¦   +---shell-quote
-¦   ¦   ¦   .nycrc
-¦   ¦   ¦   eslint.config.mjs
 ¦   ¦   ¦   index.d.ts
 ¦   ¦   ¦   index.js
 ¦   ¦   ¦   LICENSE
@@ -5627,20 +5700,10 @@ D:.
 ¦   ¦   ¦   quote.d.ts
 ¦   ¦   ¦   quote.js
 ¦   ¦   ¦   README.md
-¦   ¦   ¦   security.md
 ¦   ¦   ¦   tsconfig.json
 ¦   ¦   ¦   
 ¦   ¦   +---.github
-¦   ¦   ¦       FUNDING.yml
-¦   ¦   ¦       
-¦   ¦   +---test
-¦   ¦           comment.js
-¦   ¦           env.js
-¦   ¦           env_fn.js
-¦   ¦           op.js
-¦   ¦           parse.js
-¦   ¦           quote.js
-¦   ¦           set.js
+¦   ¦           FUNDING.yml
 ¦   ¦           
 ¦   +---source-map-js
 ¦   ¦   ¦   LICENSE
@@ -6673,8 +6736,8 @@ D:.
 ¦   ¦   ¦   manifest.json
 ¦   ¦   ¦   
 ¦   ¦   +---assets
-¦   ¦           app-CsxYZmJU.css
 ¦   ¦           app-DIZEten-.js
+¦   ¦           app-DolS2udt.css
 ¦   ¦           
 ¦   +---icons
 ¦   ¦       icon-192.png
@@ -6685,7 +6748,10 @@ D:.
 ¦       ¦   .gitignore
 ¦       ¦   
 ¦       +---produk
+¦               a847c2ad-fc3c-4210-9bc9-ff91801c53c6.webp
 ¦               c9591421-030c-4f4f-9706-31e70cb3733d.webp
+¦               e00cabc9-99a4-4253-8319-447c752d7af9.webp
+¦               ef3969db-eb60-46d6-af34-ade6d0f159fd.webp
 ¦               fe7c2333-1634-47c7-9069-3e3408207fdb.webp
 ¦               
 +---resources
@@ -6698,8 +6764,12 @@ D:.
 ¦   +---views
 ¦       ¦   dashboard.blade.php
 ¦       ¦   home.blade.php
+¦       ¦   kebijakan-privasi.blade.php
 ¦       ¦   syarat-ketentuan.blade.php
 ¦       ¦   
+¦       +---admin
+¦       ¦       dashboard.blade.php
+¦       ¦       
 ¦       +---auth
 ¦       ¦       confirm-password.blade.php
 ¦       ¦       forgot-password.blade.php
@@ -6710,6 +6780,7 @@ D:.
 ¦       ¦       verify-email.blade.php
 ¦       ¦       
 ¦       +---cart
+¦       ¦       index.blade.php
 ¦       ¦       show.blade.php
 ¦       ¦       
 ¦       +---checkout
@@ -6759,6 +6830,9 @@ D:.
 ¦       ¦       guest.blade.php
 ¦       ¦       navigation.blade.php
 ¦       ¦       
+¦       +---order
+¦       ¦       riwayat.blade.php
+¦       ¦       
 ¦       +---partials
 ¦       ¦       og-meta.blade.php
 ¦       ¦       pwa-head.blade.php
@@ -6792,7 +6866,10 @@ D:.
 ¦   ¦       ¦   .gitignore
 ¦   ¦       ¦   
 ¦   ¦       +---produk
+¦   ¦               a847c2ad-fc3c-4210-9bc9-ff91801c53c6.webp
 ¦   ¦               c9591421-030c-4f4f-9706-31e70cb3733d.webp
+¦   ¦               e00cabc9-99a4-4253-8319-447c752d7af9.webp
+¦   ¦               ef3969db-eb60-46d6-af34-ade6d0f159fd.webp
 ¦   ¦               fe7c2333-1634-47c7-9069-3e3408207fdb.webp
 ¦   ¦               
 ¦   +---framework
@@ -6815,6 +6892,7 @@ D:.
 ¦   ¦           0158603da607600666e7aff1cd6a09da.php
 ¦   ¦           0323f142743306fc84842a291972f58a.php
 ¦   ¦           089ac23df56c497715dd9c7926988347.php
+¦   ¦           0d2f46455108b471548fe6174aa76d23.php
 ¦   ¦           0f7f238bf322d73a6660337ba3eac49f.php
 ¦   ¦           132bcf3296e720f60cc1489321b85caf.php
 ¦   ¦           140e4879918c7e01425102731dd20507.php
@@ -6839,6 +6917,7 @@ D:.
 ¦   ¦           3e6ea83d919e257eb8410c9dc343ad66.php
 ¦   ¦           401972bf433424ac846c9c84760fadfb.php
 ¦   ¦           425e9a189f64792416eb64744ac2262b.php
+¦   ¦           430969b115c7ee862acb13fe35b52178.php
 ¦   ¦           4910fe8e3a5bd64c902cb683303068ec.php
 ¦   ¦           49467548a3f34c3c4c443146d6eba3f2.php
 ¦   ¦           4a7514f2235a2c1c0c08f64c55bd87fa.php
@@ -6847,6 +6926,7 @@ D:.
 ¦   ¦           4f6aee67498751240af0e0e7679efc29.php
 ¦   ¦           4fd421a9572632a4b68952f5786c89e7.php
 ¦   ¦           507ece726b6194909aee665b9c0fe9fa.php
+¦   ¦           511be6a1ec32a7835623df1ad629d36a.php
 ¦   ¦           51cea1fad1b516f41c1c4638518dd9b6.php
 ¦   ¦           5343a05cf65bd4b865b5a2c70fdad273.php
 ¦   ¦           57e3796bafff99e5524b11184ebb4ce0.php
@@ -6854,6 +6934,7 @@ D:.
 ¦   ¦           5a1320a82ae706470050537da7a53cb0.php
 ¦   ¦           5adc96e158616aa6453d298cbe4e82dd.php
 ¦   ¦           5f1145a93ca5b08b56580e9f9bab8beb.php
+¦   ¦           6018f6b61f811abb1745bf25c36b04c3.php
 ¦   ¦           612906668b7acea9325a0f12538aa6f9.php
 ¦   ¦           6302ca43d495a686eec324f1a552212d.php
 ¦   ¦           6356c40f8d3ed34d589e4a579ba545fb.php
@@ -6888,6 +6969,7 @@ D:.
 ¦   ¦           ce2ef76c37638fc7bdb11ad04a7f830b.php
 ¦   ¦           d0fd84d6e5047b2fbd07b73b54fd5c5e.php
 ¦   ¦           da1e667d4a72f2b0eafc69793f1af170.php
+¦   ¦           dfcf6413b0f0508b6c51ae76098fd273.php
 ¦   ¦           e5cfd1637440f8e4ed24678c94ba5ba4.php
 ¦   ¦           ea014e6af7438ad576887af0dce3535e.php
 ¦   ¦           ee0e8f9c15f07684259824033b7001e1.php
@@ -8094,6 +8176,7 @@ D:.
     ¦   ¦       ¦       TransferException.php
     ¦   ¦       ¦       
     ¦   ¦       +---Handler
+    ¦   ¦               ChunkedBodyStream.php
     ¦   ¦               Clock.php
     ¦   ¦               CurlFactory.php
     ¦   ¦               CurlFactoryInterface.php
@@ -8102,10 +8185,12 @@ D:.
     ¦   ¦               CurlShareHandleState.php
     ¦   ¦               CurlVersion.php
     ¦   ¦               DeadlineSourceStream.php
+    ¦   ¦               DeclaredLengthStream.php
     ¦   ¦               EasyHandle.php
     ¦   ¦               EncodedBodyStream.php
     ¦   ¦               HeaderProcessor.php
     ¦   ¦               HostValidator.php
+    ¦   ¦               InflateBodyStream.php
     ¦   ¦               MockHandler.php
     ¦   ¦               Proxy.php
     ¦   ¦               ProxyEnv.php
@@ -8115,6 +8200,7 @@ D:.
     ¦   ¦               Timeout.php
     ¦   ¦               TlsVersion.php
     ¦   ¦               TransferByteCounter.php
+    ¦   ¦               TransportStream.php
     ¦   ¦               UriDiagnostic.php
     ¦   ¦               
     ¦   +---promises
@@ -8147,6 +8233,7 @@ D:.
     ¦   ¦           PromisorInterface.php
     ¦   ¦           RejectedPromise.php
     ¦   ¦           RejectionException.php
+    ¦   ¦           State.php
     ¦   ¦           TaskQueue.php
     ¦   ¦           TaskQueueInterface.php
     ¦   ¦           Utils.php
@@ -8193,6 +8280,7 @@ D:.
     ¦   ¦       ¦   NoSeekStream.php
     ¦   ¦       ¦   PumpStream.php
     ¦   ¦       ¦   Query.php
+    ¦   ¦       ¦   ReadFailureCapturingStream.php
     ¦   ¦       ¦   Request.php
     ¦   ¦       ¦   Response.php
     ¦   ¦       ¦   Rfc3986.php
@@ -10056,6 +10144,7 @@ D:.
     ¦   ¦           ¦   ¦       Factory.php
     ¦   ¦           ¦   ¦       ImplicitRule.php
     ¦   ¦           ¦   ¦       InvokableRule.php
+    ¦   ¦           ¦   ¦       ParameterizedRule.php
     ¦   ¦           ¦   ¦       Rule.php
     ¦   ¦           ¦   ¦       UncompromisedVerifier.php
     ¦   ¦           ¦   ¦       ValidatesWhenResolved.php
@@ -10254,6 +10343,7 @@ D:.
     ¦   ¦           ¦   ¦   +---Concerns
     ¦   ¦           ¦   ¦   ¦       GuardsAttributes.php
     ¦   ¦           ¦   ¦   ¦       HasAttributes.php
+    ¦   ¦           ¦   ¦   ¦       HasDefaultAttributes.php
     ¦   ¦           ¦   ¦   ¦       HasEvents.php
     ¦   ¦           ¦   ¦   ¦       HasGlobalScopes.php
     ¦   ¦           ¦   ¦   ¦       HasRelationships.php
@@ -10489,6 +10579,7 @@ D:.
     ¦   ¦           ¦   ¦       CloudJob.php
     ¦   ¦           ¦   ¦       CloudManager.php
     ¦   ¦           ¦   ¦       Events.php
+    ¦   ¦           ¦   ¦       ExceptionReporter.php
     ¦   ¦           ¦   ¦       FailedJobProvider.php
     ¦   ¦           ¦   ¦       JsonFormatter.php
     ¦   ¦           ¦   ¦       ManagedQueueNotFoundException.php
@@ -11223,6 +11314,7 @@ D:.
     ¦   ¦           ¦   +---Attributes
     ¦   ¦           ¦   ¦       Backoff.php
     ¦   ¦           ¦   ¦       Connection.php
+    ¦   ¦           ¦   ¦       CountCrashesAsExceptions.php
     ¦   ¦           ¦   ¦       DebounceFor.php
     ¦   ¦           ¦   ¦       Delay.php
     ¦   ¦           ¦   ¦       DeleteWhenMissingModels.php
@@ -11629,6 +11721,7 @@ D:.
     ¦   ¦           ¦   ¦           ExceptionHandlerFake.php
     ¦   ¦           ¦   ¦           Fake.php
     ¦   ¦           ¦   ¦           MailFake.php
+    ¦   ¦           ¦   ¦           MatchesProperties.php
     ¦   ¦           ¦   ¦           NotificationFake.php
     ¦   ¦           ¦   ¦           PendingBatchFake.php
     ¦   ¦           ¦   ¦           PendingChainFake.php
@@ -11736,33 +11829,69 @@ D:.
     ¦   ¦           ¦   ¦       ValidatesAttributes.php
     ¦   ¦           ¦   ¦       
     ¦   ¦           ¦   +---Rules
-    ¦   ¦           ¦           AnyOf.php
-    ¦   ¦           ¦           ArrayKeys.php
-    ¦   ¦           ¦           ArrayRule.php
-    ¦   ¦           ¦           Can.php
-    ¦   ¦           ¦           Contains.php
-    ¦   ¦           ¦           DatabaseRule.php
-    ¦   ¦           ¦           Date.php
-    ¦   ¦           ¦           Dimensions.php
-    ¦   ¦           ¦           DoesntContain.php
-    ¦   ¦           ¦           Email.php
-    ¦   ¦           ¦           Enum.php
-    ¦   ¦           ¦           ExcludeIf.php
-    ¦   ¦           ¦           ExcludeUnless.php
-    ¦   ¦           ¦           Exists.php
-    ¦   ¦           ¦           File.php
-    ¦   ¦           ¦           ImageFile.php
-    ¦   ¦           ¦           In.php
-    ¦   ¦           ¦           NotIn.php
-    ¦   ¦           ¦           Numeric.php
-    ¦   ¦           ¦           Password.php
-    ¦   ¦           ¦           ProhibitedIf.php
-    ¦   ¦           ¦           ProhibitedUnless.php
-    ¦   ¦           ¦           RequiredIf.php
-    ¦   ¦           ¦           RequiredUnless.php
-    ¦   ¦           ¦           StringRule.php
-    ¦   ¦           ¦           Unique.php
-    ¦   ¦           ¦           
+    ¦   ¦           ¦       ¦   AcceptedIf.php
+    ¦   ¦           ¦       ¦   AnyOf.php
+    ¦   ¦           ¦       ¦   ArrayKeys.php
+    ¦   ¦           ¦       ¦   ArrayRule.php
+    ¦   ¦           ¦       ¦   Can.php
+    ¦   ¦           ¦       ¦   Confirmed.php
+    ¦   ¦           ¦       ¦   Contains.php
+    ¦   ¦           ¦       ¦   CurrentPassword.php
+    ¦   ¦           ¦       ¦   DatabaseRule.php
+    ¦   ¦           ¦       ¦   Date.php
+    ¦   ¦           ¦       ¦   DeclinedIf.php
+    ¦   ¦           ¦       ¦   Dimensions.php
+    ¦   ¦           ¦       ¦   Distinct.php
+    ¦   ¦           ¦       ¦   DoesntContain.php
+    ¦   ¦           ¦       ¦   Email.php
+    ¦   ¦           ¦       ¦   Enum.php
+    ¦   ¦           ¦       ¦   ExcludeIf.php
+    ¦   ¦           ¦       ¦   ExcludeUnless.php
+    ¦   ¦           ¦       ¦   ExcludeWith.php
+    ¦   ¦           ¦       ¦   ExcludeWithout.php
+    ¦   ¦           ¦       ¦   Exists.php
+    ¦   ¦           ¦       ¦   File.php
+    ¦   ¦           ¦       ¦   ImageFile.php
+    ¦   ¦           ¦       ¦   In.php
+    ¦   ¦           ¦       ¦   InArray.php
+    ¦   ¦           ¦       ¦   InArrayKeys.php
+    ¦   ¦           ¦       ¦   IpAddress.php
+    ¦   ¦           ¦       ¦   MissingIf.php
+    ¦   ¦           ¦       ¦   MissingUnless.php
+    ¦   ¦           ¦       ¦   MissingWith.php
+    ¦   ¦           ¦       ¦   MissingWithAll.php
+    ¦   ¦           ¦       ¦   NotIn.php
+    ¦   ¦           ¦       ¦   NotRegex.php
+    ¦   ¦           ¦       ¦   Numeric.php
+    ¦   ¦           ¦       ¦   Password.php
+    ¦   ¦           ¦       ¦   PresentIf.php
+    ¦   ¦           ¦       ¦   PresentUnless.php
+    ¦   ¦           ¦       ¦   PresentWith.php
+    ¦   ¦           ¦       ¦   PresentWithAll.php
+    ¦   ¦           ¦       ¦   ProhibitedIf.php
+    ¦   ¦           ¦       ¦   ProhibitedIfAccepted.php
+    ¦   ¦           ¦       ¦   ProhibitedIfDeclined.php
+    ¦   ¦           ¦       ¦   ProhibitedUnless.php
+    ¦   ¦           ¦       ¦   Prohibits.php
+    ¦   ¦           ¦       ¦   Regex.php
+    ¦   ¦           ¦       ¦   RequiredArrayKeys.php
+    ¦   ¦           ¦       ¦   RequiredIf.php
+    ¦   ¦           ¦       ¦   RequiredIfAccepted.php
+    ¦   ¦           ¦       ¦   RequiredIfDeclined.php
+    ¦   ¦           ¦       ¦   RequiredUnless.php
+    ¦   ¦           ¦       ¦   RequiredWith.php
+    ¦   ¦           ¦       ¦   RequiredWithAll.php
+    ¦   ¦           ¦       ¦   RequiredWithout.php
+    ¦   ¦           ¦       ¦   RequiredWithoutAll.php
+    ¦   ¦           ¦       ¦   StringRule.php
+    ¦   ¦           ¦       ¦   Timezone.php
+    ¦   ¦           ¦       ¦   Unique.php
+    ¦   ¦           ¦       ¦   Url.php
+    ¦   ¦           ¦       ¦   Uuid.php
+    ¦   ¦           ¦       ¦   
+    ¦   ¦           ¦       +---Concerns
+    ¦   ¦           ¦               FormatsParameters.php
+    ¦   ¦           ¦               
     ¦   ¦           +---View
     ¦   ¦               ¦   AnonymousComponent.php
     ¦   ¦               ¦   AppendableAttributeValue.php
@@ -12665,20 +12794,44 @@ D:.
     ¦   ¦   ¦   HttpFactory.php
     ¦   ¦   ¦   LICENSE
     ¦   ¦   ¦   SchemeType.php
+    ¦   ¦   ¦   TypeConverter.php
     ¦   ¦   ¦   Uri.php
     ¦   ¦   ¦   UriInfo.php
     ¦   ¦   ¦   UriResolver.php
     ¦   ¦   ¦   UriScheme.php
     ¦   ¦   ¦   UriTemplate.php
+    ¦   ¦   ¦   UrlPattern.php
+    ¦   ¦   ¦   UrlPatternBuilder.php
     ¦   ¦   ¦   Urn.php
     ¦   ¦   ¦   
     ¦   ¦   +---UriTemplate
-    ¦   ¦           Expression.php
-    ¦   ¦           Operator.php
-    ¦   ¦           Template.php
-    ¦   ¦           TemplateCanNotBeExpanded.php
-    ¦   ¦           VariableBag.php
-    ¦   ¦           VarSpecifier.php
+    ¦   ¦   ¦       Expression.php
+    ¦   ¦   ¦       ExtractedValue.php
+    ¦   ¦   ¦       ExtractionErrorReason.php
+    ¦   ¦   ¦       ExtractionResult.php
+    ¦   ¦   ¦       Literal.php
+    ¦   ¦   ¦       Operator.php
+    ¦   ¦   ¦       Template.php
+    ¦   ¦   ¦       TemplateCanNotBeExpanded.php
+    ¦   ¦   ¦       VariableBag.php
+    ¦   ¦   ¦       VariableCanNotBeExtracted.php
+    ¦   ¦   ¦       VarSpecifier.php
+    ¦   ¦   ¦       
+    ¦   ¦   +---UrlPattern
+    ¦   ¦           Component.php
+    ¦   ¦           ComponentName.php
+    ¦   ¦           ComponentResult.php
+    ¦   ¦           MatchMode.php
+    ¦   ¦           Modifier.php
+    ¦   ¦           Parser.php
+    ¦   ¦           Part.php
+    ¦   ¦           PartType.php
+    ¦   ¦           PathToRegexp.php
+    ¦   ¦           PatternType.php
+    ¦   ¦           Result.php
+    ¦   ¦           State.php
+    ¦   ¦           Token.php
+    ¦   ¦           TokenType.php
     ¦   ¦           
     ¦   +---uri-interfaces
     ¦       ¦   composer.json
@@ -12688,6 +12841,7 @@ D:.
     ¦       ¦   HostRecord.php
     ¦       ¦   HostType.php
     ¦       ¦   LICENSE
+    ¦       ¦   Occurrence.php
     ¦       ¦   QueryComposeMode.php
     ¦       ¦   QueryExtractMode.php
     ¦       ¦   QueryString.php
@@ -13086,6 +13240,7 @@ D:.
     ¦       ¦   composer.json
     ¦       ¦   extension.neon
     ¦       ¦   LICENSE
+    ¦       ¦   phpmd.yml
     ¦       ¦   readme.md
     ¦       ¦   SECURITY.md
     ¦       ¦   
@@ -13116,6 +13271,7 @@ D:.
     ¦               ¦   CarbonPeriod.php
     ¦               ¦   CarbonPeriodImmutable.php
     ¦               ¦   CarbonTimeZone.php
+    ¦               ¦   DurationConverter.php
     ¦               ¦   Factory.php
     ¦               ¦   FactoryImmutable.php
     ¦               ¦   Language.php
@@ -14019,6 +14175,7 @@ D:.
     ¦                       Date.php
     ¦                       DeprecatedPeriodProperties.php
     ¦                       Difference.php
+    ¦                       Eras.php
     ¦                       IntervalRounding.php
     ¦                       IntervalStep.php
     ¦                       LocalFactory.php
@@ -14943,10 +15100,6 @@ D:.
     ¦   ¦   ¦   README.md
     ¦   ¦   ¦   SECURITY.md
     ¦   ¦   ¦   
-    ¦   ¦   +---.psalm
-    ¦   ¦   ¦       baseline.xml
-    ¦   ¦   ¦       config.xml
-    ¦   ¦   ¦       
     ¦   ¦   +---src
     ¦   ¦       ¦   Template.php
     ¦   ¦       ¦   
@@ -16201,6 +16354,7 @@ D:.
     ¦           ¦       ¦       ¦   
     ¦           ¦       ¦       +---Subscriber
     ¦           ¦       ¦               BeforeTestClassMethodErroredSubscriber.php
+    ¦           ¦       ¦               BeforeTestClassMethodFailedSubscriber.php
     ¦           ¦       ¦               ChildProcessErroredSubscriber.php
     ¦           ¦       ¦               Subscriber.php
     ¦           ¦       ¦               TestConsideredRiskySubscriber.php
@@ -16212,6 +16366,7 @@ D:.
     ¦           ¦       ¦               TestRunnerExecutionStartedSubscriber.php
     ¦           ¦       ¦               TestSkippedSubscriber.php
     ¦           ¦       ¦               TestSuiteSkippedSubscriber.php
+    ¦           ¦       ¦               TestSuiteStartedSubscriber.php
     ¦           ¦       ¦               TestTriggeredDeprecationSubscriber.php
     ¦           ¦       ¦               TestTriggeredErrorSubscriber.php
     ¦           ¦       ¦               TestTriggeredNoticeSubscriber.php
@@ -16259,6 +16414,7 @@ D:.
     ¦               ¦       PhpDownloader.php
     ¦               ¦       
     ¦               +---PHP
+    ¦               ¦       ExtensionSettings.php
     ¦               ¦       Job.php
     ¦               ¦       JobRunner.php
     ¦               ¦       JobRunnerRegistry.php
@@ -17279,22 +17435,15 @@ D:.
     ¦               
     +---sentry
     ¦   +---sentry
-    ¦   ¦   ¦   .git-blame-ignore-revs
-    ¦   ¦   ¦   analysis-baseline.toml
     ¦   ¦   ¦   AUTHORS
     ¦   ¦   ¦   CHANGELOG.md
     ¦   ¦   ¦   composer.json
-    ¦   ¦   ¦   CONTRIBUTING.md
     ¦   ¦   ¦   LICENSE
-    ¦   ¦   ¦   mago.toml
     ¦   ¦   ¦   README.md
     ¦   ¦   ¦   UPGRADE-2.0.md
     ¦   ¦   ¦   UPGRADE-3.0.md
     ¦   ¦   ¦   UPGRADE-4.0.md
     ¦   ¦   ¦   
-    ¦   ¦   +---scripts
-    ¦   ¦   ¦       bump-version.sh
-    ¦   ¦   ¦       
     ¦   ¦   +---src
     ¦   ¦       ¦   Breadcrumb.php
     ¦   ¦       ¦   CheckIn.php
@@ -17347,6 +17496,26 @@ D:.
     ¦   ¦       +---Context
     ¦   ¦       ¦       OsContext.php
     ¦   ¦       ¦       RuntimeContext.php
+    ¦   ¦       ¦       
+    ¦   ¦       +---DataCollection
+    ¦   ¦       ¦       DatabaseDataCollector.php
+    ¦   ¦       ¦       DataCollectionOptions.php
+    ¦   ¦       ¦       DataCollectionPolicy.php
+    ¦   ¦       ¦       HttpBodyCollector.php
+    ¦   ¦       ¦       HttpBodySourceInterface.php
+    ¦   ¦       ¦       HttpCookieCollector.php
+    ¦   ¦       ¦       HttpCookieParser.php
+    ¦   ¦       ¦       HttpHeaderCollector.php
+    ¦   ¦       ¦       HttpMessageType.php
+    ¦   ¦       ¦       HttpSpanDataCollector.php
+    ¦   ¦       ¦       HttpUrlCollector.php
+    ¦   ¦       ¦       InMemoryHttpBodySource.php
+    ¦   ¦       ¦       KeyValueCollectionBehavior.php
+    ¦   ¦       ¦       KeyValueDataFilter.php
+    ¦   ¦       ¦       LegacyRequestBodyCollector.php
+    ¦   ¦       ¦       Psr7BodyReader.php
+    ¦   ¦       ¦       Psr7MessageBodySource.php
+    ¦   ¦       ¦       ServerRequestBodySource.php
     ¦   ¦       ¦       
     ¦   ¦       +---Exception
     ¦   ¦       ¦       EventCreationException.php
@@ -17523,6 +17692,7 @@ D:.
     ¦                   +---Features
     ¦                   ¦   ¦   AiIntegration.php
     ¦                   ¦   ¦   CacheIntegration.php
+    ¦                   ¦   ¦   ClassificationIntegration.php
     ¦                   ¦   ¦   ConsoleIntegration.php
     ¦                   ¦   ¦   ConsoleSchedulingIntegration.php
     ¦                   ¦   ¦   Feature.php
@@ -17535,12 +17705,19 @@ D:.
     ¦                   ¦   ¦   QueueIntegration.php
     ¦                   ¦   ¦   
     ¦                   ¦   +---Ai
+    ¦                   ¦   ¦       AiConversationTracker.php
+    ¦                   ¦   ¦       AiDataSanitizer.php
     ¦                   ¦   ¦       AiInvocationData.php
     ¦                   ¦   ¦       AiInvocationMeta.php
     ¦                   ¦   ¦       AiMessage.php
     ¦                   ¦   ¦       AiMessagePart.php
+    ¦                   ¦   ¦       AiProviderUrlResolver.php
     ¦                   ¦   ¦       AiSpanDataBag.php
     ¦                   ¦   ¦       HttpRequestIntegration.php
+    ¦                   ¦   ¦       
+    ¦                   ¦   +---Classification
+    ¦                   ¦   ¦       ClassificationInvocationData.php
+    ¦                   ¦   ¦       ClassificationMessageFormatter.php
     ¦                   ¦   ¦       
     ¦                   ¦   +---Concerns
     ¦                   ¦   ¦       ResolvesEventOrigin.php
@@ -17560,6 +17737,7 @@ D:.
     ¦                   +---Http
     ¦                   ¦       FlushEventsMiddleware.php
     ¦                   ¦       LaravelRequestFetcher.php
+    ¦                   ¦       SensitiveCookieFilter.php
     ¦                   ¦       SetRequestIpMiddleware.php
     ¦                   ¦       SetRequestMiddleware.php
     ¦                   ¦       
@@ -18823,9 +19001,21 @@ D:.
     ¦   ¦       +---stubs
     ¦   ¦               SortDirection.php
     ¦   ¦               
+    ¦   +---polyfill-time
+    ¦   ¦   ¦   composer.json
+    ¦   ¦   ¦   LICENSE
+    ¦   ¦   ¦   README.md
+    ¦   ¦   ¦   
+    ¦   ¦   +---Resources
+    ¦   ¦       +---stubs
+    ¦   ¦           +---Time
+    ¦   ¦                   Duration.php
+    ¦   ¦                   TimeException.php
+    ¦   ¦                   
     ¦   +---polyfill-uuid
     ¦   ¦       bootstrap.php
     ¦   ¦       bootstrap80.php
+    ¦   ¦       bootstrap85.php
     ¦   ¦       composer.json
     ¦   ¦       LICENSE
     ¦   ¦       README.md
