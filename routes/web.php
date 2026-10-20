@@ -85,30 +85,35 @@ Route::post('/guest-register', [App\Http\Controllers\GuestAuthController::class,
 Route::post('/order/{order}/review', [App\Http\Controllers\ReviewController::class, 'store'])->name('review.store')->middleware('auth');
 
 // ===================================================================
-// RUTE ADMIN LAPAKDA
+// RUTE ADMIN LAPAKDA (Khusus Subdomain)
 // ===================================================================
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/subscriptions', [App\Http\Controllers\AdminSubscriptionController::class, 'index'])->name('subscription.index');
-    Route::post('/subscriptions/{subscription}/approve', [App\Http\Controllers\AdminSubscriptionController::class, 'approve'])->name('subscription.approve');
-    Route::get('/search', [App\Http\Controllers\AdminSearchController::class, 'index'])->name('search');
-    
-    
-    // 1A. Pengaturan Harga
-    Route::get('/settings', [App\Http\Controllers\AdminSettingController::class, 'index'])->name('setting.index');
-    Route::post('/settings', [App\Http\Controllers\AdminSettingController::class, 'update'])->name('setting.update');
-
-    // 1B. CRUD Voucher
-    Route::get('/vouchers', [App\Http\Controllers\AdminVoucherController::class, 'index'])->name('voucher.index');
-    Route::post('/vouchers', [App\Http\Controllers\AdminVoucherController::class, 'store'])->name('voucher.store');
-    Route::patch('/vouchers/{voucher}', [App\Http\Controllers\AdminVoucherController::class, 'update'])->name('voucher.update');
-    Route::delete('/vouchers/{voucher}', [App\Http\Controllers\AdminVoucherController::class, 'destroy'])->name('voucher.destroy');
-
-    // 1C. Manajemen Toko (Suspend/Activate)
-    Route::get('/stores', [App\Http\Controllers\AdminStoreController::class, 'index'])->name('store.index');
-    Route::patch('/stores/{store}/toggle', [App\Http\Controllers\AdminStoreController::class, 'toggleStatus'])->name('store.toggle');
-    Route::get('/stores/export', [App\Http\Controllers\AdminStoreController::class, 'exportCsv'])->name('store.export');
-    
+Route::domain('admin.lapakda.com')->group(function () {
+    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        // Tagihan
+        Route::get('/subscriptions', [App\Http\Controllers\AdminSubscriptionController::class, 'index'])->name('subscription.index');
+        Route::post('/subscriptions/{subscription}/approve', [App\Http\Controllers\AdminSubscriptionController::class, 'approve'])->name('subscription.approve');
+        
+        // Pengaturan & Voucher
+        Route::get('/settings', [App\Http\Controllers\AdminSettingController::class, 'index'])->name('setting.index');
+        Route::post('/settings', [App\Http\Controllers\AdminSettingController::class, 'update'])->name('setting.update');
+        
+        Route::get('/vouchers', [App\Http\Controllers\AdminVoucherController::class, 'index'])->name('voucher.index');
+        Route::post('/vouchers', [App\Http\Controllers\AdminVoucherController::class, 'store'])->name('voucher.store');
+        Route::patch('/vouchers/{voucher}', [App\Http\Controllers\AdminVoucherController::class, 'update'])->name('voucher.update');
+        Route::delete('/vouchers/{voucher}', [App\Http\Controllers\AdminVoucherController::class, 'destroy'])->name('voucher.destroy');
+        
+        // Manajemen Toko & User
+        Route::get('/stores', [App\Http\Controllers\AdminStoreController::class, 'index'])->name('store.index');
+        Route::patch('/stores/{store}/toggle', [App\Http\Controllers\AdminStoreController::class, 'toggleStatus'])->name('store.toggle');
+        Route::get('/stores/export', [App\Http\Controllers\AdminStoreController::class, 'exportCsv'])->name('store.export');
+        
+        Route::get('/users', [App\Http\Controllers\AdminUserController::class, 'index'])->name('user.index');
+        
+        // Pencarian Admin
+        Route::get('/search', [App\Http\Controllers\AdminSearchController::class, 'index'])->name('search');
+    });
 });
 
 // WAJIB PALING BAWAH
