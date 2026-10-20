@@ -17,7 +17,7 @@
 
         <div>
             <label for="password" class="block text-sm font-bold text-gray-700 mb-1">Password (masukkan jika ada)</label>
-            <input id="password" type="password" name="password" placeholder="Biarkan kosong jika pembeli" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
+            <input id="password" type="password" name="password" placeholder="Biarkan kosong jika tidak ada" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
             <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-500 text-xs" />
         </div>
 

@@ -32,6 +32,8 @@
             </div>
         </header>
 
+        @include('partials.security-banner')
+
         <div class="max-w-3xl mx-auto px-4 pt-6">
             
             @if (session('success'))

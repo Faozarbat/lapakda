@@ -23,6 +23,7 @@ class User extends Authenticatable
         'last_longitude',
         'last_delivery_note',
         'is_admin',
+        'password_set_at',
     ];
 
     protected $hidden = [
@@ -35,6 +36,7 @@ class User extends Authenticatable
         'phone_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_admin' => 'boolean',
+        'password_set_at' => 'datetime',
     ];
 
     public function stores(): HasMany

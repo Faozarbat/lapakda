@@ -35,6 +35,11 @@
             @include('profile.partials.update-profile-information-form')
         </div>
 
+        <!-- Section: Keamanan (Password) -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            @include('profile.partials.update-password-form')
+        </div>
+
         <!-- Section: Menu Informasi Legal & Bantuan -->
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
             <a href="{{ route('terms') }}" class="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">

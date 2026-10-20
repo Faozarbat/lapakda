@@ -21,6 +21,27 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        // Jika user SUDAH punya password, wajib masukkan password lama
+        if ($request->user()->password_set_at) {
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+            ]);
+        }
+
+        $request->user()->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'password_set_at' => now(), // Tandai bahwa password sudah dibuat
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'password-updated');
+    }
+
     /**
      * Update the user's profile information.
      */

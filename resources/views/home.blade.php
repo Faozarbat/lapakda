@@ -117,6 +117,8 @@
         </div>
     </header>
 
+    @include('partials.security-banner')
+
     <main class="max-w-7xl mx-auto px-5 pt-5">
         
         <!-- Sapaan & Pencarian -->
