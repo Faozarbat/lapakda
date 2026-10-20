@@ -52,6 +52,39 @@
           }
       }">
 
+        <!-- BANNER INSTALL PWA (Gaya Iklan Atas) -->
+    <div x-data="{ showBanner: false }" 
+         @pwa-ready.window="showBanner = true" 
+         x-show="showBanner" 
+         x-transition.opacity
+         x-cloak
+         class="sticky top-0 z-[100] w-full bg-[#B9232D] text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-white text-[#B9232D] rounded-lg flex items-center justify-center font-extrabold text-sm flex-shrink-0">L</div>
+                <div>
+                    <p class="text-xs font-bold leading-tight">Install Aplikasi LapakDA</p>
+                    <p class="text-[10px] text-red-100 hidden sm:block">Akses katalog lebih cepat & praktis di HP Anda.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button @click="showBanner = false" class="text-xs font-semibold text-red-200 hover:text-white px-2">Tutup</button>
+                <button @click="
+                    if(window.deferredPrompt) {
+                        window.deferredPrompt.prompt();
+                        window.deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') showBanner = false;
+                            window.deferredPrompt = null;
+                        });
+                    } else {
+                        // Fallback jika browser bandel (misal iOS Safari)
+                        alert('Buka menu browser (titik tiga) lalu pilih \'Tambahkan ke Layar Utama\'.');
+                    }
+                " class="bg-white text-[#B9232D] px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-sm hover:scale-105 transition-transform">Install</button>
+            </div>
+        </div>
+    </div>
+
     <!-- HEADER -->
     <header class="bg-white sticky top-0 z-40 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
@@ -171,30 +204,7 @@
         @include('layouts.navigation')
     </div>
 
-        <!-- BANNER INSTALL PWA -->
-    <div id="pwaBanner" class="fixed bottom-24 left-4 right-4 z-[90] hidden justify-center pointer-events-none" x-data="{ showBanner: false }" @pwa-ready.window="showBanner = true">
-        <div x-show="showBanner" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] flex items-center justify-between gap-4 w-full max-w-sm pointer-events-auto border border-gray-700">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#B9232D] rounded-xl flex items-center justify-center font-extrabold text-lg">L</div>
-                <div>
-                    <p class="text-xs font-bold leading-tight">Install LapakDA</p>
-                    <p class="text-[10px] text-gray-400 mt-0.5">Akses lebih cepat & hemat kuota</p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button @click="showBanner = false" class="text-gray-400 hover:text-white px-2 text-xs font-bold">Nanti</button>
-                <button @click="
-                    if(window.deferredPrompt) {
-                        window.deferredPrompt.prompt();
-                        window.deferredPrompt.userChoice.then((choiceResult) => {
-                            if (choiceResult.outcome === 'accepted') showBanner = false;
-                            window.deferredPrompt = null;
-                        });
-                    }
-                " class="bg-white text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-100">Install</button>
-            </div>
-        </div>
-    </div>
+        
 
     <!-- TOAST NOTIFICATION -->
     <div x-show="toastShow" 
@@ -324,5 +334,21 @@
         </div>
     </div>
     @endguest
+
+    <script>
+        // PWA DETECTOR
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            window.dispatchEvent(new Event('pwa-ready'));
+        });
+
+        // PAKSA MUNCUL: Jika 2 detik tidak muncul, kita paksa muncul untuk testing
+        window.setTimeout(() => {
+            if (!window.deferredPrompt) {
+                window.dispatchEvent(new Event('pwa-ready'));
+            }
+        }, 2000);
+    </script>
 </body>
 </html>
