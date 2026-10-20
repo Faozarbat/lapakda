@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Store;
+use App\Notifications\NewOrderNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -169,6 +170,14 @@ class OrderController extends Controller
         }
 
         $order->load('items');
+        
+        // --- TAMBAHKAN KODE NOTIFIKASI DI SINI ---
+        // Kirim Push Notification ke HP milik Seller
+        if ($store->owner) {
+            $store->owner->notify(new NewOrderNotification($order, $store));
+        }
+        // ----------------------------------------
+
         $pesanWA = $this->susunRingkasanWA($order, $store);
         $waUrl = 'https://wa.me/' . $store->nomor_wa . '?text=' . urlencode($pesanWA);
 
