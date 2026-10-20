@@ -195,17 +195,60 @@
         </div>
     </div>
 
-        <!-- GUEST POPUP -->
+            <!-- GUEST POPUP -->
     <div x-data="{ 
              showGuestPopup: false,
+             isSubmitting: false,
+             guestName: '',
+             guestPhone: '',
              init() {
-                 if (!localStorage.getItem('lapakda_guest_prompted')) {
+                 // Cek kapan terakhir kali popup ini ditutup/di-submit
+                 const promptedUntil = localStorage.getItem('lapakda_guest_prompted_until');
+                 
+                 // Jika belum pernah (null) ATAU waktu sekarang sudah melewati batas cooldown
+                 if (!promptedUntil || Date.now() > parseInt(promptedUntil)) {
                      setTimeout(() => { this.showGuestPopup = true }, 1500);
                  }
              },
              closePopup() {
                  this.showGuestPopup = false;
-                 localStorage.setItem('lapakda_guest_prompted', 'true');
+                 // Set cooldown selama 2 Jam (2 * 60 * 60 * 1000 milidetik)
+                 const nextPrompt = Date.now() + (2 * 60 * 60 * 1000);
+                 localStorage.setItem('lapakda_guest_prompted_until', nextPrompt);
+             },
+             submitGuestForm() {
+                 if(this.isSubmitting) return;
+                 this.isSubmitting = true;
+
+                 // Ambil CSRF Token dari meta tag
+                 const csrfToken = document.querySelector('meta[name=csrf-token]')?.content || '{{ csrf_token() }}';
+
+                 fetch('{{ route('guest.register') }}', {
+                     method: 'POST',
+                     headers: { 
+                         'Content-Type': 'application/json', 
+                         'X-CSRF-TOKEN': csrfToken,
+                         'Accept': 'application/json'
+                     },
+                     body: JSON.stringify({ 
+                         name: this.guestName, 
+                         nomor_hp: this.guestPhone 
+                     })
+                 })
+                 .then(res => res.json())
+                 .then(data => {
+                     if(data.success) {
+                         // Hapus cooldown agar jika dia logout nanti, popup bisa muncul lagi
+                         localStorage.removeItem('lapakda_guest_prompted_until');
+                         // Reload halaman agar status login di header berubah otomatis
+                         window.location.reload(); 
+                     }
+                 })
+                 .catch(err => {
+                     console.error(err);
+                     this.isSubmitting = false;
+                     alert('Terjadi kesalahan sistem, silakan coba lagi.'); // Fallback (kita hindari alert jika mungkin, tapi ini untuk darurat)
+                 });
              }
          }" 
          x-show="showGuestPopup" 
@@ -239,15 +282,19 @@
                 Isi nama dan nomor WA kamu biar pesanan otomatis tersimpan di Riwayat dan kamu dapat update promo menarik dari resto favoritmu.
             </p>
 
-            <form @submit.prevent="closePopup()" class="space-y-3">
+            <form @submit.prevent="submitGuestForm()" class="space-y-3">
                 <div>
-                    <input type="text" placeholder="Nama Lengkap" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
+                    <input type="text" x-model="guestName" placeholder="Nama Lengkap" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                 </div>
                 <div>
-                    <input type="tel" placeholder="Nomor WhatsApp (cth: 0812...)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
+                    <input type="tel" x-model="guestPhone" placeholder="Nomor WhatsApp (cth: 0812...)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                 </div>
-                <button type="submit" class="w-full bg-[#B9232D] text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform mt-2">
-                    Simpan & Lanjutkan
+                <button type="submit" :disabled="isSubmitting" class="w-full bg-[#B9232D] text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform mt-2 disabled:opacity-50 disabled:hover:scale-100 flex justify-center items-center">
+                    <span x-show="!isSubmitting">Simpan & Lanjutkan</span>
+                    <span x-show="isSubmitting" class="flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        Memproses...
+                    </span>
                 </button>
             </form>
 

@@ -48,6 +48,9 @@ class GuestAuthController extends Controller
             ->whereNull('user_id')
             ->update(['user_id' => $user->id]);
 
-        return back()->with('success', 'Berhasil masuk! Pesananmu sekarang tersimpan.');
+        return response()->json([
+            'success' => true, 
+            'message' => 'Berhasil masuk! Pesananmu sekarang tersimpan.'
+        ]);
     }
 }
