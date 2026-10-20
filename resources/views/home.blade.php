@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#B9232D">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
     @include('partials.pwa-head')
     @include('partials.og-meta', [
@@ -43,7 +43,7 @@
                       window.location.href = `{{ route('jelajah', 'resto') }}?lat=${lat}&lng=${lng}`;
                   },
                   (error) => {
-                      this.toastMessage = 'Gagal mendapatkan lokasi. Pastikan izin GPS (HTTPS) diaktifkan.';
+                      this.toastMessage = 'Gagal mendapatkan lokasi. Pastikan izin GPS diaktifkan.';
                       this.toastShow = true;
                       setTimeout(() => { this.toastShow = false; }, 4000);
                       this.isLocating = false;
@@ -104,12 +104,10 @@
                 <button type="submit" class="hidden"></button>
             </form>
             
-            <!-- TOMBOL GEOLOCATION DENGAN ALPINE.JS -->
             <button @click="cariRestoTerdekat()" :disabled="isLocating" class="w-full flex items-center justify-center gap-2 bg-white border border-[#B9232D]/30 text-[#B9232D] py-3 rounded-xl text-sm font-bold shadow-sm hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" x-show="!isLocating">
                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                 </svg>
-                <!-- Spinner Loading -->
                 <svg class="animate-spin h-4 w-4 text-[#B9232D]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" x-show="isLocating" x-cloak>
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -173,7 +171,32 @@
         @include('layouts.navigation')
     </div>
 
-    <!-- TOAST NOTIFICATION (Alpine v3 safe) -->
+        <!-- BANNER INSTALL PWA -->
+    <div id="pwaBanner" class="fixed bottom-24 left-4 right-4 z-[90] hidden justify-center pointer-events-none" x-data="{ showBanner: false }" @pwa-ready.window="showBanner = true">
+        <div x-show="showBanner" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] flex items-center justify-between gap-4 w-full max-w-sm pointer-events-auto border border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#B9232D] rounded-xl flex items-center justify-center font-extrabold text-lg">L</div>
+                <div>
+                    <p class="text-xs font-bold leading-tight">Install LapakDA</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">Akses lebih cepat & hemat kuota</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button @click="showBanner = false" class="text-gray-400 hover:text-white px-2 text-xs font-bold">Nanti</button>
+                <button @click="
+                    if(window.deferredPrompt) {
+                        window.deferredPrompt.prompt();
+                        window.deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') showBanner = false;
+                            window.deferredPrompt = null;
+                        });
+                    }
+                " class="bg-white text-gray-900 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-100">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
     <div x-show="toastShow" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -203,27 +226,24 @@
              isSubmitting: false,
              guestName: '',
              guestPhone: '',
+             errorMsg: '',
              init() {
-                 // Cek kapan terakhir kali popup ini ditutup/di-submit
                  const promptedUntil = localStorage.getItem('lapakda_guest_prompted_until');
-                 
-                 // Jika belum pernah (null) ATAU waktu sekarang sudah melewati batas cooldown
                  if (!promptedUntil || Date.now() > parseInt(promptedUntil)) {
                      setTimeout(() => { this.showGuestPopup = true }, 1500);
                  }
              },
              closePopup() {
                  this.showGuestPopup = false;
-                 // Set cooldown selama 2 Jam (2 * 60 * 60 * 1000 milidetik)
-                 const nextPrompt = Date.now() + (2 * 60 * 60 * 1000);
+                 const nextPrompt = Date.now() + (2 * 60 * 60 * 1000); // 2 Jam
                  localStorage.setItem('lapakda_guest_prompted_until', nextPrompt);
              },
              submitGuestForm() {
                  if(this.isSubmitting) return;
                  this.isSubmitting = true;
+                 this.errorMsg = '';
 
-                 // Ambil CSRF Token dari meta tag
-                 const csrfToken = document.querySelector('meta[name=csrf-token]')?.content || '{{ csrf_token() }}';
+                 const csrfToken = document.querySelector('meta[name=csrf-token]')?.content;
 
                  fetch('{{ route('guest.register') }}', {
                      method: 'POST',
@@ -240,14 +260,15 @@
                  .then(res => res.json())
                  .then(data => {
                      if(data.success) {
-                         // Reload halaman agar status login berubah dan popup hilang otomatis
                          window.location.reload(); 
+                     } else {
+                         this.errorMsg = data.message; 
+                         this.isSubmitting = false;
                      }
                  })
                  .catch(err => {
                      console.error(err);
                      this.isSubmitting = false;
-                     alert('Terjadi kesalahan sistem, silakan coba lagi.'); // Fallback (kita hindari alert jika mungkin, tapi ini untuk darurat)
                  });
              }
          }" 
@@ -255,10 +276,8 @@
          x-cloak 
          class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         
-        <!-- Backdrop Blur -->
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closePopup()"></div>
 
-        <!-- Modal Box -->
         <div class="bg-white rounded-3xl w-full max-w-sm relative z-10 p-6 shadow-2xl"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-8 scale-95"
@@ -267,19 +286,17 @@
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-8 scale-95">
             
-            <!-- Tombol X -->
             <button @click="closePopup()" class="absolute top-4 right-4 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
             </button>
 
-            <!-- Ikon Sapaan -->
             <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
                 👋
             </div>
 
             <h3 class="text-xl font-extrabold text-gray-900 text-center mb-2">Kenalan Dulu Yuk!</h3>
             <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">
-                Isi nama dan nomor WA kamu biar pesanan otomatis tersimpan di Riwayat dan kamu dapat update promo menarik dari resto favoritmu.
+                Isi nama dan nomor WA kamu biar pesanan otomatis tersimpan di Riwayat dan kamu dapat update promo menarik.
             </p>
 
             <form @submit.prevent="submitGuestForm()" class="space-y-3">
@@ -289,6 +306,9 @@
                 <div>
                     <input type="tel" x-model="guestPhone" placeholder="Nomor WhatsApp (cth: 0812...)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                 </div>
+                
+                <div x-show="errorMsg" class="text-red-500 text-xs font-bold text-center bg-red-50 p-2 rounded-lg" x-text="errorMsg" x-cloak></div>
+
                 <button type="submit" :disabled="isSubmitting" class="w-full bg-[#B9232D] text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform mt-2 disabled:opacity-50 disabled:hover:scale-100 flex justify-center items-center">
                     <span x-show="!isSubmitting">Simpan & Lanjutkan</span>
                     <span x-show="isSubmitting" class="flex items-center gap-2">

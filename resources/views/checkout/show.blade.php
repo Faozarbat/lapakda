@@ -66,7 +66,6 @@
         <input type="hidden" name="idempotency_key" value="{{ $idempotencyKey }}">
         <input type="hidden" name="fulfillment_type" x-model="fulfillment">
 
-        <!-- Ditambahkan pb-40 (padding bottom) yang sangat lega agar konten bisa discroll melewati tombol fixed -->
         <main class="max-w-3xl mx-auto px-4 pt-6 pb-40 space-y-4">
 
             <!-- Pilihan Fulfillment -->
@@ -146,6 +145,7 @@
                                     <span class="text-sm font-bold text-[#B9232D] bg-red-50 px-2 py-0.5 rounded-md">{{ $item->qty }}</span>
                                 @endif
                             </div>
+                            @endif
                         </div>
                         
                         <input type="hidden" name="dine_in_qty[{{ $index }}]" x-model="dineInQty[{{ $index }}]" data-max="{{ $item->qty }}">
@@ -186,12 +186,11 @@
                     <div class="text-red-500 text-xs font-bold mb-2">{{ $message }}</div> 
                 @enderror
 
-                <!-- Posisi Baru: Catatan Alamat Ditaruh di Atas Peta -->
                 <div>
                     <label for="delivery_note" class="block text-xs font-bold text-gray-700 mb-1.5">Catatan Alamat (Opsional)</label>
-                        <textarea id="delivery_note" name="delivery_note" rows="2" placeholder="Misal: Pagar hijau, rumah nomor 12" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">{{ old('delivery_note', $savedAddress->last_delivery_note ?? '') }}</textarea>                </div>
+                        <textarea id="delivery_note" name="delivery_note" rows="2" placeholder="Misal: Pagar hijau, rumah nomor 12" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">{{ old('delivery_note', $savedAddress->last_delivery_note ?? '') }}</textarea>
+                </div>
 
-                <!-- Peta Leaflet di Posisi Bawah -->
                 <div id="map"></div>
             </div>
 
@@ -208,7 +207,7 @@
         </div>
     </form>
 
-    <!-- Toast Notification -->
+    <!-- TOAST NOTIFICATION -->
     <div x-show="toastShow" x-transition class="fixed top-20 left-4 right-4 z-[60] flex justify-center pointer-events-none" x-cloak>
         <div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 w-full max-w-sm pointer-events-auto">
             <div class="bg-red-500/20 p-1.5 rounded-lg flex-shrink-0">
@@ -313,27 +312,24 @@
              isSubmitting: false,
              guestName: '',
              guestPhone: '',
+             errorMsg: '',
              init() {
-                 // Cek kapan terakhir kali popup ini ditutup/di-submit
                  const promptedUntil = localStorage.getItem('lapakda_guest_prompted_until');
-                 
-                 // Jika belum pernah (null) ATAU waktu sekarang sudah melewati batas cooldown
                  if (!promptedUntil || Date.now() > parseInt(promptedUntil)) {
                      setTimeout(() => { this.showGuestPopup = true }, 1500);
                  }
              },
              closePopup() {
                  this.showGuestPopup = false;
-                 // Set cooldown selama 2 Jam (2 * 60 * 60 * 1000 milidetik)
-                 const nextPrompt = Date.now() + (2 * 60 * 60 * 1000);
+                 const nextPrompt = Date.now() + (2 * 60 * 60 * 1000); // 2 Jam
                  localStorage.setItem('lapakda_guest_prompted_until', nextPrompt);
              },
              submitGuestForm() {
                  if(this.isSubmitting) return;
                  this.isSubmitting = true;
+                 this.errorMsg = '';
 
-                 // Ambil CSRF Token dari meta tag
-                 const csrfToken = document.querySelector('meta[name=csrf-token]')?.content || '{{ csrf_token() }}';
+                 const csrfToken = document.querySelector('meta[name=csrf-token]')?.content;
 
                  fetch('{{ route('guest.register') }}', {
                      method: 'POST',
@@ -350,14 +346,15 @@
                  .then(res => res.json())
                  .then(data => {
                      if(data.success) {
-                         // Reload halaman agar status login berubah dan popup hilang otomatis
                          window.location.reload(); 
+                     } else {
+                         this.errorMsg = data.message; 
+                         this.isSubmitting = false;
                      }
                  })
                  .catch(err => {
                      console.error(err);
                      this.isSubmitting = false;
-                     alert('Terjadi kesalahan sistem, silakan coba lagi.'); // Fallback (kita hindari alert jika mungkin, tapi ini untuk darurat)
                  });
              }
          }" 
@@ -365,10 +362,8 @@
          x-cloak 
          class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         
-        <!-- Backdrop Blur -->
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closePopup()"></div>
 
-        <!-- Modal Box -->
         <div class="bg-white rounded-3xl w-full max-w-sm relative z-10 p-6 shadow-2xl"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-8 scale-95"
@@ -377,19 +372,17 @@
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-8 scale-95">
             
-            <!-- Tombol X -->
             <button @click="closePopup()" class="absolute top-4 right-4 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
             </button>
 
-            <!-- Ikon Sapaan -->
             <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
                 👋
             </div>
 
             <h3 class="text-xl font-extrabold text-gray-900 text-center mb-2">Kenalan Dulu Yuk!</h3>
             <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">
-                Isi nama dan nomor WA kamu biar pesanan otomatis tersimpan di Riwayat dan kamu dapat update promo menarik dari resto favoritmu.
+                Isi nama dan nomor WA kamu biar pesanan otomatis tersimpan di Riwayat dan kamu dapat update promo menarik.
             </p>
 
             <form @submit.prevent="submitGuestForm()" class="space-y-3">
@@ -399,6 +392,9 @@
                 <div>
                     <input type="tel" x-model="guestPhone" placeholder="Nomor WhatsApp (cth: 0812...)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                 </div>
+                
+                <div x-show="errorMsg" class="text-red-500 text-xs font-bold text-center bg-red-50 p-2 rounded-lg" x-text="errorMsg" x-cloak></div>
+
                 <button type="submit" :disabled="isSubmitting" class="w-full bg-[#B9232D] text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform mt-2 disabled:opacity-50 disabled:hover:scale-100 flex justify-center items-center">
                     <span x-show="!isSubmitting">Simpan & Lanjutkan</span>
                     <span x-show="isSubmitting" class="flex items-center gap-2">

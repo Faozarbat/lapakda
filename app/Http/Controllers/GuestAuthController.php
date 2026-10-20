@@ -26,14 +26,20 @@ class GuestAuthController extends Controller
         // 3. Cek apakah nomor sudah terdaftar
         $user = User::where('nomor_hp', $nomor)->first();
 
-        if (!$user) {
-            // Jika belum ada, buat akun baru (password acak karena login utamanya tanpa password)
-            $user = User::create([
-                'name' => $request->name,
-                'nomor_hp' => $nomor,
-                'password' => Hash::make(Str::random(16)),
-            ]);
+        if ($user) {
+            // JIKA SUDAH ADA: Tolak login otomatis. Paksa user login manual untuk keamanan.
+            return response()->json([
+                'success' => false, 
+                'message' => 'Nomor WA ini sudah terdaftar. Silakan login melalui menu Masuk.'
+            ], 403);
         }
+
+        // Jika belum ada, buat akun baru (password acak)
+        $user = User::create([
+            'name' => $request->name,
+            'nomor_hp' => $nomor,
+            'password' => Hash::make(Str::random(16)),
+        ]);
 
         // 4. TANGKAP ID SESSION LAMA SEBELUM LOGIN
         // Ini kunci agar riwayat guest tidak hilang saat session diganti Laravel
