@@ -11,7 +11,7 @@
     </header>
 
     <div class="max-w-3xl mx-auto px-4 pt-6 pb-24">
-        <form method="POST" action="{{ route('dashboard.produk.store', $store->id) }}" enctype="multipart/form-data" class="space-y-5" x-data="{ imageUrl: null }">
+        <form method="POST" action="{{ route('dashboard.produk.store', $store->id) }}" enctype="multipart/form-data" class="space-y-5" x-data="{ imageUrl: null, fileError: '' }">
             @csrf
 
             <!-- Upload Foto -->
@@ -33,8 +33,21 @@
 
                     <!-- Input File -->
                     <input type="file" name="foto" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10" 
-                           @change="const file = $event.target.files[0]; if (file) { imageUrl = URL.createObjectURL(file) }">
+                           @change="
+                               const file = $event.target.files[0]; 
+                               if (file) { 
+                                   if (file.size > 5 * 1024 * 1024) {
+                                       fileError = 'Ukuran foto terlalu besar! Maksimal 5MB.';
+                                       $event.target.value = ''; 
+                                       imageUrl = null;
+                                   } else {
+                                       fileError = '';
+                                       imageUrl = URL.createObjectURL(file);
+                                   }
+                               }
+                           ">
                 </div>
+                <p x-show="fileError" x-text="fileError" class="text-red-500 text-xs font-bold mt-1" x-cloak></p>
                 <p class="text-[11px] text-gray-500">Format: JPG, PNG, WebP. Maks 5MB.</p>
                 @error('foto') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>

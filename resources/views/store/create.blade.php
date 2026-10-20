@@ -4,6 +4,8 @@
             toastMessage: '', 
             profilPreview: null, 
             bgPreview: null,
+            fileErrorProfil: '',
+            fileErrorBg: '',
             voucherCode: '{{ old('voucher_code') }}'
          }"
          @show-toast.window="toastMessage = $event.detail.message; showToast = true; setTimeout(() => showToast = false, 3000)"
@@ -48,8 +50,23 @@
                                             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         </template>
                                     </div>
-                                    <input type="file" name="foto_profil" accept="image/*" @change="const file = $event.target.files[0]; if(file) profilPreview = URL.createObjectURL(file)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-[#B9232D] hover:file:bg-red-100 transition">
+                                    <input type="file" name="foto_profil" accept="image/*" 
+                                           @change="
+                                               const file = $event.target.files[0]; 
+                                               if (file) { 
+                                                   if (file.size > 5 * 1024 * 1024) {
+                                                       fileErrorProfil = 'Maks 5MB.';
+                                                       $event.target.value = ''; 
+                                                       profilPreview = null;
+                                                   } else {
+                                                       fileErrorProfil = '';
+                                                       profilPreview = URL.createObjectURL(file);
+                                                   }
+                                               }
+                                           " 
+                                           class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-[#B9232D] hover:file:bg-red-100 transition">
                                 </div>
+                                <p x-show="fileErrorProfil" x-text="fileErrorProfil" class="text-red-500 text-xs font-bold mt-1" x-cloak></p>
                                 @error('foto_profil') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
@@ -63,8 +80,23 @@
                                             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         </template>
                                     </div>
-                                    <input type="file" name="foto_background" accept="image/*" @change="const file = $event.target.files[0]; if(file) bgPreview = URL.createObjectURL(file)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-[#B9232D] hover:file:bg-red-100 transition">
+                                    <input type="file" name="foto_background" accept="image/*" 
+                                           @change="
+                                               const file = $event.target.files[0]; 
+                                               if (file) { 
+                                                   if (file.size > 5 * 1024 * 1024) {
+                                                       fileErrorBg = 'Maks 5MB.';
+                                                       $event.target.value = ''; 
+                                                       bgPreview = null;
+                                                   } else {
+                                                       fileErrorBg = '';
+                                                       bgPreview = URL.createObjectURL(file);
+                                                   }
+                                               }
+                                           " 
+                                           class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-[#B9232D] hover:file:bg-red-100 transition">
                                 </div>
+                                <p x-show="fileErrorBg" x-text="fileErrorBg" class="text-red-500 text-xs font-bold mt-1" x-cloak></p>
                                 @error('foto_background') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
