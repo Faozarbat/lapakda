@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             DemoDataSeeder::class,
             SettingSeeder::class,
             VoucherSeeder::class,
+            AdminSeeder::class,
         ]);
         
     }
