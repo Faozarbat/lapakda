@@ -78,6 +78,18 @@
 
     <main class="max-w-7xl mx-auto px-4 pt-4">
         
+        <!-- SEARCH BAR GLOBAL -->
+        <form action="{{ route('search.index') }}" method="GET" class="relative group mb-3">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-focus-within:text-[#B9232D] transition-colors" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <input type="text" name="q" value="{{ request('q') }}"
+                   class="block w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D] transition-all shadow-sm" 
+                   placeholder="Cari nama toko atau produk...">
+        </form>
+
         <!-- ACTION BAR (Filter & Terdekat - Lebih Ringkas) -->
         <div class="grid grid-cols-2 gap-2 mb-4">
             
@@ -151,10 +163,16 @@
                                 </div>
                             @endif
                             
-                            <!-- Status Buka -->
-                            <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-700 flex items-center gap-1 shadow-sm">
-                                <span class="w-1 h-1 rounded-full bg-green-500"></span> Buka
-                            </div>
+                            <!-- Status Buka / Tutup (Dinamis) -->
+                            @if($store->isOpenNow())
+                                <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-bold text-green-700 flex items-center gap-1 shadow-sm">
+                                    <span class="w-1 h-1 rounded-full bg-green-500"></span> Buka
+                                </div>
+                            @else
+                                <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-bold text-red-700 flex items-center gap-1 shadow-sm">
+                                    <span class="w-1 h-1 rounded-full bg-red-500"></span> Tutup
+                                </div>
+                            @endif
                         </div>
                         
                         <!-- Info Card -->

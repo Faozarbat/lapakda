@@ -14,6 +14,8 @@ use App\Http\Controllers\OtpController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::get('/pencarian', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');

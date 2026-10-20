@@ -51,6 +51,13 @@
             </div>
         @endif
 
+        @if ($cart && $cart->items->isNotEmpty() && !$store->isOpenNow())
+            <div class="bg-orange-50 border border-orange-100 text-orange-700 p-3 rounded-xl text-sm font-medium mb-4 flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                <p>Toko sedang <strong>Tutup</strong>. Anda masih bisa mengubah keranjang, namun belum bisa checkout saat ini.</p>
+            </div>
+        @endif
+
         @if (!$cart || $cart->items->isEmpty())
             <div class="text-center bg-white rounded-3xl p-8 border border-gray-100 shadow-sm mt-8">
                 <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -119,12 +126,19 @@
                     <span class="text-lg font-extrabold text-gray-900">Rp{{ number_format($cart->items->sum(fn($i) => $i->product->harga * $i->qty), 0, ',', '.') }}</span>
                 </div>
                 
-                <button onclick="window.location.href='{{ route('checkout.show', $store->id) }}'" class="w-full bg-[#B9232D] text-white py-3.5 rounded-2xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
-                    Lanjut ke Pembayaran
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </button>
+                @if($store->isOpenNow())
+                    <button onclick="window.location.href='{{ route('checkout.show', $store->id) }}'" class="w-full bg-[#B9232D] text-white py-3.5 rounded-2xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+                        Lanjut ke Pembayaran
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                @else
+                    <div class="w-full bg-gray-100 text-gray-400 py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Checkout Dinonaktifkan (Toko Tutup)
+                    </div>
+                @endif
             </div>
         </div>
     @endif

@@ -34,7 +34,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-[#F8F9FA] text-gray-800 antialiased {{ (isset($isPreview) && $isPreview) ? 'pb-10' : 'pb-32' }}" 
-      x-data="{ scrolled: false, cartCount: {{ $cartCount }}, toastShow: false, toastMessage: '', showReviews: false, activeCategory: 'Semua' }" 
+      x-data="{ scrolled: false, cartCount: {{ $cartCount }}, toastShow: false, toastMessage: '', showReviews: false, activeCategory: 'Semua', showProduct: false, selectedProduct: {} }" 
       @scroll.window="scrolled = (window.pageYOffset > 20) ? true : false"
       @cart-updated.window="cartCount = $event.detail.count"
       @show-toast.window="toastMessage = $event.detail.message; toastShow = true; setTimeout(() => { toastShow = false; }, 3000)">
@@ -146,9 +146,20 @@
                                 {{ $store->nomor_wa }}
                             </p>
                         </div>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-green-50 text-green-700 border border-green-100">
-                            {{ $store->kategori === 'resto' ? 'Resto' : 'Store' }}
-                        </span>
+                        <div class="flex flex-col items-end gap-1.5">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-50 text-gray-700 border border-gray-200">
+                                {{ $store->kategori === 'resto' ? 'Resto' : 'Store' }}
+                            </span>
+                            @if($store->isOpenNow())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-green-50 text-green-700 border border-green-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Buka
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-red-50 text-red-700 border border-red-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Tutup
+                                </span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,6 +167,16 @@
 
         <!-- Daftar Menu -->
         <div class="px-4">
+            @if(!$store->isOpenNow())
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4 flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    <div>
+                        <h4 class="font-bold text-red-800 text-sm">Toko Sedang Tutup / Libur</h4>
+                        <p class="text-xs text-red-600 mt-1">Saat ini toko tidak menerima pesanan. Silakan kembali pada jam operasional.</p>
+                    </div>
+                </div>
+            @endif
+
             @if ($store->products->isEmpty())
                 <div class="text-center bg-white rounded-3xl p-10 border border-gray-100 shadow-sm mt-4">
                     <p class="text-sm text-gray-500">Toko ini belum menambahkan produk.</p>
@@ -177,7 +198,20 @@
                 
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                     @foreach ($store->products as $product)
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group" x-show="activeCategory === 'Semua' || activeCategory === '{{ $product->kategori_produk }}'">
+                        @php
+                            $productData = [
+                                'id' => $product->id,
+                                'nama' => $product->nama,
+                                'harga_format' => number_format($product->harga, 0, ',', '.'),
+                                'harga_raw' => $product->harga,
+                                'deskripsi' => $product->deskripsi ?? 'Belum ada deskripsi untuk produk ini.',
+                                'foto' => $product->foto ? asset('storage/' . $product->foto) : null,
+                                'tersedia' => $product->status_tersedia ?? true
+                            ];
+                        @endphp
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group cursor-pointer hover:shadow-md transition-shadow" 
+                             x-show="activeCategory === 'Semua' || activeCategory === '{{ $product->kategori_produk }}'"
+                             @click="selectedProduct = {{ Js::from($productData) }}; showProduct = true">
                             <div class="aspect-square w-full bg-gray-100 relative overflow-hidden">
                                 @if ($product->foto)
                                     <img src="{{ asset('storage/' . $product->foto) }}" alt="{{ $product->nama }}" class="w-full h-full object-contain bg-gray-50 p-1 group-hover:scale-105 transition-transform duration-500">
@@ -200,15 +234,21 @@
                                 <span class="font-extrabold text-sm text-[#B9232D] mt-auto">Rp{{ number_format($product->harga, 0, ',', '.') }}</span>
                             </div>
                             
-                            <!-- LOGIKA TOMBOL (DIBEDAKAN PREVIEW VS LIVE) -->
+                            <!-- LOGIKA TOMBOL (PREVIEW VS TUTUP VS LIVE) -->
                             @if(isset($isPreview) && $isPreview)
                                 <!-- Tombol Mati untuk Preview -->
                                 <button disabled class="w-full py-2.5 bg-gray-100 text-gray-400 text-xs font-bold flex items-center justify-center gap-1 border-t border-gray-100 cursor-not-allowed">
                                     Mode Pratinjau
                                 </button>
+                            @elseif(!$store->isOpenNow())
+                                <!-- Tombol Mati karena Toko Tutup -->
+                                <button disabled class="w-full py-2.5 bg-red-50 text-red-400 text-xs font-bold flex items-center justify-center gap-1 border-t border-red-100 cursor-not-allowed">
+                                    Toko Tutup
+                                </button>
                             @else
                                 <!-- Tombol Aktif untuk Live -->
                                 <div class="w-full mt-auto border-t border-red-100 bg-red-50 text-[#B9232D]" 
+                                     @click.stop
                                      x-data="{ qty: {{ $cartItemsMap[$product->id] ?? 0 }} }" 
                                      id="product-ctrl-{{ $product->id }}">
                                     
@@ -263,6 +303,84 @@
         </div>
     </div>
     @endif
+
+    <!-- MODAL DETAIL PRODUK (BOTTOM SHEET) -->
+    <div x-show="showProduct" x-cloak class="fixed inset-0 z-[100] flex items-end justify-center sm:items-center">
+        <div x-show="showProduct" x-transition.opacity class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showProduct = false"></div>
+        
+        <div x-show="showProduct" 
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="translate-y-full sm:translate-y-8 sm:opacity-0"
+             x-transition:enter-end="translate-y-0 sm:opacity-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="translate-y-0 sm:opacity-100"
+             x-transition:leave-end="translate-y-full sm:translate-y-8 sm:opacity-0"
+             class="bg-white w-full max-w-lg sm:rounded-3xl rounded-t-3xl shadow-2xl relative z-10 flex flex-col max-h-[90vh]">
+            
+            <!-- Handle Mobile -->
+            <div class="w-full flex justify-center pt-3 pb-2 sm:hidden" @click="showProduct = false">
+                <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <!-- Gambar Besar -->
+            <div class="w-full h-64 sm:h-80 bg-gray-100 relative flex-shrink-0">
+                <template x-if="selectedProduct.foto">
+                    <img :src="selectedProduct.foto" class="w-full h-full object-contain bg-gray-50 p-2">
+                </template>
+                <template x-if="!selectedProduct.foto">
+                    <div class="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span class="text-xs">Tanpa Foto</span>
+                    </div>
+                </template>
+
+                <!-- Tombol Close Desktop -->
+                <button @click="showProduct = false" class="hidden sm:flex absolute top-4 right-4 w-8 h-8 bg-white/90 rounded-full items-center justify-center text-gray-700 shadow-md hover:bg-gray-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+
+                <!-- Label Habis -->
+                <template x-if="!selectedProduct.tersedia">
+                    <div class="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
+                        <span class="bg-gray-800 text-white text-sm font-bold px-4 py-2 rounded-lg uppercase tracking-wider">Stok Habis</span>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Info Produk -->
+            <div class="p-6 overflow-y-auto flex-grow">
+                <h3 class="text-xl font-extrabold text-gray-900 mb-2" x-text="selectedProduct.nama"></h3>
+                <p class="text-2xl font-extrabold text-[#B9232D] mb-4">
+                    Rp<span x-text="selectedProduct.harga_format"></span>
+                </p>
+                
+                <div class="border-t border-gray-100 pt-4">
+                    <h4 class="text-sm font-bold text-gray-900 mb-2">Deskripsi</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-line" x-text="selectedProduct.deskripsi"></p>
+                </div>
+            </div>
+
+            <!-- Tombol Tambah Keranjang di Modal -->
+            @if(!isset($isPreview) || !$isPreview)
+                <div class="p-4 border-t border-gray-100 bg-white rounded-b-3xl sm:rounded-b-3xl shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
+                    <button x-show="selectedProduct.tersedia && {{ $store->isOpenNow() ? 'true' : 'false' }}" 
+                            @click="tambahKeKeranjang(selectedProduct.id, 1, $el); showProduct = false;"
+                            class="w-full bg-[#B9232D] text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:bg-red-800 transition-colors flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                        Tambah ke Keranjang
+                    </button>
+                    <button x-show="!selectedProduct.tersedia" disabled
+                            class="w-full bg-gray-100 text-gray-400 py-3.5 rounded-xl text-sm font-bold cursor-not-allowed">
+                        Stok Habis
+                    </button>
+                    <button x-show="selectedProduct.tersedia && {{ $store->isOpenNow() ? 'false' : 'true' }}" disabled
+                            class="w-full bg-red-50 text-red-400 py-3.5 rounded-xl text-sm font-bold cursor-not-allowed">
+                        Toko Tutup
+                    </button>
+                </div>
+            @endif
+        </div>
+    </div>
 
     <!-- MODAL ULASAN -->
     <div x-show="showReviews" x-cloak class="fixed inset-0 z-[100] flex items-end justify-center sm:items-center">

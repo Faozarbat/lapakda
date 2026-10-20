@@ -124,4 +124,35 @@ class Store extends Model
               ->where('status', 'selesai');
         })->sum('qty');
     }
+
+    public function isOpenNow()
+    {
+        if (empty($this->jam_operasional)) {
+            return true; // Jika tidak ada setting, anggap buka
+        }
+
+        $waktuSekarang = now('Asia/Jakarta');
+        
+        // Mapping index hari (0 = Minggu, 1 = Senin, dst) ke bahasa Indonesia. 
+        // Ini jauh lebih aman daripada pakai translatedFormat() yang bergantung setting bahasa.
+        $days = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+        $hariIni = $days[$waktuSekarang->dayOfWeek]; 
+        
+        $jadwalHariIni = $this->jam_operasional[$hariIni] ?? null;
+
+        if (!$jadwalHariIni || ($jadwalHariIni['libur'] ?? false)) {
+            return false; // Tutup jika libur / jadwal kosong
+        }
+
+        $jamBuka = $jadwalHariIni['buka'] ?? '00:00';
+        $jamTutup = $jadwalHariIni['tutup'] ?? '23:59';
+        $jamSekarang = $waktuSekarang->format('H:i');
+
+        if ($jamBuka <= $jamTutup) {
+            return $jamSekarang >= $jamBuka && $jamSekarang <= $jamTutup;
+        } else {
+            // Handle jika tutup lewat tengah malam (misal 18:00 - 02:00)
+            return $jamSekarang >= $jamBuka || $jamSekarang <= $jamTutup;
+        }
+    }
 }

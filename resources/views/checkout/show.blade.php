@@ -88,11 +88,19 @@
 
             <!-- Self Pickup Section -->
             <div x-show="fulfillment === 'self_pickup'" x-transition.opacity class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-1.5 h-4 bg-[#B9232D] rounded-full"></div>
-                    <h3 class="font-bold text-sm text-gray-900">Rincian Konsumsi</h3>
-                </div>
-                <p class="text-xs text-gray-500 mb-2">Kamu bisa memecah pesanan: sebagian dimakan di tempat, sebagian dibungkus.</p>
+                @if($store->kategori === 'resto')
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-1.5 h-4 bg-[#B9232D] rounded-full"></div>
+                        <h3 class="font-bold text-sm text-gray-900">Rincian Konsumsi</h3>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2">Kamu bisa memecah pesanan: sebagian dimakan di tempat, sebagian dibungkus.</p>
+                @else
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-1.5 h-4 bg-[#B9232D] rounded-full"></div>
+                        <h3 class="font-bold text-sm text-gray-900">Rincian Pesanan</h3>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-2">Pesanan akan disiapkan untuk diambil sendiri (Takeaway).</p>
+                @endif
 
                 @foreach ($cart->items->values() as $index => $item)
                     <div class="border border-gray-100 rounded-xl p-4 bg-gray-50/50">
@@ -102,6 +110,7 @@
                         </div>
                         
                         <div class="flex flex-col gap-2">
+                            @if($store->kategori === 'resto')
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-semibold text-gray-700">Makan di Tempat</label>
                                 <div class="flex items-center border border-gray-200 rounded-lg bg-white overflow-hidden shadow-sm">
@@ -129,8 +138,13 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold text-gray-500">Bungkus (Takeaway)</span>
-                                <span x-text="{{ $item->qty }} - dineInQty[{{ $index }}]" class="text-sm font-bold text-[#B9232D] bg-red-50 px-2 py-0.5 rounded-md"></span>
+                                @if($store->kategori === 'resto')
+                                    <span class="text-xs font-semibold text-gray-500">Bungkus (Takeaway)</span>
+                                    <span x-text="{{ $item->qty }} - dineInQty[{{ $index }}]" class="text-sm font-bold text-[#B9232D] bg-red-50 px-2 py-0.5 rounded-md"></span>
+                                @else
+                                    <span class="text-xs font-semibold text-gray-500">Total Item</span>
+                                    <span class="text-sm font-bold text-[#B9232D] bg-red-50 px-2 py-0.5 rounded-md">{{ $item->qty }}</span>
+                                @endif
                             </div>
                         </div>
                         

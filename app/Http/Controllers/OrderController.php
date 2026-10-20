@@ -16,6 +16,12 @@ class OrderController extends Controller
     {
         $cart = $this->ambilCartAtauNull($request, $store);
 
+        if (!$store->isOpenNow()) {
+            return redirect()
+                ->route('cart.show', $store->id)
+                ->with('error', 'Maaf, toko sedang tutup. Silakan pesan kembali pada jam operasional.');
+        }
+
         if (!$cart || $cart->items->isEmpty()) {
             return redirect()
                 ->route('store.show', [$store->kecamatan->slug, $store->slug])
@@ -59,6 +65,12 @@ class OrderController extends Controller
 
         $cart = $this->ambilCartAtauNull($request, $store);
 
+        if (!$store->isOpenNow()) {
+            return redirect()
+                ->route('cart.show', $store->id)
+                ->with('error', 'Maaf, toko sedang tutup. Silakan pesan kembali pada jam operasional.');
+        }
+
         if (!$cart || $cart->items->isEmpty()) {
             return redirect()
                 ->route('store.show', [$store->kecamatan->slug, $store->slug])
@@ -72,7 +84,8 @@ class OrderController extends Controller
         $cartItems = array_values($cart->items->all());
         $adaDineIn = false;
 
-        if ($validated['fulfillment_type'] === 'self_pickup') {
+        // Jika kategori BUKAN resto, paksa tidak ada dine-in (semua takeaway/pickup)
+        if ($store->kategori === 'resto' && $validated['fulfillment_type'] === 'self_pickup') {
             foreach ($cartItems as $index => $item) {
                 $dineInQty = max(0, min((int) ($validated['dine_in_qty'][$index] ?? 0), $item->qty));
                 if ($dineInQty > 0) {
@@ -128,7 +141,8 @@ class OrderController extends Controller
                 continue;
             }
 
-            $dineInQty = max(0, min((int) ($validated['dine_in_qty'][$index] ?? 0), $item->qty));
+            // Jika bukan resto, paksa DineInQty = 0
+            $dineInQty = ($store->kategori === 'resto') ? max(0, min((int) ($validated['dine_in_qty'][$index] ?? 0), $item->qty)) : 0;
             $takeawayQty = $item->qty - $dineInQty;
 
             if ($dineInQty > 0) {

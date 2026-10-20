@@ -91,16 +91,17 @@
                 Mau cari apa <br>hari ini?
             </h1>
             
-            <div class="relative group mb-3">
+            <form action="{{ route('search.index') }}" method="GET" class="relative group mb-3">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-focus-within:text-[#B9232D] transition-colors" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
                 </div>
-                <input type="text" 
+                <input type="text" name="q" value="{{ request('q') }}"
                        class="block w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D] transition-all shadow-sm" 
                        placeholder="Cari nama resto atau makanan...">
-            </div>
+                <button type="submit" class="hidden"></button>
+            </form>
             
             <!-- TOMBOL GEOLOCATION DENGAN ALPINE.JS -->
             <button @click="cariRestoTerdekat()" :disabled="isLocating" class="w-full flex items-center justify-center gap-2 bg-white border border-[#B9232D]/30 text-[#B9232D] py-3 rounded-xl text-sm font-bold shadow-sm hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
