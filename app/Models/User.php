@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use NotificationChannels\WebPush\HasPushSubscriptions;
 
 // Catatan: TIDAK implements MustVerifyEmail — verifikasi via email tidak
 // dipakai di alur ini (login berbasis nomor HP). Saat OTP nanti aktif,
 // verifikasi berpindah ke `phone_verified_at`, bukan `email_verified_at`.
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasPushSubscriptions;
 
     protected $fillable = [
         'name',

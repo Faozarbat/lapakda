@@ -166,4 +166,53 @@
         </div>
 
     </div>
+
+    <script>
+        // Cek apakah browser mendukung Push Notification
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.ready.then(function(registration) {
+                // Minta izin notifikasi ke user
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === 'granted') {
+                        // Jika diizinkan, ambil kunci VAPID dari meta tag atau langsung
+                        const vapidPublicKey = '{{ env('VAPID_PUBLIC_KEY') }}';
+                        
+                        // Konversi kunci VAPID agar bisa dibaca browser
+                        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+                        // Daftarkan HP ini sebagai penerima notifikasi
+                        registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: convertedVapidKey
+                        }).then(function(subscription) {
+                            // Kirim data subscription ke server Laravel
+                            fetch('{{ route('push.subscribe') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(subscription)
+                            });
+                        }).catch(function(error) {
+                            console.error('Gagal subscribe push:', error);
+                        });
+                    }
+                });
+            });
+        }
+
+        // Fungsi pembantu untuk mengubah kunci VAPID
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+    </script>
+
 </x-app-layout>
