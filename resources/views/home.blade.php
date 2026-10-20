@@ -338,19 +338,27 @@
     @endguest
 
     <script>
-        // PWA DETECTOR
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            window.deferredPrompt = e;
-            window.dispatchEvent(new Event('pwa-ready'));
-        });
+        // Deteksi apakah saat ini berjalan di dalam Aplikasi (PWA Standalone)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-        // PAKSA MUNCUL: Jika 2 detik tidak muncul, kita paksa muncul untuk testing
-        window.setTimeout(() => {
-            if (!window.deferredPrompt) {
+        if (!isStandalone) {
+            // JIKA DI BROWSER: Jalankan pendeteksi PWA
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                window.deferredPrompt = e;
                 window.dispatchEvent(new Event('pwa-ready'));
-            }
-        }, 2000);
+            });
+
+            // PAKSA MUNCUL UNTUK TESTING (Hapus setTimeout ini jika sudah production asli)
+            window.setTimeout(() => {
+                if (!window.deferredPrompt) {
+                    window.dispatchEvent(new Event('pwa-ready'));
+                }
+            }, 2000);
+        } else {
+            // JIKA DI DALAM APP: Pastikan banner tidak pernah muncul
+            console.log("Berjalan di dalam mode Standalone (App). Banner Install dimatikan.");
+        }
     </script>
 </body>
 </html>

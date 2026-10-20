@@ -49,21 +49,22 @@
 
     <!-- HEADER -->
     <header :class="scrolled ? 'shadow-sm bg-white/95' : 'bg-white/90'" class="backdrop-blur-md sticky {{ (isset($isPreview) && $isPreview) ? 'top-[32px]' : 'top-0' }} z-40 border-b border-gray-100 transition-shadow duration-300">
-        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
             
-            <a href="{{ (isset($isPreview) && $isPreview) ? route('dashboard') : route('jelajah', $store->kategori) }}" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors">
+            <a href="{{ (isset($isPreview) && $isPreview) ? route('dashboard') : route('jelajah', $store->kategori) }}" class="w-10 h-10 rounded-full bg-gray-50 flex-shrink-0 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                 </svg>
             </a>
             
-            <h1 class="font-bold text-base text-gray-900 absolute left-1/2 -translate-x-1/2 truncate max-w-[200px]">{{ $store->nama }}</h1>
+            <!-- Judul di tengah mengambil sisa ruang -->
+            <h1 class="font-bold text-base text-gray-900 flex-1 text-center truncate px-2">{{ $store->nama }}</h1>
             
             <!-- Tombol Kanan -->
             @if(isset($isPreview) && $isPreview)
                 <div class="w-10"></div> <!-- Spacer jika preview -->
             @else
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     <!-- Auth Button -->
                     @auth
                         <a href="{{ route('dashboard') }}" class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-[#B9232D] hover:bg-[#B9232D] hover:text-white transition-colors">
@@ -415,7 +416,7 @@
                 @forelse($store->reviews as $review)
                     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                         <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-shrink-0">
                                 <div class="w-8 h-8 rounded-full bg-red-50 text-[#B9232D] flex items-center justify-center font-bold text-xs">
                                     {{ substr($review->user->name, 0, 1) }}
                                 </div>
