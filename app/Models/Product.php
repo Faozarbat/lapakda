@@ -12,6 +12,7 @@ class Product extends Model
         'store_id',
         'nama',
         'harga',
+        'stok',
         'foto',
         'deskripsi',
         'kategori_produk',

@@ -5,24 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderDashboardController extends Controller
 {
-    public function index(Store $store)
+    public function index(Request $request, Store $store)
     {
         $this->authorize('view', $store);
 
-        $orders = $store->orders()->with('items')->latest()->paginate(20);
+        $statusFilter = $request->query('status', 'semua');
 
-        return view('dashboard.order.index', compact('store', 'orders'));
+        // Hitung jumlah pesanan per status untuk Badge di Tab
+        $counts = $store->orders()
+            ->select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->toArray();
+
+        $totalSemua = array_sum($counts);
+
+        // Query pesanan
+        $query = $store->orders()->with(['items', 'user'])->latest();
+
+        if ($statusFilter !== 'semua') {
+            $query->where('status', $statusFilter);
+        }
+
+        $orders = $query->paginate(15)->withQueryString();
+
+        return view('dashboard.order.index', compact('store', 'orders', 'statusFilter', 'counts', 'totalSemua'));
     }
 
     public function updateStatus(Request $request, Store $store, Order $order)
     {
         $this->authorize('update', $order);
-
-        // Guard tambahan: pastikan order ini benar milik $store di URL,
-        // bukan cuma milik owner yang sama (jaga-jaga kalau owner punya >1 toko)
         abort_if($order->store_id !== $store->id, 404);
 
         $validated = $request->validate([

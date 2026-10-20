@@ -13,7 +13,9 @@
         "sentry/sentry-laravel": "^4.28"
     },
     "require-dev": {
+        "andreapollastri/checkpoint": "^1.2",
         "fakerphp/faker": "^1.23",
+        "jaydeep/laravel-guarddog": "^1.1",
         "laravel/breeze": "^2.4",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",

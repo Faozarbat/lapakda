@@ -24,7 +24,7 @@ class KategoriUsaha
             'toko' => [
                 'label' => 'Toko',
                 'icon' => '🛒',
-                'aktif' => false,
+                'aktif' => true,
                 'kategori_db' => 'store',
             ],
             'jasa' => [

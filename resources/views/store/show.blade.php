@@ -183,7 +183,9 @@
                 </div>
             @else
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-extrabold text-lg text-gray-900">Semua Menu</h3>
+                    <h3 class="font-extrabold text-lg text-gray-900">
+                        {{ $store->kategori === 'resto' ? 'Semua Menu' : 'Semua Produk' }}
+                    </h3>
                     <span class="text-xs font-semibold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">{{ $store->products->count() }} Item</span>
                 </div>
 
@@ -232,6 +234,9 @@
                             <div class="p-3 flex flex-col flex-grow">
                                 <h4 class="font-bold text-sm text-gray-900 leading-tight line-clamp-2 mb-1">{{ $product->nama }}</h4>
                                 <span class="font-extrabold text-sm text-[#B9232D] mt-auto">Rp{{ number_format($product->harga, 0, ',', '.') }}</span>
+                                @if(!is_null($product->stok))
+                                    <span class="text-[10px] font-bold text-gray-500 mt-1">Sisa: {{ $product->stok }}</span>
+                                @endif
                             </div>
                             
                             <!-- LOGIKA TOMBOL (PREVIEW VS TUTUP VS LIVE) -->

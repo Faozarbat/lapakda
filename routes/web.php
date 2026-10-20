@@ -92,6 +92,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/subscriptions', [App\Http\Controllers\AdminSubscriptionController::class, 'index'])->name('subscription.index');
     Route::post('/subscriptions/{subscription}/approve', [App\Http\Controllers\AdminSubscriptionController::class, 'approve'])->name('subscription.approve');
     Route::get('/search', [App\Http\Controllers\AdminSearchController::class, 'index'])->name('search');
+    
+    
     // 1A. Pengaturan Harga
     Route::get('/settings', [App\Http\Controllers\AdminSettingController::class, 'index'])->name('setting.index');
     Route::post('/settings', [App\Http\Controllers\AdminSettingController::class, 'update'])->name('setting.update');
@@ -105,7 +107,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // 1C. Manajemen Toko (Suspend/Activate)
     Route::get('/stores', [App\Http\Controllers\AdminStoreController::class, 'index'])->name('store.index');
     Route::patch('/stores/{store}/toggle', [App\Http\Controllers\AdminStoreController::class, 'toggleStatus'])->name('store.toggle');
-
+    Route::get('/stores/export', [App\Http\Controllers\AdminStoreController::class, 'exportCsv'])->name('store.export');
+    
 });
 
 // WAJIB PALING BAWAH

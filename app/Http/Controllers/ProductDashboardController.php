@@ -35,22 +35,28 @@ class ProductDashboardController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'harga' => 'required|integer|min:0',
+            'stok' => 'nullable|integer|min:0', // Validasi Stok
             'deskripsi' => 'nullable|string|max:1000',
             'kategori_produk' => 'nullable|string|max:100',
-            'foto' => 'nullable|image|max:5120', // maksimal 5MB file mentah sebelum dikompres
+            'foto' => 'nullable|image|max:5120',
         ]);
 
         $namaFoto = $request->hasFile('foto')
             ? $this->prosesDanSimpanFoto($request->file('foto'))
             : null;
 
+        // Logika Stok: Jika stok diisi 0, maka status_tersedia = false
+        $stok = $request->filled('stok') ? (int)$request->stok : null;
+        $statusTersedia = ($stok === 0) ? false : true;
+
         $store->products()->create([
             'nama' => $validated['nama'],
             'harga' => $validated['harga'],
+            'stok' => $stok,
             'deskripsi' => $validated['deskripsi'] ?? null,
             'kategori_produk' => $validated['kategori_produk'] ?? null,
             'foto' => $namaFoto,
-            'status_tersedia' => true,
+            'status_tersedia' => $statusTersedia,
         ]);
 
         return redirect()
@@ -72,6 +78,7 @@ class ProductDashboardController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'harga' => 'required|integer|min:0',
+            'stok' => 'nullable|integer|min:0', // Validasi Stok
             'deskripsi' => 'nullable|string|max:1000',
             'kategori_produk' => 'nullable|string|max:100',
             'foto' => 'nullable|image|max:5120',
@@ -79,14 +86,17 @@ class ProductDashboardController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            // Hapus foto lama dulu supaya tidak jadi file sampah (orphaned) di storage
             if ($product->foto) {
                 Storage::disk('public')->delete($product->foto);
             }
             $validated['foto'] = $this->prosesDanSimpanFoto($request->file('foto'));
         }
 
-        $validated['status_tersedia'] = $request->boolean('status_tersedia');
+        $stok = $request->filled('stok') ? (int)$request->stok : null;
+        $validated['stok'] = $stok;
+        
+        // Jika stok 0, matikan status tersedia. Jika tidak, ikuti input user
+        $validated['status_tersedia'] = ($stok === 0) ? false : $request->boolean('status_tersedia');
 
         $product->update($validated);
 

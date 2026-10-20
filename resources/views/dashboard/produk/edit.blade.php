@@ -63,6 +63,13 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5">Stok (Opsional)</label>
+                    <input type="number" name="stok" value="{{ old('stok', $product->stok) }}" min="0" placeholder="Kosongkan jika stok banyak" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
+                    <p class="text-[11px] text-gray-500 mt-1">Jika diisi 0, produk otomatis berstatus "Habis".</p>
+                    @error('stok') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1.5">Kategori (Opsional)</label>
                     <input type="text" name="kategori_produk" list="kategori_list" value="{{ old('kategori_produk', $product->kategori_produk) }}" placeholder="Pilih atau ketik kategori..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
                     <datalist id="kategori_list">
@@ -88,6 +95,7 @@
                     <span aria-hidden="true" :class="isTersedia ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
                 </button>
                 <input type="hidden" name="status_tersedia" :value="isTersedia ? 1 : 0">
+                <p class="text-[10px] text-gray-400 mt-1 w-full">Catatan: Jika Stok diisi 0, produk akan otomatis berstatus Habis meskipun tombol ini menyala.</p>
             </div>
 <img :src="imageUrl" class="w-full h-full object-contain bg-gray-50 p-1">
             <!-- Tombol Simpan -->

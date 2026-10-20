@@ -48,9 +48,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1.5">Harga (Rp)</label>
-                    <input type="number" name="harga" value="{{ old('harga') }}" required min="0" placeholder="25000" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
-                    @error('harga') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5">Stok (Opsional)</label>
+                    <input type="number" name="stok" value="{{ old('stok') }}" min="0" placeholder="Kosongkan jika stok banyak" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
+                    <p class="text-[11px] text-gray-500 mt-1">Jika diisi 0, produk otomatis berstatus "Habis".</p>
+                    @error('stok') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>

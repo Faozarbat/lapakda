@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "13fbe739e20b56416c206383eec4b4f8",
+    "content-hash": "1923acc28580c451b7f74ad8e1483840",
     "packages": [
         {
             "name": "brick/math",
@@ -6865,6 +6865,65 @@
     ],
     "packages-dev": [
         {
+            "name": "andreapollastri/checkpoint",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/andreapollastri/checkpoint.git",
+                "reference": "282998e9d9353ca16dc1e6d8ebd5f30619600765"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/andreapollastri/checkpoint/zipball/282998e9d9353ca16dc1e6d8ebd5f30619600765",
+                "reference": "282998e9d9353ca16dc1e6d8ebd5f30619600765",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+                "php": "^8.1",
+                "symfony/finder": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+                "symfony/process": "^5.4 || ^6.0 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0",
+                "phpunit/phpunit": "^9.5.10 || ^10.0 || ^11.0 || ^12.0 || ^13.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Checkpoint\\CheckpointServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Checkpoint\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrea Pollastri",
+                    "homepage": "https://andreapollastri.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel security scanner — checks CVEs, hardcoded secrets, SQL injection, XSS and more via a single Artisan command.",
+            "homepage": "https://github.com/andreapollastri/checkpoint",
+            "support": {
+                "docs": "https://github.com/andreapollastri/checkpoint#readme",
+                "issues": "https://github.com/andreapollastri/checkpoint/issues",
+                "security": "https://github.com/andreapollastri/checkpoint/security/advisories",
+                "source": "https://github.com/andreapollastri/checkpoint"
+            },
+            "time": "2026-10-07T09:51:41+00:00"
+        },
+        {
             "name": "fakerphp/faker",
             "version": "v1.24.1",
             "source": {
@@ -7052,6 +7111,62 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v3.0.0"
             },
             "time": "2026-03-17T11:56:53+00:00"
+        },
+        {
+            "name": "jaydeep/laravel-guarddog",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JaydeepGadhiya/laravel-guarddog.git",
+                "reference": "6b90996f102c1ed66c7728931442d28689e0aba1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JaydeepGadhiya/laravel-guarddog/zipball/6b90996f102c1ed66c7728931442d28689e0aba1",
+                "reference": "6b90996f102c1ed66c7728931442d28689e0aba1",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "php": "^7.4|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Jaydeep\\GuardDog\\GuardDogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jaydeep\\GuardDog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jaydeep Gadhiya",
+                    "email": "jaydeepgadhiya5699@gmail.com"
+                }
+            ],
+            "description": "Laravel GuardDog — Scan your Laravel project for common security vulnerabilities and generate beautiful HTML reports.",
+            "keywords": [
+                "Audit",
+                "guarddog",
+                "laravel",
+                "scanner",
+                "security",
+                "vulnerability"
+            ],
+            "support": {
+                "issues": "https://github.com/JaydeepGadhiya/laravel-guarddog/issues",
+                "source": "https://github.com/JaydeepGadhiya/laravel-guarddog/tree/v1.1.0"
+            },
+            "time": "2026-05-19T12:40:45+00:00"
         },
         {
             "name": "laravel/agent-detector",
