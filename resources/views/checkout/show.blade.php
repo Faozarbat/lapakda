@@ -306,7 +306,8 @@
         });
     </script>
 
-            <!-- GUEST POPUP -->
+    @guest
+    <!-- GUEST POPUP -->
     <div x-data="{ 
              showGuestPopup: false,
              isSubmitting: false,
@@ -349,9 +350,7 @@
                  .then(res => res.json())
                  .then(data => {
                      if(data.success) {
-                         // Hapus cooldown agar jika dia logout nanti, popup bisa muncul lagi
-                         localStorage.removeItem('lapakda_guest_prompted_until');
-                         // Reload halaman agar status login di header berubah otomatis
+                         // Reload halaman agar status login berubah dan popup hilang otomatis
                          window.location.reload(); 
                      }
                  })
@@ -414,5 +413,6 @@
             </button>
         </div>
     </div>
+    @endguest
 </body>
 </html>
