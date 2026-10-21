@@ -195,6 +195,11 @@
 
             navigator.serviceWorker.ready.then(function(registration) {
                 Notification.requestPermission().then(function(permission) {
+                    if (permission === 'denied') {
+                        alert('Notifikasi diblokir. Silakan klik ikon Gembok di URL browser dan pilih Izinkan.');
+                        return;
+                    }
+                    
                     if (permission === 'granted') {
                         const vapidPublicKey = '{{ env('VAPID_PUBLIC_KEY') }}';
                         const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
