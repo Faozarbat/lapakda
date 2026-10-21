@@ -45,20 +45,30 @@
                     </template>
 
                     <input type="file" name="foto" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10" 
-                           @change="
-                               const file = $event.target.files[0]; 
-                               if (file) { 
-                                   if (file.size > 5 * 1024 * 1024) {
-                                       fileError = 'Ukuran foto terlalu besar! Maksimal 5MB.';
-                                       $event.target.value = ''; 
-                                       imageUrl = null;
-                                   } else {
-                                       fileError = '';
-                                       imageUrl = URL.createObjectURL(file);
-                                   }
-                               }
-                           ">
-                </div>
+                          @change="
+                                const file = $event.target.files[0]; 
+                                if (file) { 
+                                    if (file.size > 5 * 1024 * 1024) {
+                                        fileError = 'Ukuran foto terlalu besar! Maksimal 5MB.';
+                                        $event.target.value = ''; 
+                                        imageUrl = null;
+                                    } else {
+                                        // Cek Dimensi Gambar
+                                        const img = new Image();
+                                        img.src = window.URL.createObjectURL(file);
+                                        img.onload = () => {
+                                            if (img.width > 5000 || img.height > 5000) {
+                                                fileError = 'Dimensi foto terlalu besar! Maks 5000x5000 px.';
+                                                $event.target.value = ''; 
+                                                imageUrl = null;
+                                            } else {
+                                                fileError = '';
+                                                imageUrl = URL.createObjectURL(file);
+                                            }
+                                        };
+                                    }
+                                }
+                            ">
                 <p x-show="fileError" x-text="fileError" class="text-red-500 text-xs font-bold mt-1" x-cloak></p>
                 <p class="text-[11px] text-gray-500">Format: JPG, PNG, WebP. Maks 5MB.</p>
                 @error('foto') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror

@@ -38,7 +38,7 @@ class ProductDashboardController extends Controller
             'stok' => 'nullable|integer|min:0', // Validasi Stok
             'deskripsi' => 'nullable|string|max:1000',
             'kategori_produk' => 'nullable|string|max:100',
-            'foto' => 'nullable|image|max:5120',
+            'foto' => 'nullable|image|max:5120|dimensions:max_width=5000,max_height=5000',
         ]);
 
         $namaFoto = $request->hasFile('foto')
@@ -81,7 +81,7 @@ class ProductDashboardController extends Controller
             'stok' => 'nullable|integer|min:0', // Validasi Stok
             'deskripsi' => 'nullable|string|max:1000',
             'kategori_produk' => 'nullable|string|max:100',
-            'foto' => 'nullable|image|max:5120',
+            'foto' => 'nullable|image|max:5120|dimensions:max_width=5000,max_height=5000',
             'status_tersedia' => 'nullable|boolean',
         ]);
 

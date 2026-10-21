@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LapakDA — Master Technical Documentation (V3)</title>
+    <title>LapakDA — Ultimate Technical Documentation (V5)</title>
     <style>
         :root {
             --primary: #B9232D;
@@ -38,6 +38,7 @@
         .alert-danger { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
         .alert-info { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
         .alert-success { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+        
         .design-context { background: #FFFBEB; border: 1px solid #FDE68A; padding: 20px; border-radius: 10px; margin: 20px 0; font-size: 0.95rem; color: #92400E; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 0.95rem; }
@@ -55,25 +56,25 @@
         .badge-new { background: #DEF7EC; color: #03543F; }
         .badge-update { background: #E1EFFE; color: #1E429F; }
         
-        .file-path { font-family: monospace; color: #1D4ED8; font-weight: bold; background: #EFF6FF; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 10px; }
+        .file-path { font-family: monospace; color: #1D4ED8; font-weight: bold; background: #EFF6FF; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 10px; border: 1px solid #BFDBFE;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>LapakDA — Master Technical Documentation (V3)</h1>
-    <p><strong>Versi Dokumen:</strong> 3.0.0 (Production Ready) | <strong>Tech Stack:</strong> Laravel 11/13, Blade, Alpine.js, Tailwind CSS, MySQL, ApexCharts, Leaflet.js.</p>
+    <h1>LapakDA — Ultimate Technical Documentation (V5)</h1>
+    <p><strong>Versi Dokumen:</strong> 5.0.0 (Handover & Blueprint) | <strong>Tech Stack:</strong> Laravel 11/13, Blade, Alpine.js, Tailwind CSS, MySQL, ApexCharts, Leaflet, Web Push API.</p>
 
     <div class="alert alert-danger">
         <strong>⚠️ ATURAN EMAS (GOLDEN RULES) UNTUK PROGRAMMER SELANJUTNYA:</strong><br>
-        Dokumen ini adalah hasil evolusi panjang. Jika Anda melanjutkan proyek ini, Anda WAJIB mematuhi aturan berikut:<br>
         1. <strong>JANGAN PERNAH MENEBAK ISI FILE.</strong> Selalu minta kode asli sebelum mengubah Controller/Model/View.<br>
-        2. <strong>METODE CARI & GANTI:</strong> Untuk perubahan kecil, gunakan instruksi "Cari baris X, ganti dengan Y". Jangan menimpa seluruh file jika hanya mengubah 1 baris.<br>
-        3. <strong>ANALISIS AFTER-EFFECT:</strong> Setiap kali menambah kolom database, WAJIB cek View mana saja yang perlu diupdate (contoh: menambah foto profil, wajib update halaman Jelajah & Katalog).<br>
-        4. <strong>JANGAN UBAH ALUR BACKEND:</strong> Logika PHP yang sudah solid (terutama di OrderController & StoreController) jangan diutak-atik tanpa izin. Fokus perubahan di layer View/UI.<br>
-        5. <strong>DESAIN:</strong> Gunakan Tailwind CSS, warna brand <code>#B9232D</code>, font Plus Jakarta Sans. <strong>DILARANG</strong> menggunakan <code>alert()</code> bawaan browser (gunakan Toast Alpine.js).<br>
-        6. <strong>TIMEZONE:</strong> Server menggunakan UTC, tapi logika bisnis (terutama jam operasional) WAJIB dikonversi ke WIB (<code>now('Asia/Jakarta')</code>).<br>
-        7. <strong>DOMAIN SEPARATION:</strong> Jangan mencampur logika Panel Admin (SaaS) dengan Dashboard Seller (Operasional Toko). Admin mengurus langganan, Seller mengurus jualan.
+        2. <strong>METODE CARI & GANTI:</strong> Gunakan instruksi "Cari baris X, ganti dengan Y". Jangan menimpa seluruh file jika hanya mengubah 1 baris (kecuali diminta versi full).<br>
+        3. <strong>ANALISIS AFTER-EFFECT:</strong> Setiap kali menambah kolom database/fitur, WAJIB cek View mana saja yang perlu diupdate (misal: nambah stok, wajib update create, edit, dan katalog).<br>
+        4. <strong>JANGAN UBAH ALUR BACKEND:</strong> Logika PHP (OrderController, StoreController) sudah solid. Fokus perubahan di layer View/UI.<br>
+        5. <strong>DESAIN:</strong> Tailwind CSS, warna brand <code>#B9232D</code>, font Plus Jakarta Sans. <strong>DILARANG</strong> pakai <code>alert()</code> (pakai Toast Alpine.js atau div error).<br>
+        6. <strong>TIMEZONE:</strong> Server UTC, logika bisnis (isOpenNow) WAJIB konversi ke WIB (<code>now('Asia/Jakarta')</code>).<br>
+        7. <strong>DOMAIN SEPARATION:</strong> Admin (SaaS) pisah dengan Seller (Operasional).<br>
+        8. <strong>SERVER PRODUCTION:</strong> Nginx & PHP di-set maksimal upload 10MB, Laravel memvalidasi maksimal 5MB (WebP Compression).
     </div>
 
     <!-- ========================================== -->
@@ -81,205 +82,181 @@
     <!-- ========================================== -->
     <h2>1. Gambaran Umum Arsitektur</h2>
     <p>LapakDA adalah platform katalog online multi-tenant (SaaS) untuk UMKM. Sistem ini memiliki 3 aktor utama: <strong>Pembeli (Customer)</strong>, <strong>Penjual (Seller/Owner)</strong>, dan <strong>Admin</strong>.</p>
-    <ul>
-        <li><strong>Customer:</strong> Menjelajah katalog, mencari produk, checkout (via WA), dan melihat riwayat pesanan. Mendukung <em>guest checkout</em>.</li>
-        <li><strong>Seller:</strong> Mengelola toko, produk, stok, pesanan, dan <strong>melanggan</strong> sistem (SaaS).</li>
-        <li><strong>Admin:</strong> Memverifikasi pembayaran seller, mengelola voucher, mengatur harga langganan, dan memantau sistem via <em>Dashboard Premium</em>.</li>
-    </ul>
+
+    <h2>2. Struktur Folder & Penjelasan File</h2>
+    <p>Dokumen ini disusun mengikuti struktur folder. Di tiap level folder, urutannya selalu: file-file dulu, baru penjelasan garis besar folder.</p>
 
     <!-- ========================================== -->
-    <!-- DATABASE SCHEMA -->
+    <!-- APP/HTTP/CONTROLLERS -->
     <!-- ========================================== -->
-    <h2>2. Database Schema (V3 Update)</h2>
-    <p>Skema ini mencakup tabel lama, tabel sistem langganan, dan penambahan stok produk.</p>
-    
-    <table>
-        <tr><th>Tabel</th><th>Kolom Kunci & Relasi</th><th>Keterangan</th></tr>
-        <tr>
-            <td><strong>users</strong></td>
-            <td><code>id</code>, <code>name</code>, <code>nomor_hp</code> (unique), <code>email</code>, <code>password</code>, <code>is_admin</code>, <code>last_latitude</code>, <code>last_longitude</code>.</td>
-            <td>User biasa login via No HP (Silent Register), Admin login via HP + Password.</td>
-        </tr>
-        <tr>
-            <td><strong>stores</strong></td>
-            <td><code>id</code>, <code>owner_id</code>, <code>kecamatan_id</code>, <code>nama</code>, <code>slug</code>, <code>kategori</code> (resto/store), <code>foto_profil</code>, <code>foto_background</code>, <code>jam_operasional</code> (JSON), <code>status_aktif</code>.</td>
-            <td><strong>SaaS:</strong> <code>active_until</code>, <code>subscription_status</code> (trial/discounted/active/archived), <code>open_fee_paid</code>, <code>voucher_id</code>, <code>subscription_started_at</code>.</td>
-        </tr>
-        <tr>
-            <td><strong>products</strong></td>
-            <td><code>id</code>, <code>store_id</code>, <code>nama</code>, <code>harga</code>, <code>foto</code>, <code>deskripsi</code>, <code>kategori_produk</code>, <code>status_tersedia</code>.</td>
-            <td><strong>BARU:</strong> <code>stok</code> (integer, nullable). Jika kosong = stok tak terbatas. Jika diisi 0, <code>status_tersedia</code> otomatis false.</td>
-        </tr>
-        <tr>
-            <td><strong>settings</strong> <span class="badge badge-new">New</span></td>
-            <td><code>id</code>, <code>key</code>, <code>value</code>, <code>type</code>.</td>
-            <td>Harga dinamis: <code>open_fee_price</code> (20rb), <code>monthly_price</code> (10rb), <code>discount_price</code> (5rb), <code>grace_period_days</code> (3 hari).</td>
-        </tr>
-        <tr>
-            <td><strong>vouchers</strong> <span class="badge badge-new">New</span></td>
-            <td><code>id</code>, <code>code</code> (unique), <code>free_months</code>, <code>valid_until</code>, <code>is_active</code>.</td>
-            <td>Menyimpan kode promo seperti "UNDANGAN" (Gratis 3 bulan).</td>
-        </tr>
-        <tr>
-            <td><strong>voucher_usages</strong> <span class="badge badge-new">New</span></td>
-            <td><code>id</code>, <code>voucher_id</code>, <code>user_id</code>, <code>store_id</code>.</td>
-            <td>Mencegah 1 user memakai kode voucher yang sama berkali-kali.</td>
-        </tr>
-        <tr>
-            <td><strong>subscriptions</strong> <span class="badge badge-new">New</span></td>
-            <td><code>id</code>, <code>store_id</code>, <code>user_id</code>, <code>type</code> (open_fee/subscription), <code>amount</code>, <code>status</code> (pending/paid), <code>payment_proof</code>.</td>
-            <td>Riwayat tagihan seller. Admin meng-approve bukti transfer di sini.</td>
-        </tr>
-    </table>
-
-    <!-- ========================================== -->
-    <!-- STRUKTUR FOLDER & FILE (DETAIL) -->
-    <!-- ========================================== -->
-    <h2>3. Struktur Folder & Ringkasan File</h2>
-
     <h3>app/Http/Controllers/</h3>
-    <table>
-        <tr><th>File</th><th>Fungsi Utama</th></tr>
-        <tr>
-            <td><span class="file-path">StoreController.php</span></td>
-            <td><strong>Krusial:</strong> Mendaftarkan toko. Validasi voucher, cek toko pertama (bebas biaya) vs ke-2+ (kena biaya buka). Simpan tagihan pending ke <code>subscriptions</code>.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">OrderController.php</span></td>
-            <td>Menangani checkout. Cek <code>isOpenNow()</code>. Pemisahan qty Dine-in/Takeaway khusus Resto (Toko otomatis Takeaway). Generate link WA.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">OrderDashboardController.php</span></td>
-            <td>Pesanan masuk Seller. Dilengkapi <strong>Filter Status</strong> (Menunggu, Diproses, Selesai, Batal) dan tombol aksi cepat.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">ProductDashboardController.php</span></td>
-            <td>CRUD Produk. Termasuk kompresi gambar WebP. <strong>Logika Stok:</strong> Jika input stok = 0, paksa <code>status_tersedia = false</code>.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">SubscriptionController.php</span></td>
-            <td>Halaman Tagihan Seller. Menampilkan sisa masa aktif, daftar tagihan pending, upload bukti transfer.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">AdminDashboardController.php</span></td>
-            <td>Statistik Admin & Grafik <strong>ApexCharts</strong> (Pendaftaran toko 7 hari terakhir).</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">AdminSubscriptionController.php</span></td>
-            <td>Verifikasi pembayaran. Jika approve, otomatis <code>active_until</code> +1 bulan & status jadi <code>active</code>.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">AdminSettingController.php</span></td>
-            <td>Form edit harga dinamis (Biaya Buka, Bulanan, Diskon, Grace Period).</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">AdminVoucherController.php</span></td>
-            <td>CRUD kode voucher (seperti UNDANGAN).</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">AdminStoreController.php</span></td>
-            <td>Manajemen toko. Fitur <strong>Suspend/Aktifkan</strong>, <strong>Export CSV</strong>, dan tombol <strong>Reminder WA</strong>.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">SearchController.php</span></td>
-            <td>Pencarian dari Beranda/Jelajah. Mencari nama Toko ATAU nama Produk.</td>
-        </tr>
-    </table>
-
-    <h3>app/Models/</h3>
-    <table>
-        <tr><th>File</th><th>Fungsi / Atribut Penting</th></tr>
-        <tr>
-            <td><span class="file-path">Store.php</span></td>
-            <td><strong>Fungsi Ajaib <code>isOpenNow()</code>:</strong> Cek jam buka berdasarkan JSON & timezone <code>Asia/Jakarta</code>. <br><strong>Scope <code>tampilDiPublik()</code>:</strong> Filter agar toko yang belum bayar / arsip tidak muncul di publik.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">Setting.php</span></td>
-            <td>Static method <code>getVal($key)</code> untuk mengambil value pengaturan dengan casting tipe data.</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">Order.php</span></td>
-            <td>Relasi <code>items()</code> dan <code>user()</code> (nullable, support guest).</td>
-        </tr>
-        <tr>
-            <td><span class="file-path">Product.php</span></td>
-            <td>Memiliki kolom <code>stok</code> di <code>$fillable</code>.</td>
-        </tr>
-    </table>
-
-    <h3>app/Support/</h3>
-    <ul>
-        <li><span class="file-path">KategoriUsaha.php</span>: "Otak" dari navigasi kategori (Resto, Toko, Jasa). Untuk membuka kategori baru, tinggal ubah <code>'aktif' => true</code>.</li>
-    </ul>
-
-    <h3>app/Console/Commands/</h3>
-    <ul>
-        <li><span class="file-path">CheckSubscriptionExpiry.php</span>: Cronjob harian (<code>php artisan subscriptions:check-expiry</code>). Mengarsipkan toko yang telat bayar.</li>
-    </ul>
-
-    <!-- ========================================== -->
-    <!-- ALUR LOGIKA BISNIS -->
-    <!-- ========================================== -->
-    <h2>4. Alur Logika Bisnis (Business Logic)</h2>
-
-    <div class="design-context">
-        <strong>💡 Alur Pendaftaran Toko & Langganan:</strong><br>
-        1. User klik "Daftar Toko". Cek: Toko pertama? Biaya buka Rp 0. Toko ke-2+? Biaya buka Rp 20.000.<br>
-        2. Validasi Voucher (misal: UNDANGAN). Jika valid, <code>active_until</code> 3 bulan (trial).<br>
-        3. Tanpa voucher: <code>active_until</code> 1 bulan (active).<br>
-        4. Jika ada biaya buka, buat tagihan di <code>subscriptions</code> (pending).
-    </div>
-
-    <div class="design-context">
-        <strong>💡 Perbedaan Resto vs Toko (Domain Separation):</strong><br>
-        - <strong>Resto:</strong> Checkout punya fitur Dine-in (Makan di tempat) & Input Nomor Meja.<br>
-        - <strong>Toko:</strong> Fitur Dine-in disembunyikan. Checkout otomatis Takeaway/Delivery. Label di katalog diganti dari "Menu" menjadi "Produk".
-    </div>
-
-    <div class="design-context">
-        <strong>💡 Logika Stok Produk:</strong><br>
-        Kolom stok bersifat opsional. Jika diisi angka (misal 10), katalog menampilkan "Sisa 10". Jika diisi 0, sistem otomatis mematikan <code>status_tersedia</code> (pembeli tidak bisa tambah ke keranjang).
-    </div>
-
-    <!-- ========================================== -->
-    <!-- SECURITY & DEPLOYMENT -->
-    <!-- ========================================== -->
-    <h2>5. Security Checklist & Deployment</h2>
     
-    <div class="alert alert-success">
-        <strong>Audit Keamanan:</strong> Proyek ini sudah dilindungi dari IDOR (Authorization), Mass Assignment ($fillable), SQL Injection (Eloquent Binding), dan XSS (Blade Escaping). File Upload divalidasi ketat (hanya gambar, max 5MB) dan disimpan di folder storage.
+    <span class="file-path">StoreController.php</span>
+    <p><strong>Ringkasan:</strong> Mengelola pendaftaran dan pengaturan toko (Resto/Toko).</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>create()</code></td><td>Menampilkan form pendaftaran. Cek apakah ini toko pertama (bebas biaya) atau ke-2+ (kena open fee). Mengambil data voucher.</td></tr>
+        <tr><td><code>store(Request $request)</code></td><td>Memproses pendaftaran. Validasi voucher, hitung biaya buka, upload foto profil/background, simpan tagihan pending ke tabel subscriptions jika ada biaya.</td></tr>
+        <tr><td><code>edit(Store $store)</code></td><td>Menampilkan form edit toko (Jam operasional, Lokasi, Foto, Status).</td></tr>
+        <tr><td><code>update(Request $request, Store $store)</code></td><td>Memproses update data toko. Mengompres gambar baru ke WebP.</td></tr>
+        <tr><td><code>preview(Store $store)</code></td><td>Menampilkan pratinjau toko (Mode Read-Only untuk Seller).</td></tr>
+    </table>
+    <div class="design-context">
+        <strong>💡 Konteks/Alasan Desain:</strong> Logika biaya buka (open_fee) dan voucher ditanam di Controller ini. Jika voucher valid, masa aktif diset 3 bulan (trial). Jika tidak, 1 bulan (active). Jika ini toko ke-2+, sistem otomatis membuat tagihan pending di tabel <code>subscriptions</code> tanpa menahan pembuatan toko, agar seller bisa langsung isi produk sambil menunggu verifikasi admin.
+    </div>
+
+    <span class="file-path">OrderController.php</span>
+    <p><strong>Ringkasan:</strong> Menangani checkout, pembuatan Order, dan integrasi WA.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>checkout(Request $request, Store $store)</code></td><td>Menampilkan form checkout. Cek <code>isOpenNow()</code>. Jika toko tutup, redirect ke cart dengan error. Generate <code>idempotencyKey</code>.</td></tr>
+        <tr><td><code>store(Request $request, Store $store)</code></td><td>Memproses pesanan. Memisahkan qty Dine-in/Takeaway. Menembakkan <code>NewOrderNotification</code> (Push Notif) ke HP Seller. Menyusun teks WA & redirect ke <code>wa.me</code>.</td></tr>
+        <tr><td><code>riwayat(Request $request)</code></td><td>Menampilkan riwayat pesanan pembeli (berdasarkan user_id atau session_id).</td></tr>
+        <tr><td><code>susunRingkasanWA(Order $order, Store $store)</code></td><td>Private. Merangkai teks pesanan (format Markdown WA) berisi item, total, tipe, no meja, & link Gmaps.</td></tr>
+    </table>
+    <div class="design-context">
+        <strong>💡 Konteks/Alasan Desain:</strong> <strong>Idempotency</strong> digunakan (via Cache) untuk mencegah user klik tombol submit dua kali karena koneksi lambat yang bisa membuat 2 Order. <strong>Push Notification</strong> dipanggil tepat setelah order dibuat agar Seller langsung waspada.
+    </div>
+
+    <span class="file-path">ProductDashboardController.php</span>
+    <p><strong>Ringkasan:</strong> CRUD produk seller.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>store() / update()</code></td><td>Menyimpan produk. Mengecek input stok. Jika stok 0, <code>status_tersedia</code> dipaksa false.</td></tr>
+        <tr><td><code>prosesDanSimpanFoto($file)</code></td><td>Private. Menggunakan <strong>Intervention Image v3</strong> untuk scaleDown (800x800), pad, dan convert ke WebP (kualitas 80).</td></tr>
+    </table>
+    
+    <span class="file-path">OrderDashboardController.php</span>
+    <p><strong>Ringkasan:</strong> Manajemen pesanan masuk untuk Seller.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>index(Request $request, Store $store)</code></td><td>Menampilkan pesanan. Dilengkapi filter status (Menunggu, Diproses, Selesai, Batal) dan hitungan per status.</td></tr>
+        <tr><td><code>updateStatus()</code></td><td>Mengubah status pesanan (Terima, Tolak, Selesai).</td></tr>
+    </table>
+
+    <span class="file-path">SubscriptionController.php</span>
+    <p><strong>Ringkasan:</strong> Halaman tagihan & langganan seller.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>index()</code></td><td>Menampilkan status langganan, sisa hari, dan tagihan pending.</td></tr>
+        <tr><td><code>uploadProof()</code></td><td>Menerima bukti transfer, menyimpannya, dan mengubah notes tagihan.</td></tr>
+    </table>
+
+    <span class="file-path">GuestAuthController.php</span>
+    <p><strong>Ringkasan:</strong> Pendaftaran tamu (Silent Register).</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>register()</code></td><td>Menerima nama & no HP dari Popup. <strong>PENTING:</strong> Jika no HP sudah terdaftar, tolak (return 403). Jika belum, buat user baru, login, dan pindahkan session_id order lama ke user_id baru.</td></tr>
+    </table>
+    <div class="design-context">
+        <strong>💡 Konteks/Alasan Desain:</strong> Dulu sistem ini bisa login hanya dengan No HP (celah keamanan). Sudah diperbaiki: jika No HP sudah ada, sistem menolak dan meminta user login lewat menu Masuk.
+    </div>
+
+    <span class="file-path">ProfileController.php</span>
+    <p><strong>Ringkasan:</strong> Manajemen profil user.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>updatePassword()</code></td><td>Mengubah password. Jika <code>password_set_at</code> kosong (user baru), tidak perlu input password lama. Jika sudah ada, wajib input password lama.</td></tr>
+    </table>
+
+    <span class="file-path">SearchController.php</span>
+    <p><strong>Ringkasan:</strong> Pencarian global.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>index(Request $request)</code></td><td>Mencari toko berdasarkan nama toko ATAU nama produk di dalamnya.</td></tr>
+    </table>
+
+    <span class="file-path">Admin*Controller.php (Kumpulan)</span>
+    <p><strong>AdminDashboardController:</strong> Statistik & Grafik ApexCharts.<br>
+    <strong>AdminStoreController:</strong> List toko, Suspend, Export CSV, WA Reminder.<br>
+    <strong>AdminSubscriptionController:</strong> Approve bukti transfer (otomatis +1 bulan active_until).<br>
+    <strong>AdminSettingController:</strong> CRUD harga (open_fee, monthly, discount).<br>
+    <strong>AdminVoucherController:</strong> CRUD voucher promo.<br>
+    <strong>AdminUserController:</strong> List semua pembeli & seller.<br>
+    <strong>PushSubscriptionController:</strong> Simpan ID perangkat Seller untuk notifikasi.</p>
+
+    <!-- ========================================== -->
+    <!-- APP/MODELS -->
+    <!-- ========================================== -->
+    <h3>app/Models/</h3>
+    
+    <span class="file-path">Store.php</span>
+    <table>
+        <tr><th>Fungsi / Atribut</th><th>Deskripsi</th></tr>
+        <tr><td><code>isOpenNow()</code></td><td>Menghitung apakah toko sedang buka berdasarkan JSON jam_operasional & timezone <code>Asia/Jakarta</code>.</td></tr>
+        <tr><td><code>scopeTampilDiPublik()</code></td><td>Query scope untuk menyembunyikan toko yang belum bayar / diarsipkan dari halaman publik.</td></tr>
+        <tr><td><code>$fillable</code></td><td>Termasuk <code>active_until</code>, <code>subscription_status</code>, <code>open_fee_paid</code>, <code>voucher_id</code>.</td></tr>
+    </table>
+
+    <span class="file-path">User.php</span>
+    <p>Menggunakan trait <code>HasPushSubscriptions</code> (dari paket WebPush) untuk menyimpan token notifikasi ke tabel <code>push_subscriptions</code>. Memiliki kolom <code>password_set_at</code>.</p>
+
+    <span class="file-path">Order.php</span>
+    <p>Relasi <code>items()</code> dan <code>user()</code>. Memiliki accessor <code>getTotalAttribute()</code> untuk menghitung total dari snapshot harga.</p>
+
+    <!-- ========================================== -->
+    <!-- VIEWS & FRONTEND -->
+    <!-- ========================================== -->
+    <h3>resources/views/ & public/</h3>
+    
+    <span class="file-path">home.blade.php</span>
+    <p>Halaman utama. Menampilkan kategori, pencarian, banner "Punya Usaha?", PWA Install Banner (dengan deteksi standalone), dan Popup Guest Register (@guest).</p>
+
+    <span class="file-path">dashboard.blade.php</span>
+    <p>Dashboard Seller. Menampilkan kartu toko, menu aksi (Produk, Order, Setting, Preview, QR Code), Banner Peringatan Tagihan, dan script pendaftaran Push Notification.</p>
+
+    <span class="file-path">store/show.blade.php</span>
+    <p>Katalog Pembeli. Header menggunakan Flexbox (anti-tabrakan judul). Menampilkan info buka/tutup. Tombol tambah di-disable jika toko tutup. Ada Bottom Sheet (modal) untuk detail produk (deskripsi & foto besar).</p>
+
+    <span class="file-path">checkout/show.blade.php</span>
+    <p>Halaman Checkout. Form Dine-in otomatis disembunyikan jika toko kategori 'store'. Peta Leaflet untuk delivery. Script validasi ukuran file upload (>5MB ditolak).</p>
+
+    <span class="file-path">public/sw.js</span>
+    <p>Service Worker. Menangani event <code>push</code> dari server dan memunculkan notifikasi di HP Seller.</p>
+
+    <!-- ========================================== -->
+    <!-- ALUR BISNIS & KEAMANAN -->
+    <!-- ========================================== -->
+    <h2>3. Alur Logika Bisnis & Keamanan</h2>
+    
+    <div class="alert alert-info">
+        <strong>Alur Langganan (SaaS):</strong><br>
+        1. Toko pertama = Gratis biaya buka. Toko ke-2+ = Bayar Rp 20.000 (masuk tabel subscriptions pending).<br>
+        2. Voucher (UNDANGAN) = Bebas biaya langganan 3 bulan (trial).<br>
+        3. Tanpa voucher = active_until diset 1 bulan.<br>
+        4. Cronjob <code>subscriptions:check-expiry</code> jalan tiap malam. Jika telat bayar lewat 3 hari (grace period), status jadi <code>archived</code> & hilang dari publik.
     </div>
 
     <div class="alert alert-info">
-        <strong>Wajib dijalankan sebelum Go-Live (Production):</strong>
+        <strong>Keamanan Upload (Anti 413 Error):</strong><br>
+        Nginx diset <code>client_max_body_size 10M</code>. Laravel validasi <code>max:5120</code> (5MB). Javascript di frontend menolak file > 5MB sebelum dikirim ke server. Server lalu mengompres gambar jadi WebP (50-100KB).
+    </div>
+
+    <!-- ========================================== -->
+    <!-- KNOWN ISSUES & MASTER PLAN -->
+    <!-- ========================================== -->
+    <h2>4. Known Issues & Master Plan (TODO)</h2>
+    
+    <div class="alert alert-danger">
+        <strong>Known Issues (Sisa Bug/PR):</strong>
         <ul>
-            <li><code>APP_ENV=production</code> dan <code>APP_DEBUG=false</code> di file <code>.env</code>.</li>
-            <li>Pastikan <code>APP_KEY</code> sudah di-generate dan unik.</li>
-            <li>Aktifkan HTTPS (SSL) di hosting.</li>
-            <li>Jalankan <code>npm run build</code> (bukan dev) untuk optimasi CSS/JS.</li>
-            <li>Jalankan <code>php artisan optimize</code> dan <code>php artisan config:cache</code>.</li>
-            <li>Setup Cronjob di cPanel/VPS: <code>* * * * * php /path-to-project/artisan schedule:run >> /dev/null 2>&1</code>.</li>
+            <li><strong>Push Notification:</strong> Terkadang delay jika server tidur. Pastikan VAPID key di .env server sama dengan lokal.</li>
+            <li><strong>PWA Install Banner:</strong> Chrome sangat ketat. Kadang tidak muncul meski syarat terpenuhi. Gunakan mode Incognito atau hard refresh untuk tes.</li>
         </ul>
     </div>
 
-    <!-- ========================================== -->
-    <!-- LAMPIRAN: MASTER PLAN MASA DEPAN -->
-    <!-- ========================================== -->
-    <h2>Lampiran: Master Plan Masa Depan (Ekspansi Kategori)</h2>
-    <div class="design-context" style="background: #F0FDF4; border-color: #BBF7D0; color: #166534;">
-        <strong>🚀 Visi Jangka Panjang:</strong> LapakDA akan berekspansi ke sektor <strong>Jasa</strong> (Barbershop, Servis, Laundry).
+    <div class="alert alert-success">
+        <strong>Master Plan (Next Phase):</strong>
+        <ol>
+            <li><strong>SEO Dasar:</strong> Buat <code>sitemap.xml</code> otomatis dan Meta Tags dinamis (Open Graph) untuk tiap toko.</li>
+            <li><strong>Kategori Jasa:</strong> Tambah enum <code>jasa</code> di DB, sesuaikan form, dan buat alur booking tanggal (bukan delivery).</li>
+            <li><strong>Grafik Penjualan Seller:</strong> Tampilkan ApexCharts pendapatan di dashboard seller.</li>
+            <li><strong>Vacation Mode:</strong> Tombol "Tutup Toko Sementara" yang tidak perlu verifikasi admin.</li>
+        </ol>
     </div>
 
-    <h3>Persiapan Teknis untuk Ekspansi Jasa:</h3>
-    <ol>
-        <li><strong>Database:</strong> Ubah tipe kolom <code>kategori</code> di tabel <code>stores</code> dari <code>enum</code> menjadi <code>string</code> agar fleksibel.</li>
-        <li><strong>Class KategoriUsaha:</strong> Tambahkan array <code>'jasa'</code> dan set <code>'aktif' => true</code>.</li>
-        <li><strong>Form Daftar Toko:</strong> Ubah input radio statis menjadi <code>@foreach</code> dari <code>KategoriUsaha::semua()</code>.</li>
-        <li><strong>Checkout Khusus Jasa:</strong> Modifikasi <code>OrderController</code>. Jasa mungkin tidak butuh Delivery, melainkan butuh fitur "Pilih Tanggal Booking / Jadwal Kedatangan".</li>
-    </ol>
-
     <p style="text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.9rem;">
-        Akhir Dokumen V3. Disusun dengan standar keamanan dan UX terbaik. Selamat bertarung di Production!
+        Akhir Dokumen V5. Disusun dengan standar keamanan dan UX terbaik. Selamat bertarung di Production!
     </p>
 
 </div>
