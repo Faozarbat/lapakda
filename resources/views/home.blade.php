@@ -52,35 +52,67 @@
           }
       }">
 
-        <!-- BANNER INSTALL PWA (Gaya Iklan Atas) -->
-    <div x-data="{ showBanner: false }" 
-         @pwa-ready.window="showBanner = true" 
-         x-show="showBanner" 
-         x-transition.opacity
-         x-cloak
-         class="sticky top-0 z-[100] w-full bg-[#B9232D] text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-white text-[#B9232D] rounded-lg flex items-center justify-center font-extrabold text-sm flex-shrink-0">L</div>
-                <div>
-                    <p class="text-xs font-bold leading-tight">Install Aplikasi LapakDA</p>
-                    <p class="text-[10px] text-red-100 hidden sm:block">Akses katalog lebih cepat & praktis di HP Anda.</p>
+    <!-- BANNER INSTALL PWA & MODAL -->
+    <div x-data="{ showBanner: false, showManualModal: false }" 
+         @pwa-ready.window="showBanner = true">
+        
+        <!-- Banner Melayang -->
+        <div x-show="showBanner" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="fixed bottom-24 left-4 right-4 z-[90] flex justify-center pointer-events-none">
+            <div class="bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] flex items-center justify-between gap-4 w-full max-w-sm pointer-events-auto border border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-[#B9232D] rounded-xl flex items-center justify-center font-extrabold text-lg">L</div>
+                    <div>
+                        <p class="text-xs font-bold leading-tight">Install LapakDA</p>
+                        <p class="text-[10px] text-gray-400 mt-0.5">Akses cepat langsung dari layar HP</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button @click="showBanner = false" class="text-gray-400 hover:text-white px-2 text-xs font-bold transition-colors">Nanti</button>
+                    <button @click="
+                        if(window.deferredPrompt) {
+                            window.deferredPrompt.prompt();
+                            window.deferredPrompt.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === 'accepted') showBanner = false;
+                                window.deferredPrompt = null;
+                            });
+                        } else {
+                            showManualModal = true; // Buka modal instruksi manual
+                        }
+                    " class="bg-white text-gray-900 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-100 transition-colors">Install</button>
                 </div>
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <button @click="showBanner = false" class="text-xs font-semibold text-red-200 hover:text-white px-2">Tutup</button>
-                <button @click="
-                    if(window.deferredPrompt) {
-                        window.deferredPrompt.prompt();
-                        window.deferredPrompt.userChoice.then((choiceResult) => {
-                            if (choiceResult.outcome === 'accepted') showBanner = false;
-                            window.deferredPrompt = null;
-                        });
-                    } else {
-                        // Fallback jika browser bandel (misal iOS Safari)
-                        alert('Buka menu browser (titik tiga) lalu pilih \'Tambahkan ke Layar Utama\'.');
-                    }
-                " class="bg-white text-[#B9232D] px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-sm hover:scale-105 transition-transform">Install</button>
+        </div>
+
+        <!-- MODAL INSTRUKSI MANUAL (Pengganti alert) -->
+        <div x-show="showManualModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showManualModal = false"></div>
+            
+            <div class="bg-white rounded-3xl w-full max-w-sm relative z-10 p-6 shadow-2xl text-center" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="scale-95 opacity-0"
+                 x-transition:enter-end="scale-100 opacity-100">
+                
+                <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#B9232D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                </div>
+
+                <h3 class="text-lg font-extrabold text-gray-900 mb-2">Instal LapakDA</h3>
+                <p class="text-sm text-gray-500 mb-5">Karena pengaturan browser Anda, silakan ikuti langkah kecil ini untuk menginstal aplikasi:</p>
+                
+                <div class="text-left bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100 space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-[#B9232D] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+                        <p class="text-xs text-gray-700">Klik ikon <strong>Titik Tiga</strong> (menu) di pojok kanan atas browser Anda.</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-[#B9232D] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+                        <p class="text-xs text-gray-700">Cari dan pilih menu <strong>"Instal Aplikasi"</strong> atau <strong>"Tambahkan ke Layar Utama"</strong>.</p>
+                    </div>
+                </div>
+
+                <button @click="showManualModal = false" class="w-full bg-[#B9232D] text-white font-bold py-3.5 rounded-xl hover:bg-red-800 transition-colors shadow-lg shadow-red-500/30">
+                    Saya Mengerti
+                </button>
             </div>
         </div>
     </div>
