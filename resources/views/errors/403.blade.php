@@ -1,5 +1,25 @@
-@extends('errors.layout')
-
-@section('kode', '403')
-@section('title', 'Kamu tidak punya akses')
-@section('message', 'Halaman ini hanya bisa dibuka oleh pemiliknya.')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Akses Ditolak — LapakDA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css'])
+</head>
+<body class="bg-[#F8F9FA] text-gray-800 antialiased h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-gray-100 shadow-xl text-center">
+        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+        </div>
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-2">403</h1>
+        <h2 class="text-lg font-bold text-gray-700 mb-2">Akses Ditolak</h2>
+        <p class="text-sm text-gray-500 mb-8">Anda tidak memiliki izin untuk mengakses halaman ini. Silakan kembali ke halaman yang aman.</p>
+        <a href="{{ url('/') }}" class="inline-flex items-center justify-center w-full bg-[#B9232D] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/30 hover:bg-red-800 transition-colors">
+            Kembali ke Beranda
+        </a>
+    </div>
+</body>
+</html>
