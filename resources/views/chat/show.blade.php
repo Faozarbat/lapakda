@@ -36,7 +36,7 @@
     </header>
 
     <!-- AREA CHAT -->
-    <main class="flex-grow overflow-y-auto p-4 hide-scrollbar" id="chat-container">
+    <main class="flex-grow min-h-0 overflow-y-auto p-4 hide-scrollbar" id="chat-container">
         <div class="max-w-3xl mx-auto space-y-4 pb-4" id="chat-messages">
             <!-- Render Pesan Awal via Blade -->
             @foreach($messages as $msg)
