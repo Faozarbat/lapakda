@@ -214,7 +214,8 @@ class OrderController extends Controller
         $cart->delete();
 
         if ($validated['checkout_method'] === 'chat') {
-            return redirect()->route('chat.show', $order->id);
+            // Arahkan ke riwayat pesanan, bukan langsung ke ruang chat
+            return redirect()->route('order.riwayat')->with('success', 'Pesanan berhasil dibuat! Silakan buka chat dari daftar pesanan di bawah.');
         }
 
         return redirect()->away($waUrl);
