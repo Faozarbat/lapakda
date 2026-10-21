@@ -14,10 +14,10 @@
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#E5DDD5] text-gray-800 antialiased">
+<body class="bg-[#E5DDD5] text-gray-800 antialiased h-[100dvh] flex flex-col overflow-hidden">
 
     <!-- HEADER -->
-    <header class="bg-[#B9232D] text-white shadow-md z-20 fixed top-0 left-0 right-0">
+    <header class="bg-[#B9232D] text-white shadow-md z-20 flex-shrink-0">
         <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <a href="{{ route('order.riwayat') }}" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -36,7 +36,7 @@
     </header>
 
     <!-- AREA CHAT -->
-    <main class="h-screen overflow-y-auto p-4 pt-20 pb-24 hide-scrollbar" id="chat-container">
+    <main class="flex-1 min-h-0 overflow-y-auto p-4 hide-scrollbar" id="chat-container">
         <div class="max-w-3xl mx-auto space-y-4 pb-4" id="chat-messages">
             <!-- Render Pesan Awal via Blade -->
             @foreach($messages as $msg)
@@ -79,7 +79,7 @@
         }
     @endphp
 
-    <div class="bg-white border-t border-gray-200 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] fixed bottom-0 left-0 right-0 z-30">
+    <div class="bg-white border-t border-gray-200 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex-shrink-0 z-30">
         <div class="max-w-3xl mx-auto">
             @if($canChat)
                 <form id="chat-form" class="flex items-center gap-2">
@@ -91,8 +91,8 @@
                     <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-grow bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D]">
                     
                     <button type="submit" class="w-11 h-11 bg-[#B9232D] text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-800 transition-colors flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 transform -rotate-45" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 ml-1">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                         </svg>
                     </button>
                 </form>
