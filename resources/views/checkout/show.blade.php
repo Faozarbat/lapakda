@@ -316,16 +316,33 @@
             );
         });
 
-        document.getElementById('checkoutForm').addEventListener('submit', function () {
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+        document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+            // Simpan penanda di sessionStorage untuk mencegah loop back
+            sessionStorage.setItem('checkout_sukses', 'true');
+
+            const btnWA = document.getElementById('submitBtnWA');
+            const btnChat = document.getElementById('submitBtnChat');
+            
+            // Tentukan tombol mana yang diklik
+            const submitter = e.submitter;
+            
+            if (submitter && submitter.value === 'chat' && btnChat) {
+                btnChat.disabled = true;
+                btnChat.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+                btnWA.disabled = true; // Matikan tombol satunya
+            } else {
+                btnWA.disabled = true;
+                btnWA.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+                if(btnChat) btnChat.disabled = true; // Matikan tombol satunya
+            }
         });
 
         // MENCEGAH TOMBOL NYANGKUT SAAT KLIK BACK DARI WHATSAPP
         window.addEventListener('pageshow', function (event) {
-            // Jika halaman di-load dari cache (BFCache) atau tombol back ditekan
-            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            // Jika user kembali ke halaman ini SETELAH checkout sukses
+            if (sessionStorage.getItem('checkout_sukses') === 'true') {
+                // Hapus penanda
+                sessionStorage.removeItem('checkout_sukses');
                 // Lempar user ke halaman Riwayat Pesanan
                 window.location.replace("{{ route('order.riwayat') }}");
             }
