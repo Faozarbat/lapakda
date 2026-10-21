@@ -76,11 +76,13 @@ class ChatController extends Controller
 
     private function authorizeChat(Order $order)
     {
-        // Cek apakah yang buka chat adalah Pembeli ATAU Pemilik Toko
         $isBuyer = Auth::id() === $order->user_id;
         $isSeller = Auth::id() === $order->store->owner_id;
+        
+        // Cek Fallback: Jika pesanan ini milik Guest (user_id null), cocokkan session_id
+        $isGuestBuyer = is_null($order->user_id) && session()->getId() === $order->session_id;
 
-        if (!$isBuyer && !$isSeller) {
+        if (!$isBuyer && !$isSeller && !$isGuestBuyer) {
             abort(403, 'Anda tidak berhak mengakses obrolan ini.');
         }
     }
