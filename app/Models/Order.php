@@ -24,12 +24,17 @@ class Order extends Model
         'payment_status',
         'payment_method',
         'platform_fee',
+        // --- KOLOM BARU UNTUK CHAT ---
+        'chat_expires_at',
+        'chat_initiated_by',
     ];
 
     protected $casts = [
         'delivery_latitude' => 'decimal:7',
         'delivery_longitude' => 'decimal:7',
         'platform_fee' => 'integer',
+        // --- CAST BARU UNTUK CHAT ---
+        'chat_expires_at' => 'datetime',
     ];
 
     public function store(): BelongsTo
@@ -61,7 +66,7 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-        public function messages()
+    public function messages()
     {
         return $this->hasMany(OrderMessage::class)->orderBy('created_at', 'asc');
     }
