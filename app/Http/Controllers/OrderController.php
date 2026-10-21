@@ -15,6 +15,13 @@ class OrderController extends Controller
 {
     public function checkout(Request $request, Store $store)
     {
+        // Cegah Seller checkout di toko sendiri
+        if (auth()->check() && auth()->id() === $store->owner_id) {
+            return redirect()
+                ->route('store.show', [$store->kecamatan->slug, $store->slug])
+                ->with('error', 'Anda tidak dapat melakukan checkout di toko Anda sendiri.');
+        }
+
         $cart = $this->ambilCartAtauNull($request, $store);
 
         if (!$store->isOpenNow()) {
@@ -43,6 +50,13 @@ class OrderController extends Controller
 
     public function store(Request $request, Store $store)
     {
+        // Cegah Seller checkout di toko sendiri
+        if (auth()->check() && auth()->id() === $store->owner_id) {
+            return redirect()
+                ->route('store.show', [$store->kecamatan->slug, $store->slug])
+                ->with('error', 'Anda tidak dapat melakukan checkout di toko Anda sendiri.');
+        }
+
         $validated = $request->validate([
             'idempotency_key' => 'required|string',
             'fulfillment_type' => 'required|in:self_pickup,delivery',

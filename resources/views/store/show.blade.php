@@ -240,11 +240,14 @@
                                 @endif
                             </div>
                             
-                            <!-- LOGIKA TOMBOL (PREVIEW VS TUTUP VS LIVE) -->
+                            <!-- LOGIKA TOMBOL (PREVIEW VS TUTUP VS PEMILIK VS LIVE) -->
                             @if(isset($isPreview) && $isPreview)
-                                <!-- Tombol Mati untuk Preview -->
                                 <button disabled class="w-full py-2.5 bg-gray-100 text-gray-400 text-xs font-bold flex items-center justify-center gap-1 border-t border-gray-100 cursor-not-allowed">
                                     Mode Pratinjau
+                                </button>
+                            @elseif(auth()->check() && auth()->id() === $store->owner_id)
+                                <button disabled class="w-full py-2.5 bg-gray-100 text-gray-400 text-xs font-bold flex items-center justify-center gap-1 border-t border-gray-100 cursor-not-allowed">
+                                    Toko Anda Sendiri
                                 </button>
                             @elseif(!$store->isOpenNow())
                                 <!-- Tombol Mati karena Toko Tutup -->
