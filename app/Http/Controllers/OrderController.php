@@ -59,6 +59,7 @@ class OrderController extends Controller
 
         $validated = $request->validate([
             'idempotency_key' => 'required|string',
+            'checkout_method' => 'required|in:wa,chat',
             'fulfillment_type' => 'required|in:self_pickup,delivery',
             'dine_in_qty' => 'required_if:fulfillment_type,self_pickup|array',
             'dine_in_qty.*' => 'integer|min:0',
@@ -68,7 +69,9 @@ class OrderController extends Controller
             'delivery_note' => 'nullable|string|max:255',
         ]);
 
-        $cacheKey = 'checkout_idempotency:' . $validated['idempotency_key'];
+        if ($validated['checkout_method'] === 'chat' && !auth()->check()) {
+            return back()->withErrors(['checkout_method' => 'Silakan login terlebih dahulu untuk menggunakan fitur Chat.'])->withInput();
+        }
 
         // Kalau token ini SUDAH pernah diproses (submit ganda dari form yang sama),
         // langsung redirect ke hasil yang sudah pernah dibuat sebelumnya —
@@ -196,12 +199,20 @@ class OrderController extends Controller
         $pesanWA = $this->susunRingkasanWA($order, $store);
         $waUrl = 'https://wa.me/' . $store->nomor_wa . '?text=' . urlencode($pesanWA);
 
-        // Simpan hasil selama 1 jam — kalau token ini muncul lagi (submit ganda),
-        // redirect ke URL WA yang SAMA tanpa bikin Order baru.
-        Cache::put($cacheKey, $waUrl, now()->addHour());
+        // Tentukan URL Redirect berdasarkan metode pilihan
+        $redirectUrl = ($validated['checkout_method'] === 'chat') 
+            ? route('chat.show', $order->id) 
+            : $waUrl;
+
+        // Simpan URL di cache (idempotency)
+        Cache::put($cacheKey, $redirectUrl, now()->addHour());
 
         $cart->items()->delete();
         $cart->delete();
+
+        if ($validated['checkout_method'] === 'chat') {
+            return redirect()->route('chat.show', $order->id);
+        }
 
         return redirect()->away($waUrl);
     }
