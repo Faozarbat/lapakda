@@ -201,7 +201,7 @@
                     }
                     
                     if (permission === 'granted') {
-                        const vapidPublicKey = '{{ env('VAPID_PUBLIC_KEY') }}';
+                        const vapidPublicKey = '{{ config('webpush.vapid.public_key') }}';
                         const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
                         registration.pushManager.subscribe({
