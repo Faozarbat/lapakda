@@ -142,6 +142,10 @@
             </div>
         </div>
     @endif
+    <!-- BOTTOM NAVIGATION -->
+    <div class="fixed bottom-6 left-4 right-4 z-40 flex justify-center pointer-events-none">
+        @include('layouts.navigation')
+    </div>
 
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;

@@ -193,21 +193,33 @@ class OrderController extends Controller
 
     public function riwayat(Request $request)
     {
+        $myOrders = collect();
+        $incomingOrders = collect();
+
         if (auth()->check()) {
-            // Jika sudah login, cari berdasarkan user_id
-            $orders = Order::where('user_id', auth()->id())
-                ->with(['store', 'items'])
+            // Ambil riwayat belanja user (sebagai pembeli)
+            $myOrders = Order::where('user_id', auth()->id())
+                ->with(['store', 'items', 'review'])
                 ->latest()
                 ->get();
+                
+            // Jika user punya toko, ambil pesanan masuk (sebagai penjual)
+            if (auth()->user()->stores->isNotEmpty()) {
+                $storeIds = auth()->user()->stores->pluck('id');
+                $incomingOrders = Order::whereIn('store_id', $storeIds)
+                    ->with(['items', 'store', 'user'])
+                    ->latest()
+                    ->get();
+            }
         } else {
             // Jika guest, cari berdasarkan session_id
-            $orders = Order::where('session_id', $request->session()->getId())
-                ->with(['store', 'items'])
+            $myOrders = Order::where('session_id', $request->session()->getId())
+                ->with(['store', 'items', 'review'])
                 ->latest()
                 ->get();
         }
 
-        return view('order.riwayat', compact('orders'));
+        return view('order.riwayat', compact('myOrders', 'incomingOrders'));
     }
 
     private function ambilCartAtauNull(Request $request, Store $store): ?Cart

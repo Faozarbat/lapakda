@@ -196,7 +196,7 @@
 
         </main>
 
-        <!-- Tombol Submit Fixed di Bawah -->
+    <!-- Tombol Submit Fixed di Bawah -->
         <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-200/60 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <div class="max-w-3xl mx-auto">
                 <button type="submit" id="submitBtn" class="w-full bg-[#25D366] text-white py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-green-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
@@ -204,8 +204,10 @@
                     Kirim Pesanan via WhatsApp
                 </button>
             </div>
+            
         </div>
     </form>
+
 
     <!-- TOAST NOTIFICATION -->
     <div x-show="toastShow" x-transition class="fixed top-20 left-4 right-4 z-[60] flex justify-center pointer-events-none" x-cloak>
