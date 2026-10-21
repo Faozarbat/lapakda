@@ -1,6 +1,6 @@
 <x-app-layout>
     <!-- Membungkus seluruh halaman dengan state Alpine -->
-    <div x-data="{ showQrModal: false, qrUrl: '' }" class="pb-24">
+    <div x-data="{ showQrModal: false, qrUrl: '', showNotifBanner: true }" @notif-enabled.window="showNotifBanner = false" class="pb-24">
         
         <!-- Header Dashboard -->
         <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100">
@@ -51,6 +51,20 @@
             <div class="mb-6">
                 <h1 class="text-xl font-extrabold text-gray-900">Halo, {{ Auth::user()->name }}!</h1>
                 <p class="text-sm text-gray-500 mt-1">Kelola toko dan pesananmu di sini.</p>
+            </div>
+
+            <!-- BANNER NOTIFIKASI -->
+            <div x-show="showNotifBanner" x-cloak class="mb-6 bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-red-50 text-[#B9232D] flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-900">Aktifkan Notifikasi</p>
+                        <p class="text-xs text-gray-500">Dapatkan bunyi & getaran saat ada pesanan masuk.</p>
+                    </div>
+                </div>
+                <button @click="if(typeof window.triggerNotification === 'function') window.triggerNotification()" class="bg-[#B9232D] text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md whitespace-nowrap">Aktifkan</button>
             </div>
 
             @php $stores = auth()->user()->stores; @endphp
@@ -173,24 +187,22 @@
     </div>
 
     <script>
-        // Cek apakah browser mendukung Push Notification
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
+        window.triggerNotification = function() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                console.log('Browser tidak mendukung notifikasi.');
+                return;
+            }
+
             navigator.serviceWorker.ready.then(function(registration) {
-                // Minta izin notifikasi ke user
                 Notification.requestPermission().then(function(permission) {
                     if (permission === 'granted') {
-                        // Jika diizinkan, ambil kunci VAPID dari meta tag atau langsung
                         const vapidPublicKey = '{{ env('VAPID_PUBLIC_KEY') }}';
-                        
-                        // Konversi kunci VAPID agar bisa dibaca browser
                         const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
-                        // Daftarkan HP ini sebagai penerima notifikasi
                         registration.pushManager.subscribe({
                             userVisibleOnly: true,
                             applicationServerKey: convertedVapidKey
                         }).then(function(subscription) {
-                            // Kirim data subscription ke server Laravel
                             fetch('{{ route('push.subscribe') }}', {
                                 method: 'POST',
                                 headers: {
@@ -198,6 +210,9 @@
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                 },
                                 body: JSON.stringify(subscription)
+                            }).then(() => {
+                                // Sembunyikan banner jika berhasil
+                                window.dispatchEvent(new CustomEvent('notif-enabled'));
                             });
                         }).catch(function(error) {
                             console.error('Gagal subscribe push:', error);
@@ -205,6 +220,11 @@
                     }
                 });
             });
+        };
+
+        // Sembunyikan banner otomatis jika sebelumnya sudah diizinkan
+        if ('Notification' in window && Notification.permission === 'granted') {
+            window.dispatchEvent(new CustomEvent('notif-enabled'));
         }
 
         // Fungsi pembantu untuk mengubah kunci VAPID
