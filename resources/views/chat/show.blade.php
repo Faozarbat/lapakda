@@ -14,7 +14,7 @@
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#E5DDD5] text-gray-800 antialiased h-screen flex flex-col overflow-hidden">
+<body class="bg-[#E5DDD5] text-gray-800 antialiased h-[100dvh] flex flex-col overflow-hidden">
 
     <!-- HEADER -->
     <header class="bg-[#B9232D] text-white shadow-md z-20 flex-shrink-0">
@@ -79,7 +79,7 @@
         }
     @endphp
 
-    <div class="bg-white border-t border-gray-200 p-3 flex-shrink-0 z-30">
+    <div class="bg-white border-t border-gray-200 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex-shrink-0 z-30">
         <div class="max-w-3xl mx-auto">
             @if($canChat)
                 <form id="chat-form" class="flex items-center gap-2">
