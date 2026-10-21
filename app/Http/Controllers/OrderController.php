@@ -103,7 +103,8 @@ class OrderController extends Controller
 
         $order = Order::create([
             'store_id' => $store->id,
-            'session_id' => $request->session()->getId(), // <--- TAMBAHKAN INI
+            'user_id' => auth()->check() ? auth()->id() : null, // <--- FIX: Simpan user_id jika login
+            'session_id' => $request->session()->getId(),
             'nomor_order' => 'TEMP-' . Str::random(10),
             'fulfillment_type' => $validated['fulfillment_type'],
             'delivery_latitude' => $validated['delivery_latitude'] ?? null,
@@ -198,7 +199,11 @@ class OrderController extends Controller
 
         if (auth()->check()) {
             // Ambil riwayat belanja user (sebagai pembeli)
-            $myOrders = Order::where('user_id', auth()->id())
+            // Cek berdasarkan user_id ATAU session_id (jaga-jaga jika pesanan dibuat sebelum login)
+            $myOrders = Order::where(function($query) use ($request) {
+                    $query->where('user_id', auth()->id())
+                          ->orWhere('session_id', $request->session()->getId());
+                })
                 ->with(['store', 'items', 'review'])
                 ->latest()
                 ->get();
