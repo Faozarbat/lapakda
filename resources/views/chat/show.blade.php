@@ -91,7 +91,9 @@
                     <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-grow bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D]">
                     
                     <button type="submit" class="w-11 h-11 bg-[#B9232D] text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-800 transition-colors flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 transform -rotate-45" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
                     </button>
                 </form>
                 
