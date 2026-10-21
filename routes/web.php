@@ -25,10 +25,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    // Rute Chat Privat
+    Route::get('/chat/{order}', [App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{order}/send', [App\Http\Controllers\ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat/{order}/fetch', [App\Http\Controllers\ChatController::class, 'fetchMessages'])->name('chat.fetch');
+
     Route::get('/dashboard/pesanan', [App\Http\Controllers\OrderDashboardController::class, 'allOrders'])->name('dashboard.order.all');
     Route::post('/push-subscribe', [App\Http\Controllers\PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
 
-    
+
     // Rate limit: registrasi toko dibatasi 5x per 10 menit -> cegah spam bikin toko fiktif
     Route::middleware('throttle:60,1')->group(function () {
         Route::get('/toko/daftar', [StoreController::class, 'create'])->name('store.create');

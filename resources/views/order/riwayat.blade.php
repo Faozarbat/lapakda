@@ -77,10 +77,13 @@
                                 @endforeach
                             </div>
                             
-                            <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                            <div class="flex justify-between items-center pt-3 border-t border-gray-100 mb-3">
                                 <span class="text-xs font-semibold text-gray-500">Total Belanja</span>
                                 <span class="text-base font-extrabold text-[#B9232D]">Rp{{ number_format($order->items->sum(fn($i) => $i->harga_saat_beli * $i->qty), 0, ',', '.') }}</span>
                             </div>
+                            <a href="{{ route('chat.show', $order->id) }}" class="block w-full text-center bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-100 transition-colors">
+                                Buka Chat / Tanya Penjual
+                            </a>
 
                             @if($order->status === 'selesai' && !$order->review)
                                 <div class="mt-3 pt-3 border-t border-gray-100 flex justify-end">
@@ -153,9 +156,14 @@
                                 Rp {{ number_format($order->total, 0, ',', '.') }}
                             </div>
 
-                            <a href="{{ route('dashboard.order.index', $order->store_id) }}" class="block w-full text-center bg-gray-100 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
-                                Kelola Pesanan di Toko
-                            </a>
+                            <div class="flex gap-2">
+                                <a href="{{ route('chat.show', $order->id) }}" class="flex-1 text-center bg-[#B9232D] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-red-800 transition-colors">
+                                    Chat
+                                </a>
+                                <a href="{{ route('dashboard.order.index', $order->store_id) }}" class="flex-1 text-center bg-gray-100 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
+                                    Kelola
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>

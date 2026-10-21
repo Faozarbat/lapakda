@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LapakDA — Master Technical Documentation (V6)</title>
+    <style>
+        :root {
+            --primary: #B9232D;
+            --primary-light: #FFF5F5;
+            --bg: #F8F9FA;
+            --text: #1F2937;
+            --text-muted: #4B5563;
+            --border: #E5E7EB;
+            --code-bg: #1F2937;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        h1 { color: var(--primary); font-size: 2.5rem; border-bottom: 4px solid var(--primary); padding-bottom: 15px; margin-bottom: 10px;}
+        h2 { color: #111827; font-size: 1.8rem; margin-top: 50px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        h3 { color: #1F2937; font-size: 1.3rem; margin-top: 30px; background: #F3F4F6; padding: 10px 15px; border-radius: 8px; border-left: 5px solid var(--primary); }
+        h4 { color: var(--primary); font-size: 1.1rem; margin-top: 25px; margin-bottom: 10px; }
+        
+        .alert { padding: 20px; border-radius: 10px; margin-bottom: 25px; font-weight: 500; }
+        .alert-danger { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+        .alert-info { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+        .alert-success { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+        
+        .design-context { background: #FFFBEB; border: 1px solid #FDE68A; padding: 20px; border-radius: 10px; margin: 20px 0; font-size: 0.95rem; color: #92400E; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 0.95rem; }
+        th, td { text-align: left; padding: 12px 15px; border: 1px solid var(--border); }
+        th { background: #F3F4F6; font-weight: 700; color: #374151; }
+        tr:nth-child(even) { background: #F9FAFB; }
+        
+        code { background: #F3F4F6; padding: 3px 8px; border-radius: 6px; font-family: 'Courier New', Courier, monospace; color: var(--primary); font-size: 0.9em; font-weight: 600; }
+        pre { background: var(--code-bg); color: #F3F4F6; padding: 20px; border-radius: 10px; overflow-x: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.9em; }
+        
+        ul, ol { padding-left: 25px; }
+        li { margin-bottom: 8px; }
+        
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .badge-done { background: #DEF7EC; color: #03543F; }
+        .badge-todo { background: #FEF3C7; color: #92400E; }
+        
+        .folder { font-weight: bold; color: #047857; font-size: 1.2rem; border-bottom: 1px solid #D1D5DB; padding-bottom: 5px; margin-top: 30px; display: block;}
+        .file-path { font-family: monospace; color: #1D4ED8; font-weight: bold; background: #EFF6FF; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 10px; border: 1px solid #BFDBFE;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>LapakDA — Master Technical Documentation (V6)</h1>
+    <p><strong>Versi Dokumen:</strong> 6.0.0 (Deep Technical Reference) | <strong>Tech Stack:</strong> Laravel 11/13, Blade, Alpine.js, Tailwind CSS, MySQL, ApexCharts, Leaflet, Web Push.</p>
+
+    <div class="alert alert-danger">
+        <strong>⚠️ ATURAN EMAS (GOLDEN RULES) UNTUK PROGRAMMER SELANJUTNYA:</strong><br>
+        1. <strong>JANGAN PERNAH MENEBAK ISI FILE.</strong> Selalu minta kode asli sebelum mengubah Controller/Model/View.<br>
+        2. <strong>METODE CARI & GANTI:</strong> Gunakan instruksi "Cari baris X, ganti dengan Y". Jangan menimpa seluruh file jika hanya mengubah 1 baris.<br>
+        3. <strong>ANALISIS AFTER-EFFECT:</strong> Setiap kali menambah kolom database/fitur, WAJIB cek View mana saja yang perlu diupdate.<br>
+        4. <strong>JANGAN UBAH ALUR BACKEND:</strong> Logika PHP (OrderController, StoreController) sudah solid. Fokus perubahan di layer View/UI.<br>
+        5. <strong>DESAIN:</strong> Tailwind CSS, warna brand <code>#B9232D</code>, font Plus Jakarta Sans. DILARANG pakai <code>alert()</code>.<br>
+        6. <strong>TIMEZONE:</strong> Server UTC, logika bisnis (isOpenNow) WAJIB konversi ke WIB (<code>now('Asia/Jakarta')</code>).<br>
+        7. <strong>DOMAIN SEPARATION:</strong> Admin (SaaS) pisah dengan Seller (Operasional).<br>
+        8. <strong>SERVER PRODUCTION:</strong> Nginx & PHP di-set maksimal upload 10MB, Laravel memvalidasi maksimal 5MB.
+    </div>
+
+    <!-- ========================================== -->
+    <!-- DATABASE SCHEMA -->
+    <!-- ========================================== -->
+    <h2>Database Schema (Lengkap)</h2>
+    <table>
+        <tr><th>Tabel</th><th>Kolom Kunci & Relasi</th><th>Keterangan</th></tr>
+        <tr>
+            <td><strong>users</strong></td>
+            <td><code>id</code>, <code>name</code>, <code>nomor_hp</code>, <code>password</code>, <code>password_set_at</code>, <code>is_admin</code>, <code>last_latitude</code>, <code>last_longitude</code>.</td>
+            <td>User login via No HP. <code>password_set_at</code> menandai user sudah buat password.</td>
+        </tr>
+        <tr>
+            <td><strong>stores</strong></td>
+            <td><code>id</code>, <code>owner_id</code>, <code>kategori</code> (resto/store), <code>foto_profil</code>, <code>foto_background</code>, <code>active_until</code>, <code>subscription_status</code>, <code>open_fee_paid</code>.</td>
+            <td>Info toko, langganan, dan status operasional (buka/tutup).</td>
+        </tr>
+        <tr>
+            <td><strong>products</strong></td>
+            <td><code>id</code>, <code>store_id</code>, <code>nama</code>, <code>harga</code>, <code>stok</code>, <code>status_tersedia</code>, <code>foto</code>.</td>
+            <td>Produk jualan. Foto otomatis dikompres WebP.</td>
+        </tr>
+        <tr>
+            <td><strong>orders</strong></td>
+            <td><code>id</code>, <code>store_id</code>, <code>status</code>, <code>fulfillment_type</code>, <code>chat_expires_at</code> <span class="badge badge-todo">New</span>, <code>chat_initiated_by</code> <span class="badge badge-todo">New</span>.</td>
+            <td>Pesanan. Timer chat ditambahkan untuk fitur obrolan.</td>
+        </tr>
+        <tr>
+            <td><strong>order_messages</strong> <span class="badge badge-todo">New</span></td>
+            <td><code>id</code>, <code>order_id</code>, <code>user_id</code>, <code>message</code>, <code>image_path</code>, <code>timestamps</code>.</td>
+            <td>Tabel baru untuk menyimpan riwayat chat privat per pesanan.</td>
+        </tr>
+        <tr>
+            <td><strong>push_subscriptions</strong></td>
+            <td><code>id</code>, <code>subscribable_type</code>, <code>subscribable_id</code>, <code>endpoint</code>, <code>public_key</code>, <code>auth_token</code>.</td>
+            <td>Menyimpan ID perangkat Seller untuk notifikasi.</td>
+        </tr>
+    </table>
+
+    <!-- ========================================== -->
+    <!-- STRUKTUR FOLDER & FILE -->
+    <!-- ========================================== -->
+    <h2>Struktur Folder & Referensi Kode</h2>
+
+    <!-- CONTROLLERS -->
+    <span class="folder">app/Http/Controllers/</span>
+
+    <h3><span class="file-path">OrderController.php</span></h3>
+    <p><strong>Ringkasan:</strong> Menangani checkout, pembuatan Order, dan integrasi WA.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>checkout(Request $request, Store $store)</code></td><td>Menampilkan form checkout. Cek <code>isOpenNow()</code>. Jika toko tutup, redirect ke cart dengan error. Generate <code>idempotencyKey</code>.</td></tr>
+        <tr><td><code>store(Request $request, Store $store)</code></td><td>Memproses pesanan. Memisahkan qty Dine-in/Takeaway. Menembakkan <code>NewOrderNotification</code> (Push Notif) ke HP Seller. Menyusun teks WA & redirect ke <code>wa.me</code>.</td></tr>
+        <tr><td><code>riwayat(Request $request)</code></td><td>Menampilkan tab pesanan (Pesanan Saya & Masuk). Query berdasarkan <code>user_id</code> atau <code>session_id</code>.</td></tr>
+        <tr><td><code>susunRingkasanWA(Order $order, Store $store)</code></td><td>Private. Merangkai teks pesanan (format Markdown WA) berisi item, total, tipe, no meja, & link Gmaps.</td></tr>
+    </table>
+    <div class="design-context">
+        <strong>💡 Konteks/Alasan Desain:</strong> <strong>Idempotency</strong> digunakan (via Cache) untuk mencegah user klik tombol submit dua kali karena koneksi lambat yang bisa membuat 2 Order. <strong>Push Notification</strong> dipanggil tepat setelah order dibuat agar Seller langsung waspada.
+    </div>
+
+    <h3><span class="file-path">StoreController.php</span></h3>
+    <p><strong>Ringkasan:</strong> Mengelola pendaftaran dan pengaturan toko (Resto/Toko).</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>create()</code></td><td>Menampilkan form pendaftaran. Cek apakah ini toko pertama (bebas biaya) atau ke-2+ (kena open fee). Mengambil data voucher.</td></tr>
+        <tr><td><code>store(Request $request)</code></td><td>Memproses pendaftaran. Validasi voucher, hitung biaya buka, upload foto profil/background, simpan tagihan pending ke tabel subscriptions jika ada biaya.</td></tr>
+        <tr><td><code>update(Request $request, Store $store)</code></td><td>Memproses update data toko. Mengompres gambar baru ke WebP.</td></tr>
+    </table>
+    <div class="design-context">
+        <strong>💡 Konteks/Alasan Desain:</strong> Logika biaya buka (open_fee) dan voucher ditanam di Controller ini. Jika voucher valid, masa aktif diset 3 bulan (trial). Jika tidak, 1 bulan (active). Jika ini toko ke-2+, sistem otomatis membuat tagihan pending di tabel <code>subscriptions</code> tanpa menahan pembuatan toko.
+    </div>
+
+    <h3><span class="file-path">ProductDashboardController.php</span></h3>
+    <p><strong>Ringkasan:</strong> CRUD produk seller.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>store() / update()</code></td><td>Menyimpan produk. Mengecek input stok. Jika stok 0, <code>status_tersedia</code> dipaksa false.</td></tr>
+        <tr><td><code>prosesDanSimpanFoto($file)</code></td><td>Private. Menggunakan <strong>Intervention Image v3</strong> untuk scaleDown (800x800), pad, dan convert ke WebP (kualitas 80).</td></tr>
+    </table>
+
+    <h3><span class="file-path">OrderDashboardController.php</span></h3>
+    <p><strong>Ringkasan:</strong> Manajemen pesanan masuk untuk Seller.</p>
+    <table>
+        <tr><th>Fungsi</th><th>Deskripsi</th></tr>
+        <tr><td><code>index(Request $request, Store $store)</code></td><td>Menampilkan pesanan. Dilengkapi filter status (Menunggu, Diproses, Selesai, Batal) dan hitungan per status.</td></tr>
+        <tr><td><code>allOrders()</code></td><td>Menampilkan semua pesanan lintas toko milik Seller (digunakan di Tab Pesanan).</td></tr>
+    </table>
+
+    <h3><span class="file-path">ChatController.php</span> <span class="badge badge-todo">Todo</span></h3>
+    <p><strong>Ringkasan (Blueprint):</strong> Controller yang akan dibuat untuk fitur Chat.</p>
+    <table>
+        <tr><th>Fungsi (Rencana)</th><th>Deskripsi</th></tr>
+        <tr><td><code>show(Order $order)</code></td><td>Validasi apakah user berhak (Buyer/Seller). Tampilkan view chat.</td></tr>
+        <tr><td><code>send(Request $request, Order $order)</code></td><td>Simpan pesan. Logika Timer: Jika <code>chat_expires_at</code> null & order status <code>selesai</code> & pengirim adalah buyer, set <code>chat_expires_at = now()->addHours(5)</code>.</td></tr>
+        <tr><td><code>getMessages(Order $order)</code></td><td>Return JSON daftar chat (untuk Polling JS).</td></tr>
+    </table>
+
+    <!-- MODELS -->
+    <span class="folder">app/Models/</span>
+
+    <h3><span class="file-path">Store.php</span></h3>
+    <table>
+        <tr><th>Fungsi / Atribut</th><th>Deskripsi</th></tr>
+        <tr><td><code>isOpenNow()</code></td><td>Menghitung apakah toko sedang buka berdasarkan JSON jam_operasional & timezone <code>Asia/Jakarta</code>.</td></tr>
+        <tr><td><code>scopeTampilDiPublik()</code></td><td>Query scope untuk menyembunyikan toko yang belum bayar / diarsipkan dari halaman publik.</td></tr>
+    </table>
+
+    <h3><span class="file-path">OrderMessage.php</span> <span class="badge badge-todo">Todo</span></h3>
+    <p><strong>Ringkasan:</strong> Model baru untuk chat. Fillable: <code>order_id</code>, <code>user_id</code>, <code>message</code>, <code>image_path</code>.</p>
+
+    <!-- ========================================== -->
+    <!-- BLUEPRINT FITUR CHAT (LANJUTAN) -->
+    <!-- ========================================== -->
+    <h2>Blueprint: Fitur Chat Privat (Lanjutan)</h2>
+    <div class="alert alert-info">
+        <strong>Status: Migrasi Selesai. Sisa UI, Controller, dan JS.</strong>
+    </div>
+
+    <h3>Aturan Main (Business Rules)</h3>
+    <ul>
+        <li><strong>Guest Dilarang Chat:</strong> Wajib login.</li>
+        <li><strong>Full Page Chat:</strong> Bukan modal, halaman penuh.</li>
+        <li><strong>Timer 5 Jam (Setelah Selesai):</strong> Seller tidak bisa chat duluan setelah status <code>selesai</code>. Jika Buyer chat, timer 5 jam mulai. Setelah 5 jam, input chat hilang (read-only).</li>
+        <li><strong>Kirim Gambar:</strong> Mendukung upload gambar (kompres WebP).</li>
+    </ul>
+
+    <h3>Langkah Eksekusi (Todo List)</h3>
+    <ol>
+        <li><strong>Model & Relasi:</strong> Buat <code>OrderMessage.php</code>. Relasi <code>messages()</code> di <code>Order.php</code>.</li>
+        <li><strong>Controller:</strong> Buat <code>ChatController.php</code> (show, send, getMessages).</li>
+        <li><strong>Routes:</strong> Tambah route group chat.</li>
+        <li><strong>UI Checkout:</strong> Radio button pilih "Pesan via WA" atau "Pesan via Aplikasi (Chat)".</li>
+        <li><strong>UI Chat (<code>resources/views/chat/show.blade.php</code>):</strong> Desain balon chat, form input, tombol upload.</li>
+        <li><strong>JS Polling:</strong> <code>setInterval</code> 4 detik untuk ambil pesan baru.</li>
+        <li><strong>Integrasi Dashboard:</strong> Tombol "Buka Chat" di list pesanan.</li>
+    </ol>
+
+    <p style="text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 0.9rem;">
+        Akhir Dokumen V6. Disusun sebagai referensi teknis mendalam.
+    </p>
+
+</div>
+
+</body>
+</html>
