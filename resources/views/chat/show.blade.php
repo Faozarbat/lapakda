@@ -17,7 +17,7 @@
 <body class="bg-[#E5DDD5] text-gray-800 antialiased">
 
     <!-- HEADER DIPAKU DI ATAS -->
-    <header class="bg-[#B9232D] text-white shadow-md z-40 fixed top-0 left-0 right-0 h-16">
+    <header class="bg-[#B9232D] text-white shadow-md z-20 fixed top-0 left-0 right-0">
         <div class="max-w-3xl mx-auto px-4 h-full flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <a href="{{ route('order.riwayat') }}" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -36,7 +36,7 @@
     </header>
 
     <!-- AREA CHAT (DIBERI PADDING AGAR TIDAK TERTUTUP HEADER/FOOTER) -->
-    <main class="pt-20 pb-32 h-screen overflow-y-auto hide-scrollbar" id="chat-container">
+    <main class="h-screen overflow-y-auto p-4 pt-20 pb-24 hide-scrollbar" id="chat-container">
         <div class="max-w-3xl mx-auto px-4 space-y-4" id="chat-messages">
             <!-- Render Pesan Awal via Blade -->
             @foreach($messages as $msg)
@@ -78,8 +78,7 @@
         }
     @endphp
 
-    <div class="bg-white border-t border-gray-200 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] fixed bottom-0 left-0 right-0 z-40">
-        <div class="max-w-3xl mx-auto">
+<div class="bg-white border-t border-gray-200 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] fixed bottom-0 left-0 right-0 z-30">        <div class="max-w-3xl mx-auto">
             @if($canChat)
                 <form id="chat-form" class="flex items-center gap-2">
                     <label class="cursor-pointer p-2 text-gray-500 hover:text-[#B9232D] transition-colors rounded-full hover:bg-gray-100">
