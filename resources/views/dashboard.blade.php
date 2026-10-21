@@ -1,6 +1,18 @@
 <x-app-layout>
     <!-- Membungkus seluruh halaman dengan state Alpine -->
-    <div x-data="{ showQrModal: false, qrUrl: '', showNotifBanner: true }" @notif-enabled.window="showNotifBanner = false" class="pb-24">
+    <div x-data="{ 
+            showQrModal: false, 
+            qrUrl: '', 
+            showNotifBanner: true,
+            init() {
+                // Cek izin langsung saat Alpine dimuat
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    this.showNotifBanner = false;
+                }
+            }
+         }" 
+         @notif-enabled.window="showNotifBanner = false" 
+         class="pb-24">
         
         <!-- Header Dashboard -->
         <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100">
@@ -227,10 +239,7 @@
             });
         };
 
-        // Sembunyikan banner otomatis jika sebelumnya sudah diizinkan
-        if ('Notification' in window && Notification.permission === 'granted') {
-            window.dispatchEvent(new CustomEvent('notif-enabled'));
-        }
+
 
         // Fungsi pembantu untuk mengubah kunci VAPID
         function urlBase64ToUint8Array(base64String) {
