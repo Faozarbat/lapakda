@@ -1,4 +1,10 @@
 <x-guest-layout>
+    <!-- Tombol Back -->
+    <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-[#B9232D] transition-colors mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+        Kembali ke Beranda
+    </a>
+
     <div class="mb-6 text-center">
         <h2 class="text-2xl font-extrabold text-gray-900">Masuk ke LapakDA</h2>
         <p class="text-sm text-gray-500 mt-1">Masukkan nomor WhatsApp kamu.</p>
