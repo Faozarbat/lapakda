@@ -28,6 +28,42 @@
           toastShow: false, 
           toastMessage: '', 
           isLocating: false,
+          showBottomBanner: false,
+          showTopBanner: false,
+          showManualModal: false,
+          init() {
+              window.addEventListener('pwa-ready', () => {
+                  this.initPwa();
+              });
+          },
+          initPwa() {
+              const dismissedUntil = localStorage.getItem('lapakda_pwa_dismissed_until');
+              const now = Date.now();
+              if (dismissedUntil && now < parseInt(dismissedUntil)) {
+                  this.showTopBanner = true;
+              } else {
+                  this.showBottomBanner = true;
+              }
+          },
+          dismissPwa() {
+              this.showBottomBanner = false;
+              this.showTopBanner = true;
+              const nextShow = Date.now() + (24 * 60 * 60 * 1000);
+              localStorage.setItem('lapakda_pwa_dismissed_until', nextShow);
+          },
+          installPwa() {
+              if(window.deferredPrompt) {
+                  window.deferredPrompt.prompt();
+                  window.deferredPrompt.userChoice.then((choiceResult) => {
+                      if (choiceResult.outcome === 'accepted') {
+                          this.dismissPwa();
+                      }
+                      window.deferredPrompt = null;
+                  });
+              } else {
+                  this.showManualModal = true;
+              }
+          },
           cariRestoTerdekat() {
               if (!navigator.geolocation) {
                   this.toastMessage = 'Browser kamu tidak mendukung fitur lokasi.';
@@ -52,70 +88,7 @@
           }
       }">
 
-    <!-- BANNER INSTALL PWA & MODAL -->
-    <div x-data="{ showBanner: false, showManualModal: false }" 
-         @pwa-ready.window="showBanner = true">
-        
-        <!-- Banner Melayang -->
-        <div x-show="showBanner" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="fixed bottom-24 left-4 right-4 z-[90] flex justify-center pointer-events-none">
-            <div class="bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] flex items-center justify-between gap-4 w-full max-w-sm pointer-events-auto border border-gray-700">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-[#B9232D] rounded-xl flex items-center justify-center font-extrabold text-lg">L</div>
-                    <div>
-                        <p class="text-xs font-bold leading-tight">Install LapakDA</p>
-                        <p class="text-[10px] text-gray-400 mt-0.5">Akses cepat langsung dari layar HP</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button @click="showBanner = false" class="text-gray-400 hover:text-white px-2 text-xs font-bold transition-colors">Nanti</button>
-                    <button @click="
-                        if(window.deferredPrompt) {
-                            window.deferredPrompt.prompt();
-                            window.deferredPrompt.userChoice.then((choiceResult) => {
-                                if (choiceResult.outcome === 'accepted') showBanner = false;
-                                window.deferredPrompt = null;
-                            });
-                        } else {
-                            showManualModal = true; // Buka modal instruksi manual
-                        }
-                    " class="bg-white text-gray-900 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-100 transition-colors">Install</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL INSTRUKSI MANUAL (Pengganti alert) -->
-        <div x-show="showManualModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showManualModal = false"></div>
-            
-            <div class="bg-white rounded-3xl w-full max-w-sm relative z-10 p-6 shadow-2xl text-center" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="scale-95 opacity-0"
-                 x-transition:enter-end="scale-100 opacity-100">
-                
-                <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#B9232D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                </div>
-
-                <h3 class="text-lg font-extrabold text-gray-900 mb-2">Instal LapakDA</h3>
-                <p class="text-sm text-gray-500 mb-5">Karena pengaturan browser Anda, silakan ikuti langkah kecil ini untuk menginstal aplikasi:</p>
-                
-                <div class="text-left bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100 space-y-3">
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-[#B9232D] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
-                        <p class="text-xs text-gray-700">Klik ikon <strong>Titik Tiga</strong> (menu) di pojok kanan atas browser Anda.</p>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-[#B9232D] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
-                        <p class="text-xs text-gray-700">Cari dan pilih menu <strong>"Instal Aplikasi"</strong> atau <strong>"Tambahkan ke Layar Utama"</strong>.</p>
-                    </div>
-                </div>
-
-                <button @click="showManualModal = false" class="w-full bg-[#B9232D] text-white font-bold py-3.5 rounded-xl hover:bg-red-800 transition-colors shadow-lg shadow-red-500/30">
-                    Saya Mengerti
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- PWA BLOCK DIPINDAHKAN -->
 
     <!-- HEADER -->
     <header class="bg-white sticky top-0 z-40 border-b border-gray-100">
@@ -150,6 +123,20 @@
     </header>
 
     @include('partials.security-banner')
+
+    <!-- TOP BANNER PWA (Masa Tunggu 24 Jam) -->
+    <div x-show="showTopBanner" x-cloak class="bg-[#B9232D] text-white border-b border-red-800">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-white text-[#B9232D] rounded-md flex items-center justify-center font-extrabold text-[10px] flex-shrink-0">L</div>
+                <p class="text-[11px] font-bold leading-tight">Install Aplikasi LapakDA</p>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button @click="dismissPwa()" class="text-[10px] font-semibold text-red-200 hover:text-white px-1">Tutup</button>
+                <button @click="installPwa()" class="bg-white text-[#B9232D] px-3 py-1 rounded-md text-[10px] font-extrabold shadow-sm">Install</button>
+            </div>
+        </div>
+    </div>
 
     <main class="max-w-7xl mx-auto px-5 pt-5">
         
@@ -232,6 +219,56 @@
             </div>
         </div>
     </main>
+
+    <!-- BOTTOM BANNER PWA (Tampilan Awal) -->
+    <div x-show="showBottomBanner" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="fixed bottom-24 left-4 right-4 z-[90] flex justify-center pointer-events-none">
+        <div class="bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] flex items-center justify-between gap-4 w-full max-w-sm pointer-events-auto border border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#B9232D] rounded-xl flex items-center justify-center font-extrabold text-lg">L</div>
+                <div>
+                    <p class="text-xs font-bold leading-tight">Install LapakDA</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">Akses cepat langsung dari layar HP</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button @click="dismissPwa()" class="text-gray-400 hover:text-white px-2 text-xs font-bold transition-colors">Nanti</button>
+                <button @click="installPwa()" class="bg-white text-gray-900 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-100 transition-colors">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INSTRUKSI MANUAL -->
+    <div x-show="showManualModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showManualModal = false"></div>
+        
+        <div class="bg-white rounded-3xl w-full max-w-sm relative z-10 p-6 shadow-2xl text-center" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="scale-95 opacity-0"
+             x-transition:enter-end="scale-100 opacity-100">
+            
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#B9232D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            </div>
+
+            <h3 class="text-lg font-extrabold text-gray-900 mb-2">Instal LapakDA</h3>
+            <p class="text-sm text-gray-500 mb-5">Silakan ikuti langkah kecil ini untuk menginstal aplikasi:</p>
+            
+            <div class="text-left bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100 space-y-3">
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-[#B9232D] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+                    <p class="text-xs text-gray-700">Klik ikon <strong>Titik Tiga</strong> (menu) di pojok kanan atas browser Anda.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-[#B9232D] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+                    <p class="text-xs text-gray-700">Cari dan pilih menu <strong>"Instal Aplikasi"</strong> atau <strong>"Tambahkan ke Layar Utama"</strong>.</p>
+                </div>
+            </div>
+
+            <button @click="showManualModal = false" class="w-full bg-[#B9232D] text-white font-bold py-3.5 rounded-xl hover:bg-red-800 transition-colors shadow-lg shadow-red-500/30">
+                Saya Mengerti
+            </button>
+        </div>
+    </div>
 
     <!-- BOTTOM NAVIGATION -->
     <div class="fixed bottom-6 left-4 right-4 z-40 flex justify-center pointer-events-none">
@@ -370,26 +407,21 @@
     @endguest
 
     <script>
-        // Deteksi apakah saat ini berjalan di dalam Aplikasi (PWA Standalone)
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
         if (!isStandalone) {
-            // JIKA DI BROWSER: Jalankan pendeteksi PWA
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 window.deferredPrompt = e;
                 window.dispatchEvent(new Event('pwa-ready'));
             });
 
-            // PAKSA MUNCUL UNTUK TESTING (Hapus setTimeout ini jika sudah production asli)
+            // Force trigger untuk testing
             window.setTimeout(() => {
                 if (!window.deferredPrompt) {
                     window.dispatchEvent(new Event('pwa-ready'));
                 }
             }, 2000);
-        } else {
-            // JIKA DI DALAM APP: Pastikan banner tidak pernah muncul
-            console.log("Berjalan di dalam mode Standalone (App). Banner Install dimatikan.");
         }
     </script>
 </body>
