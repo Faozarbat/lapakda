@@ -36,6 +36,27 @@ class OrderDashboardController extends Controller
         return view('dashboard.order.index', compact('store', 'orders', 'statusFilter', 'counts', 'totalSemua'));
     }
 
+        public function allOrders(Request $request)
+    {
+        // Ambil ID toko milik user ini
+        $storeIds = auth()->user()->stores()->pluck('id');
+
+        // Query pesanan dari semua toko tersebut
+        $query = Order::whereIn('store_id', $storeIds)
+            ->with(['items', 'store', 'user'])
+            ->latest();
+
+        // Filter status (opsional, biar rapi)
+        $statusFilter = $request->query('status', 'semua');
+        if ($statusFilter !== 'semua') {
+            $query->where('status', $statusFilter);
+        }
+
+        $orders = $query->paginate(15)->withQueryString();
+
+        return view('dashboard.order.all', compact('orders', 'statusFilter'));
+    }
+
     public function updateStatus(Request $request, Store $store, Order $order)
     {
         $this->authorize('update', $order);

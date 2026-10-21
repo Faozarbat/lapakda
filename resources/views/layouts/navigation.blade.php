@@ -1,3 +1,9 @@
+@auth
+    @php
+        $storeIds = auth()->user()->stores()->pluck('id');
+        $pendingCount = \App\Models\Order::whereIn('store_id', $storeIds)->where('status', 'menunggu_konfirmasi')->count();
+    @endphp
+@endauth
 <div class="fixed bottom-4 left-4 right-4 z-50 flex justify-center pointer-events-none">
     <nav class="bg-white/90 backdrop-blur-xl border border-gray-200/60 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] px-1 py-1.5 flex items-center justify-between w-full max-w-md pointer-events-auto">
         
@@ -25,20 +31,29 @@
             <span class="text-[10px] {{ request()->routeIs('cart.*') ? 'font-bold' : 'font-medium' }}">Keranjang</span>
         </a>
 
-        <!-- Pesanan (Riwayat) -->
-        <a href="{{ route('order.riwayat') }}" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 {{ request()->routeIs('order.riwayat') ? 'text-[#B9232D]' : 'text-gray-400 hover:text-gray-800' }} transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <span class="text-[10px] {{ request()->routeIs('order.riwayat') ? 'font-bold' : 'font-medium' }}">Pesanan</span>
+        <!-- Pesanan (Global Seller / Riwayat Buyer) -->
+        <a href="{{ auth()->check() && auth()->user()->stores->isNotEmpty() ? route('dashboard.order.all') : route('order.riwayat') }}" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 relative {{ request()->routeIs('dashboard.order.*') || request()->routeIs('order.riwayat') ? 'text-[#B9232D]' : 'text-gray-400 hover:text-gray-800' }} transition-colors">
+            <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                @auth
+                    @if(isset($pendingCount) && $pendingCount > 0)
+                        <span class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
+                            {{ $pendingCount }}
+                        </span>
+                    @endif
+                @endauth
+            </div>
+            <span class="text-[10px] {{ request()->routeIs('dashboard.order.*') || request()->routeIs('order.riwayat') ? 'font-bold' : 'font-medium' }}">Pesanan</span>
         </a>
 
-        <!-- Akun (Profil/Dashboard) -->
-        <a href="{{ auth()->check() ? route('profile.edit') : route('login') }}" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 {{ request()->routeIs('profile.*') ? 'text-[#B9232D]' : 'text-gray-400 hover:text-gray-800' }} transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <!-- Dashboard (Pengganti Akun) -->
+        <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 {{ request()->routeIs('dashboard') || request()->routeIs('store.*') ? 'text-[#B9232D]' : 'text-gray-400 hover:text-gray-800' }} transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
-            <span class="text-[10px] {{ request()->routeIs('profile.*') || request()->routeIs('dashboard*') ? 'font-bold' : 'font-medium' }}">Akun</span>
+            <span class="text-[10px] {{ request()->routeIs('dashboard') || request()->routeIs('store.*') ? 'font-bold' : 'font-medium' }}">Dashboard</span>
         </a>
     </nav>
 </div>
