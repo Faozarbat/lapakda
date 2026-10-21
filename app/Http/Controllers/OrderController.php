@@ -73,6 +73,9 @@ class OrderController extends Controller
             return back()->withErrors(['checkout_method' => 'Silakan login terlebih dahulu untuk menggunakan fitur Chat.'])->withInput();
         }
 
+        // FIX: Kembalikan definisi $cacheKey yang terhapus
+        $cacheKey = 'checkout_idempotency:' . $validated['idempotency_key'];
+
         // Kalau token ini SUDAH pernah diproses (submit ganda dari form yang sama),
         // langsung redirect ke hasil yang sudah pernah dibuat sebelumnya —
         // TANPA membuat Order baru lagi.
