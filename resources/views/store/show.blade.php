@@ -9,6 +9,14 @@
     @include('partials.pwa-head')
     @php
         $ogFoto = $store->products->first(fn ($p) => $p->foto)?->foto;
+        
+        // Tentukan gambar preview WA: Prioritas Foto Profil -> Background -> Default
+        $ogImageOverride = $store->foto_profil 
+            ? asset('storage/' . $store->foto_profil) 
+            : ($store->foto_background 
+                ? asset('storage/' . $store->foto_background) 
+                : asset('og-default.png'));
+
         $cartData = \App\Models\Cart::where('session_id', session()->getId())
                     ->where('store_id', $store->id)
                     ->with('items')
@@ -19,7 +27,7 @@
     @include('partials.og-meta', [
         'ogTitle' => $store->nama . ' — LapakDA',
         'ogDescription' => ($store->kategori === 'resto' ? 'Resto' : 'Toko') . ' di ' . $store->kecamatan->nama . '. Lihat menu & pesan langsung via WhatsApp.',
-        'ogImage' => $ogFoto ? asset('storage/' . $ogFoto) : asset('og-default.png'),
+        'ogImage' => $ogImageOverride,
     ])
     
     <title>{{ $store->nama }} — LapakDA</title>
