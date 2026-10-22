@@ -3,11 +3,37 @@
     <div x-data="{ 
             showQrModal: false, 
             qrUrl: '', 
+            storeUrl: '',
+            copySuccess: false,
             showNotifBanner: true,
             init() {
                 // Cek izin langsung saat Alpine dimuat
                 if ('Notification' in window && Notification.permission === 'granted') {
                     this.showNotifBanner = false;
+                }
+            },
+            copyLink() {
+                navigator.clipboard.writeText(this.storeUrl).then(() => {
+                    this.copySuccess = true;
+                    setTimeout(() => this.copySuccess = false, 2000);
+                });
+            },
+            async downloadQr() {
+                try {
+                    // Ambil gambar sebagai blob agar bisa didownload paksa
+                    const response = await fetch(this.qrUrl);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'qrcode-toko.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } catch (e) {
+                    // Fallback: buka di tab baru jika gagal download
+                    window.open(this.qrUrl, '_blank');
                 }
             }
          }" 
@@ -155,7 +181,11 @@
                                 
                                 <!-- TOMBOL QR CODE -->
                                 <button type="button" 
-                                        @click="qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode(route('store.show', [$store->kecamatan->slug, $store->slug])) }}'; showQrModal = true" 
+                                        @click="
+                                            storeUrl = '{{ route('store.show', [$store->kecamatan->slug, $store->slug]) }}'; 
+                                            qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(storeUrl); 
+                                            showQrModal = true
+                                        " 
                                         class="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-gray-50 transition-colors group">
                                     <div class="w-8 h-8 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
@@ -188,11 +218,27 @@
                 <p class="text-xs text-gray-500 mb-5">Scan untuk buka katalog.</p>
                 
                 <!-- Gambar QR Code menggunakan API, bukan library yang diblokir -->
-                <div class="bg-gray-50 rounded-2xl p-4 mb-5 border border-gray-100 flex justify-center">
-                    <img :src="qrUrl" alt="QR Code" class="w-48 h-48 rounded-lg">
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-100 flex justify-center">
+                    <img :src="qrUrl" alt="QR Code" class="w-48 h-48 rounded-lg mix-blend-multiply">
                 </div>
 
-                <button @click="showQrModal = false" class="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">Tutup</button>
+                <!-- URL Text Box -->
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-5 flex items-center gap-2">
+                    <input type="text" readonly :value="storeUrl" class="bg-transparent text-xs text-gray-600 flex-grow focus:outline-none">
+                    <button @click="copyLink()" class="text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors" :class="copySuccess ? 'bg-green-100 text-green-700' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'">
+                        <span x-show="!copySuccess">Salin</span>
+                        <span x-show="copySuccess" x-cloak>Tersalin!</span>
+                    </button>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button @click="downloadQr()" class="w-full bg-[#B9232D] text-white py-3 rounded-xl font-bold shadow-md shadow-red-500/20 hover:bg-red-800 transition-colors flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        Unduh
+                    </button>
+                    <button @click="showQrModal = false" class="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">Tutup</button>
+                </div>
             </div>
         </div>
 
@@ -208,7 +254,8 @@
             navigator.serviceWorker.ready.then(function(registration) {
                 Notification.requestPermission().then(function(permission) {
                     if (permission === 'denied') {
-                        alert('Notifikasi diblokir. Silakan klik ikon Gembok di URL browser dan pilih Izinkan.');
+                        // Tidak pakai alert(), biarkan banner peringatan di bawah yang menangani UI-nya
+                        console.warn('Notifikasi diblokir oleh user.');
                         return;
                     }
                     
