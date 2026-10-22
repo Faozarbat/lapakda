@@ -340,6 +340,13 @@
                 if(btnWA) btnWA.innerHTML = spinner;
                 if(btnChat) btnChat.disabled = true;
             }
+
+            // FALLBACK PWA: Jika 3.5 detik tidak pindah halaman, paksa ke Riwayat Pesanan
+            setTimeout(() => {
+                if (window.location.pathname.includes('/checkout/')) {
+                    window.location.href = "{{ route('order.riwayat') }}";
+                }
+            }, 3500);
         });
 
         // MENCEGAH TOMBOL NYANGKUT SAAT KLIK BACK DARI WHATSAPP
