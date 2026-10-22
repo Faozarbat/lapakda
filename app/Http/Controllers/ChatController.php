@@ -32,6 +32,20 @@ class ChatController extends Controller
     {
         $this->authorizeChat($order);
 
+        // --- VALIDASI TIMER & ATURAN CHAT ---
+        if ($order->status === 'selesai') {
+            // 1. Tolak jika sesi sudah berakhir (lewat 5 jam)
+            if ($order->chat_expires_at && now()->greaterThan($order->chat_expires_at)) {
+                return response()->json(['error' => 'Sesi obrolan telah berakhir (melebihi 5 jam).'], 403);
+            }
+            
+            // 2. Tolak jika Penjual mencoba chat duluan
+            if (is_null($order->chat_expires_at) && Auth::id() === $order->store->owner_id) {
+                return response()->json(['error' => 'Tunggu pembeli mengirim pesan terlebih dahulu.'], 403);
+            }
+        }
+        // ------------------------------------
+
         $request->validate([
             'message' => 'nullable|string|max:1000',
             'image' => 'nullable|image|max:5120',
@@ -59,8 +73,11 @@ class ChatController extends Controller
         $isSeller = Auth::id() === $order->store->owner_id;
         $recipient = $isSeller ? $order->user : $order->store->owner;
         
-        // Tentukan nama pengirim untuk judul notif
+        // Tentukan nama pengirim untuk judul notif (Gunakan nama toko jika pengirim adalah penjual)
         $senderName = Auth::check() ? Auth::user()->name : 'Pembeli (Guest)';
+        if (Auth::id() === $order->store->owner_id) {
+            $senderName = $order->store->nama;
+        }
 
         // Kirim push notification jika penerima valid (Pembeli login / Penjual punya akun)
         if ($recipient) {
@@ -86,9 +103,53 @@ class ChatController extends Controller
     {
         $this->authorizeChat($order);
         $this->markMessagesAsRead($order);
-        $messages = $order->messages()->with('user')->get();
+        
+        $messages = $order->messages()->with('user')->get()->map(function($msg) use ($order) {
+            // Tentukan nama tampilan: Nama Toko (jika penjual) atau Nama User/Guest
+            if ($msg->user_id === $order->store->owner_id) {
+                $msg->display_name = $order->store->nama;
+            } else {
+                $msg->display_name = $msg->user ? $msg->user->name : 'Pembeli (Guest)';
+            }
+            return $msg;
+        });
         
         return response()->json($messages);
+    }
+
+    public function badgeCount()
+    {
+        $authId = Auth::id();
+        $storeIds = Auth::user()->stores()->pluck('id');
+        
+        $pendingCount = Order::whereIn('store_id', $storeIds)->where('status', 'menunggu_konfirmasi')->count();
+        
+        $unreadChatCount = OrderMessage::whereHas('order', function($q) use ($authId, $storeIds) {
+            $q->where('user_id', $authId)->orWhereIn('store_id', $storeIds);
+        })->where('is_read', false)
+          ->where(function($q) use ($authId) {
+              $q->where('user_id', '!=', $authId)->orWhereNull('user_id');
+          })->count();
+
+        // Ambil jumlah unread per order_id untuk update badge di halaman riwayat
+        $unreadPerOrder = OrderMessage::whereHas('order', function($q) use ($authId, $storeIds) {
+            $q->where('user_id', $authId)->orWhereIn('store_id', $storeIds);
+        })->where('is_read', false)
+          ->where(function($q) use ($authId) {
+              $q->where('user_id', '!=', $authId)->orWhereNull('user_id');
+          })
+          ->selectRaw('order_id, count(*) as count')
+          ->groupBy('order_id')
+          ->pluck('count', 'order_id');
+
+        // Ambil ID order terbaru untuk deteksi orderan masuk (khusus penjual)
+        $latestOrderId = Order::whereIn('store_id', $storeIds)->max('id') ?? 0;
+          
+        return response()->json([
+            'total' => $pendingCount + $unreadChatCount,
+            'unread_per_order' => $unreadPerOrder,
+            'latest_order_id' => $latestOrderId
+        ]);
     }
 
     private function authorizeChat(Order $order)
@@ -104,10 +165,6 @@ class ChatController extends Controller
         }
     }
 
-    /**
-     * Tandai semua pesan dari lawan bicara sebagai sudah dibaca.
-     * Aman dipanggil berulang (idempoten). Hanya jalan untuk user login.
-     */
     private function markMessagesAsRead(Order $order): void
     {
         if (!Auth::check()) {

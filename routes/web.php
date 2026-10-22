@@ -33,6 +33,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard/pesanan', [App\Http\Controllers\OrderDashboardController::class, 'allOrders'])->name('dashboard.order.all');
     Route::post('/push-subscribe', [App\Http\Controllers\PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
+    
+    // Rute untuk polling badge notif
+    Route::get('/api/badge-count', [App\Http\Controllers\ChatController::class, 'badgeCount'])->name('api.badge.count');
 
 
     // Rate limit: registrasi toko dibatasi 5x per 10 menit -> cegah spam bikin toko fiktif

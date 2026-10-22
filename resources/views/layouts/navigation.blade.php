@@ -2,6 +2,17 @@
     @php
         $storeIds = auth()->user()->stores()->pluck('id');
         $pendingCount = \App\Models\Order::whereIn('store_id', $storeIds)->where('status', 'menunggu_konfirmasi')->count();
+        
+        // Hitung total unread chat (sebagai pembeli maupun penjual)
+        $authId = auth()->id();
+        $unreadChatCount = \App\Models\OrderMessage::whereHas('order', function($q) use ($authId, $storeIds) {
+            $q->where('user_id', $authId)->orWhereIn('store_id', $storeIds);
+        })->where('is_read', false)
+          ->where(function($q) use ($authId) {
+              $q->where('user_id', '!=', $authId)->orWhereNull('user_id');
+          })->count();
+          
+        $totalBadge = $pendingCount + $unreadChatCount;
     @endphp
 @endauth
 <div class="fixed bottom-4 left-4 right-4 z-50 flex justify-center pointer-events-none">
@@ -38,11 +49,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 @auth
-                    @if(isset($pendingCount) && $pendingCount > 0)
-                        <span class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
-                            {{ $pendingCount }}
-                        </span>
-                    @endif
+                    <span id="nav-badge" class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white {{ (isset($totalBadge) && $totalBadge > 0) ? '' : 'hidden' }}">
+                        {{ $totalBadge > 9 ? '9+' : $totalBadge }}
+                    </span>
                 @endauth
             </div>
             <span class="text-[10px] {{ request()->routeIs('dashboard.order.*') || request()->routeIs('order.riwayat') ? 'font-bold' : 'font-medium' }}">Pesanan</span>
@@ -55,5 +64,31 @@
             </svg>
             <span class="text-[10px] {{ request()->routeIs('dashboard') || request()->routeIs('store.*') ? 'font-bold' : 'font-medium' }}">Dashboard</span>
         </a>
-    </nav>
+        </nav>
 </div>
+
+@auth
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function updateNavBadge() {
+            fetch("{{ route('api.badge.count') }}")
+                .then(res => res.json())
+                .then(data => {
+                    const badge = document.getElementById('nav-badge');
+                    if (!badge) return;
+                    
+                    if (data.total > 0) {
+                        badge.textContent = data.total > 9 ? '9+' : data.total;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                })
+                .catch(err => console.error('Failed to fetch badge count', err));
+        }
+        
+        // Cek setiap 15 detik
+        setInterval(updateNavBadge, 2000);
+    });
+</script>
+@endauth

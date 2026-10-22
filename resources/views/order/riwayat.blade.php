@@ -8,7 +8,7 @@
     <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } [x-cloak] { display: none !important; } </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#F8F9FA] text-gray-800 antialiased pb-24" x-data="{ activeTab: 'pembeli' }">
+<body class="bg-[#F8F9FA] text-gray-800 antialiased pb-24" x-data="{ activeTab: 'pembeli', toastShow: false, toastMessage: '' }" @show-toast.window="toastMessage = $event.detail.message; toastShow = true; setTimeout(() => { toastShow = false; }, 2000)">
 
     <!-- HEADER -->
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100">
@@ -22,7 +22,16 @@
             </a>
         </div>
     </header>
-
+    <!-- TOAST NOTIFICATION -->
+    <div x-show="toastShow" x-transition class="fixed top-20 left-4 right-4 z-[60] flex justify-center pointer-events-none" x-cloak>
+        <div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 w-full max-w-sm pointer-events-auto">
+            <div class="bg-red-500/20 p-1.5 rounded-lg flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+            </div>
+            <p class="text-sm font-medium flex-1" x-text="toastMessage"></p>
+            <button @click="toastShow = false" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
+        </div>
+    </div>
     <main class="max-w-3xl mx-auto px-4 pt-6">
         
         <!-- TAB MENU (Hanya muncul jika user punya toko) -->
@@ -81,8 +90,11 @@
                                 <span class="text-xs font-semibold text-gray-500">Total Belanja</span>
                                 <span class="text-base font-extrabold text-[#B9232D]">Rp{{ number_format($order->items->sum(fn($i) => $i->harga_saat_beli * $i->qty), 0, ',', '.') }}</span>
                             </div>
-                            <a href="{{ route('chat.show', $order->id) }}" class="block w-full text-center bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-100 transition-colors">
+                            <a href="{{ route('chat.show', $order->id) }}" class="relative flex items-center justify-center gap-2 w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-100 transition-colors">
                                 Buka Chat / Tanya Penjual
+                                <span id="chat-badge-{{ $order->id }}" class="bg-[#B9232D] text-white text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}">
+                                    {{ $order->unread_count }}
+                                </span>
                             </a>
 
                             @if($order->status === 'selesai' && !$order->review)
@@ -157,8 +169,11 @@
                             </div>
 
                             <div class="flex gap-2">
-                                <a href="{{ route('chat.show', $order->id) }}" class="flex-1 text-center bg-[#B9232D] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-red-800 transition-colors">
+                                <a href="{{ route('chat.show', $order->id) }}" class="relative flex items-center justify-center gap-2 flex-1 bg-[#B9232D] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-red-800 transition-colors">
                                     Chat
+                                    <span id="chat-badge-{{ $order->id }}" class="bg-white text-[#B9232D] text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}">
+                                        {{ $order->unread_count }}
+                                    </span>
                                 </a>
                                 <a href="{{ route('dashboard.order.index', $order->store_id) }}" class="flex-1 text-center bg-gray-100 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
                                     Kelola
@@ -178,5 +193,49 @@
         @include('layouts.navigation')
     </div>
 
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ambil ID order terbaru saat halaman pertama kali dimuat
+            let currentLatestOrderId = 0;
+            fetch("{{ route('api.badge.count') }}").then(res => res.json()).then(data => {
+                currentLatestOrderId = data.latest_order_id;
+            });
+
+            setInterval(() => {
+                fetch("{{ route('api.badge.count') }}")
+                    .then(res => res.json())
+                    .then(data => {
+                        // 1. Update Badge Chat secara spesifik (tanpa sentuh DOM lain)
+                        for (const [orderId, count] of Object.entries(data.unread_per_order)) {
+                            let badge = document.getElementById(`chat-badge-${orderId}`);
+                            if (badge) {
+                                if (count > 0) {
+                                    badge.textContent = count;
+                                    badge.classList.remove('hidden');
+                                } else {
+                                    badge.classList.add('hidden');
+                                }
+                            }
+                        }
+
+                        // 2. Cek apakah ada orderan masuk baru (khusus penjual)
+                        if (currentLatestOrderId > 0 && data.latest_order_id > currentLatestOrderId) {
+                            currentLatestOrderId = data.latest_order_id;
+                            
+                            // Munculkan Toast (tidak me-reload halaman, jadi user aman)
+                            window.dispatchEvent(new CustomEvent('show-toast', { 
+                                detail: { message: 'Ada pesanan baru masuk! Silakan cek tab Pesanan Masuk.' } 
+                            }));
+                            
+                            // Opsional: Jika user sedang di tab penjual, kita bisa beri highlight
+                            // (Tapi biarkan user klik manual agar tidak mengganggu form yang sedang diisi)
+                        }
+                    })
+                    .catch(err => console.error('Polling error', err));
+            }, 10000); // Cek setiap 10 detik
+        });
+    </script>
+    @endauth
 </body>
 </html>

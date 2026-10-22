@@ -14,7 +14,18 @@
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#E5DDD5] text-gray-800 antialiased">
+<body class="bg-[#E5DDD5] text-gray-800 antialiased" x-data="{ toastShow: false, toastMessage: '' }" @show-toast.window="toastMessage = $event.detail.message; toastShow = true; setTimeout(() => { toastShow = false; }, 4000)">
+
+    <!-- TOAST NOTIFICATION -->
+    <div x-show="toastShow" x-transition class="fixed top-20 left-4 right-4 z-[60] flex justify-center pointer-events-none" x-cloak>
+        <div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 w-full max-w-sm pointer-events-auto">
+            <div class="bg-red-500/20 p-1.5 rounded-lg flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+            </div>
+            <p class="text-sm font-medium flex-1" x-text="toastMessage"></p>
+            <button @click="toastShow = false" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
+        </div>
+    </div>
 
     <!-- HEADER DIPAKU DI ATAS -->
     <header class="bg-[#B9232D] text-white shadow-md z-20 fixed top-0 left-0 right-0">
@@ -44,7 +55,10 @@
                 <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
                     <div class="max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm {{ $isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none' }}">
                         @if(!$isMe)
-                            <p class="text-[10px] font-bold text-[#B9232D] mb-1">{{ $msg->user->name }}</p>
+                            @php
+                                $senderName = ($msg->user_id === $order->store->owner_id) ? $order->store->nama : ($msg->user->name ?? 'Pembeli (Guest)');
+                            @endphp
+                            <p class="text-[10px] font-bold text-[#B9232D] mb-1">{{ $senderName }}</p>
                         @endif
                         
                         @if($msg->image_path)
@@ -68,7 +82,7 @@
         $alasanTutup = '';
 
         if ($order->status === 'selesai') {
-            if (now()->greaterThan($order->chat_expires_at) && $order->chat_expires_at !== null) {
+            if ($order->chat_expires_at !== null && now()->greaterThan($order->chat_expires_at)) {
                 $canChat = false;
                 $alasanTutup = 'Sesi obrolan telah berakhir (melebihi 5 jam).';
             } elseif (is_null($order->chat_expires_at) && auth()->id() === $order->store->owner_id) {
@@ -168,9 +182,21 @@
                     },
                     body: formData
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) {
+                        throw new Error(data.error || 'Terjadi kesalahan sistem.');
+                    }
+                    return data;
+                })
                 .then(data => {
                     fetchMessages(); // Tarik pesan terbaru
+                })
+                .catch(err => {
+                    // Tampilkan toast error via Alpine.js
+                    window.dispatchEvent(new CustomEvent('show-toast', { detail: { message: err.message } }));
+                    // Kembalikan teks ke input jika gagal agar user tidak perlu ketik ulang
+                    if (text) chatInput.value = text;
                 });
             });
         }
@@ -190,7 +216,7 @@
                 const isMe = msg.user_id === authId;
                 const imgHtml = msg.image_path ? `<img src="/storage/${msg.image_path}" class="w-full max-w-[200px] rounded-lg mb-2" onclick="window.open(this.src, '_blank')">` : '';
                 const textHtml = msg.message ? `<p class="text-sm text-gray-800 break-words">${msg.message}</p>` : '';
-                const nameHtml = !isMe ? `<p class="text-[10px] font-bold text-[#B9232D] mb-1">${msg.user.name}</p>` : '';
+                const nameHtml = !isMe ? `<p class="text-[10px] font-bold text-[#B9232D] mb-1">${msg.display_name}</p>` : '';
                 
                 // Format jam
                 const date = new Date(msg.created_at);

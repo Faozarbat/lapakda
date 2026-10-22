@@ -229,11 +229,19 @@ class OrderController extends Controller
         if (auth()->check()) {
             // Ambil riwayat belanja user (sebagai pembeli)
             // Cek berdasarkan user_id ATAU session_id (jaga-jaga jika pesanan dibuat sebelum login)
+            $authId = auth()->id();
+
             $myOrders = Order::where(function($query) use ($request) {
                     $query->where('user_id', auth()->id())
                           ->orWhere('session_id', $request->session()->getId());
                 })
                 ->with(['store', 'items', 'review'])
+                ->withCount(['messages as unread_count' => function($q) use ($authId) {
+                    $q->where('is_read', false)
+                      ->where(function($sub) use ($authId) {
+                          $sub->where('user_id', '!=', $authId)->orWhereNull('user_id');
+                      });
+                }])
                 ->latest()
                 ->get();
                 
@@ -242,6 +250,12 @@ class OrderController extends Controller
                 $storeIds = auth()->user()->stores->pluck('id');
                 $incomingOrders = Order::whereIn('store_id', $storeIds)
                     ->with(['items', 'store', 'user'])
+                    ->withCount(['messages as unread_count' => function($q) use ($authId) {
+                        $q->where('is_read', false)
+                          ->where(function($sub) use ($authId) {
+                              $sub->where('user_id', '!=', $authId)->orWhereNull('user_id');
+                          });
+                    }])
                     ->latest()
                     ->get();
             }
