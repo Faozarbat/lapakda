@@ -65,8 +65,6 @@
         @csrf
         <input type="hidden" name="idempotency_key" value="{{ $idempotencyKey }}">
         <input type="hidden" name="fulfillment_type" x-model="fulfillment">
-        <!-- HIDDEN INPUT UNTUK METODE CHECKOUT -->
-        <input type="hidden" name="checkout_method" id="checkout_method" value="">
 
         <main class="max-w-3xl mx-auto px-4 pt-6 pb-40 space-y-4">
 
@@ -158,7 +156,7 @@
                 <template x-if="hasTableNumber && hasDineIn">
                     <div class="pt-2">
                         <label for="table_number" class="block text-xs font-bold text-gray-700 mb-1.5">Nomor Meja <span class="text-red-500">*</span></label>
-                        <input type="text" id="table_number" name="table_number" value="{{ old('table_number') }}" placeholder="Misal: A3 atau VIP-2" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]">
+                        <input type="text" id="table_number" name="table_number" value="{{ old('table_number') }}" placeholder="Misal: A3 atau VIP-2" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                         @error('table_number') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                 </template>
@@ -203,14 +201,14 @@
             <div class="max-w-3xl mx-auto grid grid-cols-2 gap-3">
                 
                 <!-- Tombol WhatsApp -->
-                <button type="button" onclick="submitCheckout('wa')" id="submitBtnWA" class="w-full bg-[#25D366] text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-green-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+                <button type="submit" name="checkout_method" value="wa" id="submitBtnWA" class="w-full bg-[#25D366] text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-green-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
                     Via WA
                 </button>
 
                 <!-- Tombol Chat Aplikasi -->
                 @auth
-                    <button type="button" onclick="submitCheckout('chat')" id="submitBtnChat" class="w-full bg-[#B9232D] text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
+                    <button type="submit" name="checkout_method" value="chat" id="submitBtnChat" class="w-full bg-[#B9232D] text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                         Via App
                     </button>
@@ -318,33 +316,36 @@
             );
         });
 
-        function submitCheckout(method) {
-            // Set nilai ke hidden input
-            document.getElementById('checkout_method').value = method;
-            
+        // EVENT LISTENER UNTUK VALIDASI & LOADING
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            // Cek Validasi HTML5 (Jika Nomor Meja kosong, form tidak akan submit)
+            if (!this.checkValidity()) {
+                e.preventDefault(); // Batalkan submit
+                return;
+            }
+
+            // Jika valid, jalankan efek loading
+            const submitter = e.submitter;
             const btnWA = document.getElementById('submitBtnWA');
             const btnChat = document.getElementById('submitBtnChat');
-            const spinner = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+            const spinner = '<svg class="animate-spin h-5 w-5 text-white inline-block mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
 
-            if (method === 'chat' && btnChat) {
-                btnChat.innerHTML = spinner;
-                btnWA.disabled = true;
+            // Set penanda untuk mencegah loop saat balik dari WA
+            sessionStorage.setItem('checkout_sukses', 'true');
+
+            if (submitter && submitter.value === 'chat') {
+                if(btnChat) btnChat.innerHTML = spinner;
+                if(btnWA) btnWA.disabled = true;
             } else {
-                btnWA.innerHTML = spinner;
+                if(btnWA) btnWA.innerHTML = spinner;
                 if(btnChat) btnChat.disabled = true;
             }
-            
-            // Eksekusi form submit
-            document.getElementById('checkoutForm').submit();
-        }
+        });
 
         // MENCEGAH TOMBOL NYANGKUT SAAT KLIK BACK DARI WHATSAPP
         window.addEventListener('pageshow', function (event) {
-            // Jika user kembali ke halaman ini SETELAH checkout sukses
             if (sessionStorage.getItem('checkout_sukses') === 'true') {
-                // Hapus penanda
                 sessionStorage.removeItem('checkout_sukses');
-                // Lempar user ke halaman Riwayat Pesanan
                 window.location.replace("{{ route('order.riwayat') }}");
             }
         });
@@ -421,13 +422,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
             </button>
 
-            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                👋
-            </div>
-
-            <h3 class="text-xl font-extrabold text-gray-900 text-center mb-2">Kenalan Dulu Yuk!</h3>
+            <h3 class="text-xl font-extrabold text-gray-900 text-center mb-2">Buat akun aja Yuk!</h3>
             <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">
-                Isi nama dan nomor WA kamu biar pesanan otomatis tersimpan di Riwayat dan kamu dapat update promo menarik.
+                Cukup isi Nama dan Nomor WA kamu, Akun langsung Aktif 
             </p>
 
             <form @submit.prevent="submitGuestForm()" class="space-y-3">
@@ -435,7 +432,7 @@
                     <input type="text" x-model="guestName" placeholder="Nama Lengkap" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                 </div>
                 <div>
-                    <input type="tel" x-model="guestPhone" placeholder="Nomor WhatsApp (cth: 0812...)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
+                    <input type="tel" x-model="guestPhone" placeholder="Nomor WhatsApp" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D] focus:border-[#B9232D]" required>
                 </div>
                 
                 <div x-show="errorMsg" class="text-red-500 text-xs font-bold text-center bg-red-50 p-2 rounded-lg" x-text="errorMsg" x-cloak></div>
