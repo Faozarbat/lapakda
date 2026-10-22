@@ -11,6 +11,11 @@ class OrderMessage extends Model
         'user_id',
         'message',
         'image_path',
+        'is_read',
+    ];
+
+    protected $casts = [
+        'is_read' => 'boolean',
     ];
 
     public function user()

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderMessage;
+use App\Notifications\NewChatNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,7 @@ class ChatController extends Controller
     public function show(Order $order)
     {
         $this->authorizeChat($order);
+        $this->markMessagesAsRead($order);
 
         // Ambil pesan
         $messages = $order->messages;
@@ -52,6 +54,20 @@ class ChatController extends Controller
             'image_path' => $imagePath,
         ]);
 
+        // --- LOGIKA NOTIFIKASI CHAT ---
+        // Tentukan penerima: Jika yang kirim Penjual, tembak ke Pembeli. Jika Pembeli/Guest, tembak ke Penjual.
+        $isSeller = Auth::id() === $order->store->owner_id;
+        $recipient = $isSeller ? $order->user : $order->store->owner;
+        
+        // Tentukan nama pengirim untuk judul notif
+        $senderName = Auth::check() ? Auth::user()->name : 'Pembeli (Guest)';
+
+        // Kirim push notification jika penerima valid (Pembeli login / Penjual punya akun)
+        if ($recipient) {
+            $recipient->notify(new NewChatNotification($msg, $order, $senderName));
+        }
+        // ------------------------------
+
         // Logika Timer 5 Jam (Hanya memicu jika order selesai & belum ada timer)
         if ($order->status === 'selesai' && is_null($order->chat_expires_at)) {
             $order->update([
@@ -69,6 +85,7 @@ class ChatController extends Controller
     public function fetchMessages(Order $order)
     {
         $this->authorizeChat($order);
+        $this->markMessagesAsRead($order);
         $messages = $order->messages()->with('user')->get();
         
         return response()->json($messages);
@@ -85,6 +102,22 @@ class ChatController extends Controller
         if (!$isBuyer && !$isSeller && !$isGuestBuyer) {
             abort(403, 'Anda tidak berhak mengakses obrolan ini.');
         }
+    }
+
+    /**
+     * Tandai semua pesan dari lawan bicara sebagai sudah dibaca.
+     * Aman dipanggil berulang (idempoten). Hanya jalan untuk user login.
+     */
+    private function markMessagesAsRead(Order $order): void
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $order->messages()
+            ->where('user_id', '!=', Auth::id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
     }
 
     private function prosesDanSimpanFoto($file): string

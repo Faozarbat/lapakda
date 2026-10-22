@@ -12,7 +12,7 @@ D:.
 ¦   CLAUDE.md
 ¦   composer.json
 ¦   composer.lock
-¦   LapakDA - Handover & Project Guide.html
+¦   LAPAKDA_MASTER_DOCS_V6.html
 ¦   nomor_wa)])
 ¦   package-lock.json
 ¦   package.json
@@ -24,10 +24,21 @@ D:.
 ¦   vite.config.js
 ¦   
 +---app
+¦   +---Console
+¦   ¦   +---Commands
+¦   ¦           CheckSubscriptionExpiry.php
+¦   ¦           
 ¦   +---Http
 ¦   ¦   +---Controllers
 ¦   ¦   ¦   ¦   AdminDashboardController.php
+¦   ¦   ¦   ¦   AdminSearchController.php
+¦   ¦   ¦   ¦   AdminSettingController.php
+¦   ¦   ¦   ¦   AdminStoreController.php
+¦   ¦   ¦   ¦   AdminSubscriptionController.php
+¦   ¦   ¦   ¦   AdminUserController.php
+¦   ¦   ¦   ¦   AdminVoucherController.php
 ¦   ¦   ¦   ¦   CartController.php
+¦   ¦   ¦   ¦   ChatController.php
 ¦   ¦   ¦   ¦   Controller.php
 ¦   ¦   ¦   ¦   GuestAuthController.php
 ¦   ¦   ¦   ¦   HomeController.php
@@ -37,9 +48,12 @@ D:.
 ¦   ¦   ¦   ¦   ProductDashboardController.php
 ¦   ¦   ¦   ¦   ProfileController.php
 ¦   ¦   ¦   ¦   PublicStoreController.php
+¦   ¦   ¦   ¦   PushSubscriptionController.php
 ¦   ¦   ¦   ¦   ReviewController.php
+¦   ¦   ¦   ¦   SearchController.php
 ¦   ¦   ¦   ¦   StoreController.php
 ¦   ¦   ¦   ¦   StoreDirectoryController.php
+¦   ¦   ¦   ¦   SubscriptionController.php
 ¦   ¦   ¦   ¦   
 ¦   ¦   ¦   +---Auth
 ¦   ¦   ¦           AuthenticatedSessionController.php
@@ -67,10 +81,18 @@ D:.
 ¦   ¦       Kecamatan.php
 ¦   ¦       Order.php
 ¦   ¦       OrderItem.php
+¦   ¦       OrderMessage.php
 ¦   ¦       Product.php
 ¦   ¦       Review.php
+¦   ¦       Setting.php
 ¦   ¦       Store.php
+¦   ¦       Subscription.php
 ¦   ¦       User.php
+¦   ¦       Voucher.php
+¦   ¦       VoucherUsage.php
+¦   ¦       
+¦   +---Notifications
+¦   ¦       NewOrderNotification.php
 ¦   ¦       
 ¦   +---Policies
 ¦   ¦       OrderPolicy.php
@@ -138,11 +160,23 @@ D:.
 ¦   ¦       2026_10_19_055204_add_delivery_address_to_users_table.php
 ¦   ¦       2026_10_19_074249_create_reviews_table.php
 ¦   ¦       2026_10_19_101737_add_is_admin_to_users_table.php
+¦   ¦       2026_10_19_120000_create_subscription_tables.php
+¦   ¦       2026_10_19_120100_add_subscription_columns_to_stores_table.php
+¦   ¦       2026_10_19_130000_add_images_to_stores_table.php
+¦   ¦       2026_10_20_150000_add_stok_to_products_table.php
+¦   ¦       2026_10_20_163559_add_password_set_at_to_users_table.php
+¦   ¦       2026_10_20_173946_create_push_subscriptions_table.php
+¦   ¦       2026_10_20_173946_increase_push_subscriptions_endpoint_length.php
+¦   ¦       2026_10_21_100404_create_order_messages_and_chat_columns.php
+¦   ¦       2026_10_22_152119_add_is_read_to_order_messages_table.php
 ¦   ¦       
 ¦   +---seeders
+¦           AdminSeeder.php
 ¦           DatabaseSeeder.php
 ¦           DemoDataSeeder.php
 ¦           KecamatanSeeder.php
+¦           SettingSeeder.php
+¦           VoucherSeeder.php
 ¦           
 +---node_modules
 ¦   ¦   .package-lock.json
@@ -6723,6 +6757,7 @@ D:.
 ¦                   
 +---public
 ¦   ¦   .htaccess
+¦   ¦   413.html
 ¦   ¦   favicon.ico
 ¦   ¦   hot
 ¦   ¦   index.php
@@ -6736,8 +6771,8 @@ D:.
 ¦   ¦   ¦   manifest.json
 ¦   ¦   ¦   
 ¦   ¦   +---assets
-¦   ¦           app-DIZEten-.js
-¦   ¦           app-DolS2udt.css
+¦   ¦           app-BHxyPAIk.css
+¦   ¦           app-Co-7HB2c.js
 ¦   ¦           
 ¦   +---icons
 ¦   ¦       icon-192.png
@@ -6748,12 +6783,21 @@ D:.
 ¦       ¦   .gitignore
 ¦       ¦   
 ¦       +---produk
-¦               a847c2ad-fc3c-4210-9bc9-ff91801c53c6.webp
-¦               c9591421-030c-4f4f-9706-31e70cb3733d.webp
-¦               e00cabc9-99a4-4253-8319-447c752d7af9.webp
-¦               ef3969db-eb60-46d6-af34-ade6d0f159fd.webp
-¦               fe7c2333-1634-47c7-9069-3e3408207fdb.webp
-¦               
+¦       ¦       a847c2ad-fc3c-4210-9bc9-ff91801c53c6.webp
+¦       ¦       c9591421-030c-4f4f-9706-31e70cb3733d.webp
+¦       ¦       e00cabc9-99a4-4253-8319-447c752d7af9.webp
+¦       ¦       ef3969db-eb60-46d6-af34-ade6d0f159fd.webp
+¦       ¦       fe7c2333-1634-47c7-9069-3e3408207fdb.webp
+¦       ¦       
+¦       +---stores
+¦           +---background
+¦           ¦       2zY2gW9NsIu98RUMy6DPeSuQNDezVgbGji97GuOz.png
+¦           ¦       kHpXg6xm3jurei5U5cUwtIKA0mNYeu0rcGAyK0WO.png
+¦           ¦       
+¦           +---profil
+¦                   dQIFK9BAbhwfadvXnhf9HxgJc7XE984KDTpSrAxu.png
+¦                   vJx5Tujd2ihriSYibr4FRujWInr00BXK1RLtEceW.png
+¦                   
 +---resources
 ¦   +---css
 ¦   ¦       app.css
@@ -6768,8 +6812,24 @@ D:.
 ¦       ¦   syarat-ketentuan.blade.php
 ¦       ¦   
 ¦       +---admin
-¦       ¦       dashboard.blade.php
-¦       ¦       
+¦       ¦   ¦   dashboard.blade.php
+¦       ¦   ¦   search.blade.php
+¦       ¦   ¦   
+¦       ¦   +---setting
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---store
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---subscription
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---user
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---voucher
+¦       ¦           index.blade.php
+¦       ¦           
 ¦       +---auth
 ¦       ¦       confirm-password.blade.php
 ¦       ¦       forgot-password.blade.php
@@ -6783,26 +6843,33 @@ D:.
 ¦       ¦       index.blade.php
 ¦       ¦       show.blade.php
 ¦       ¦       
+¦       +---chat
+¦       ¦       show.blade.php
+¦       ¦       
 ¦       +---checkout
 ¦       ¦       show.blade.php
 ¦       ¦       
 ¦       +---components
-¦       ¦       application-logo.blade.php
-¦       ¦       auth-session-status.blade.php
-¦       ¦       danger-button.blade.php
-¦       ¦       dropdown-link.blade.php
-¦       ¦       dropdown.blade.php
-¦       ¦       input-error.blade.php
-¦       ¦       input-label.blade.php
-¦       ¦       modal.blade.php
-¦       ¦       nav-link.blade.php
-¦       ¦       primary-button.blade.php
-¦       ¦       responsive-nav-link.blade.php
-¦       ¦       secondary-button.blade.php
-¦       ¦       text-input.blade.php
-¦       ¦       
+¦       ¦   ¦   application-logo.blade.php
+¦       ¦   ¦   auth-session-status.blade.php
+¦       ¦   ¦   danger-button.blade.php
+¦       ¦   ¦   dropdown-link.blade.php
+¦       ¦   ¦   dropdown.blade.php
+¦       ¦   ¦   input-error.blade.php
+¦       ¦   ¦   input-label.blade.php
+¦       ¦   ¦   modal.blade.php
+¦       ¦   ¦   nav-link.blade.php
+¦       ¦   ¦   primary-button.blade.php
+¦       ¦   ¦   responsive-nav-link.blade.php
+¦       ¦   ¦   secondary-button.blade.php
+¦       ¦   ¦   text-input.blade.php
+¦       ¦   ¦   
+¦       ¦   +---layouts
+¦       ¦           admin.blade.php
+¦       ¦           
 ¦       +---dashboard
 ¦       ¦   +---order
+¦       ¦   ¦       all.blade.php
 ¦       ¦   ¦       index.blade.php
 ¦       ¦   ¦       
 ¦       ¦   +---produk
@@ -6811,7 +6878,10 @@ D:.
 ¦       ¦   ¦       index.blade.php
 ¦       ¦   ¦       
 ¦       ¦   +---store
-¦       ¦           edit.blade.php
+¦       ¦   ¦       edit.blade.php
+¦       ¦   ¦       
+¦       ¦   +---subscription
+¦       ¦           index.blade.php
 ¦       ¦           
 ¦       +---errors
 ¦       ¦       403.blade.php
@@ -6836,6 +6906,7 @@ D:.
 ¦       +---partials
 ¦       ¦       og-meta.blade.php
 ¦       ¦       pwa-head.blade.php
+¦       ¦       security-banner.blade.php
 ¦       ¦       
 ¦       +---profile
 ¦       ¦   ¦   edit.blade.php
@@ -6845,6 +6916,9 @@ D:.
 ¦       ¦           update-password-form.blade.php
 ¦       ¦           update-profile-information-form.blade.php
 ¦       ¦           
+¦       +---search
+¦       ¦       index.blade.php
+¦       ¦       
 ¦       +---store
 ¦               create.blade.php
 ¦               nonaktif.blade.php
@@ -6856,6 +6930,8 @@ D:.
 ¦       web.php
 ¦       
 +---storage
+¦   ¦   guarddog-security-report.html
+¦   ¦   
 ¦   +---app
 ¦   ¦   ¦   .gitignore
 ¦   ¦   ¦   
@@ -6866,12 +6942,21 @@ D:.
 ¦   ¦       ¦   .gitignore
 ¦   ¦       ¦   
 ¦   ¦       +---produk
-¦   ¦               a847c2ad-fc3c-4210-9bc9-ff91801c53c6.webp
-¦   ¦               c9591421-030c-4f4f-9706-31e70cb3733d.webp
-¦   ¦               e00cabc9-99a4-4253-8319-447c752d7af9.webp
-¦   ¦               ef3969db-eb60-46d6-af34-ade6d0f159fd.webp
-¦   ¦               fe7c2333-1634-47c7-9069-3e3408207fdb.webp
-¦   ¦               
+¦   ¦       ¦       a847c2ad-fc3c-4210-9bc9-ff91801c53c6.webp
+¦   ¦       ¦       c9591421-030c-4f4f-9706-31e70cb3733d.webp
+¦   ¦       ¦       e00cabc9-99a4-4253-8319-447c752d7af9.webp
+¦   ¦       ¦       ef3969db-eb60-46d6-af34-ade6d0f159fd.webp
+¦   ¦       ¦       fe7c2333-1634-47c7-9069-3e3408207fdb.webp
+¦   ¦       ¦       
+¦   ¦       +---stores
+¦   ¦           +---background
+¦   ¦           ¦       2zY2gW9NsIu98RUMy6DPeSuQNDezVgbGji97GuOz.png
+¦   ¦           ¦       kHpXg6xm3jurei5U5cUwtIKA0mNYeu0rcGAyK0WO.png
+¦   ¦           ¦       
+¦   ¦           +---profil
+¦   ¦                   dQIFK9BAbhwfadvXnhf9HxgJc7XE984KDTpSrAxu.png
+¦   ¦                   vJx5Tujd2ihriSYibr4FRujWInr00BXK1RLtEceW.png
+¦   ¦                   
 ¦   +---framework
 ¦   ¦   ¦   .gitignore
 ¦   ¦   ¦   
@@ -6889,7 +6974,9 @@ D:.
 ¦   ¦   ¦       
 ¦   ¦   +---views
 ¦   ¦           .gitignore
+¦   ¦           00b3ba671d6baf88b7cca12b918f9739.php
 ¦   ¦           0158603da607600666e7aff1cd6a09da.php
+¦   ¦           018edabddc251a9b910420db2874a68e.php
 ¦   ¦           0323f142743306fc84842a291972f58a.php
 ¦   ¦           089ac23df56c497715dd9c7926988347.php
 ¦   ¦           0d2f46455108b471548fe6174aa76d23.php
@@ -6903,6 +6990,7 @@ D:.
 ¦   ¦           207a6994347d3496df36fc48c1d15444.php
 ¦   ¦           216b1a9a2a5007d379e07d410f665e9e.php
 ¦   ¦           21cb7d1c94d4d960849a919b4931a6db.php
+¦   ¦           2326cb33f96d288b0303a24f41ca8fc3.php
 ¦   ¦           23e401afbf3ec7060867c431ccf148dc.php
 ¦   ¦           2520c1923879792cc5eb543eca6ef825.php
 ¦   ¦           2b95e145671da7593a8367af86eb40a9.php
@@ -6912,8 +7000,11 @@ D:.
 ¦   ¦           2e9af40159750c71d3211ec7d541c3ff.php
 ¦   ¦           3234c1e3365231e4e66104c5a88ec712.php
 ¦   ¦           3438770ba0063959c8782c224c7e4f05.php
+¦   ¦           353e367bd8fea4b146ae189529401701.php
+¦   ¦           3a0b91657e8e74774eeab7aca55ebce5.php
 ¦   ¦           3cc79a4fbfef26df284193548521950f.php
 ¦   ¦           3d4dc701f5b7cf3c1e8c32d2cdb299f9.php
+¦   ¦           3d926e34688f704f389ae5f0a8d92735.php
 ¦   ¦           3e6ea83d919e257eb8410c9dc343ad66.php
 ¦   ¦           401972bf433424ac846c9c84760fadfb.php
 ¦   ¦           425e9a189f64792416eb64744ac2262b.php
@@ -6929,17 +7020,22 @@ D:.
 ¦   ¦           511be6a1ec32a7835623df1ad629d36a.php
 ¦   ¦           51cea1fad1b516f41c1c4638518dd9b6.php
 ¦   ¦           5343a05cf65bd4b865b5a2c70fdad273.php
+¦   ¦           53c9d8c0bdc61ed1a4edf0de3ae21434.php
 ¦   ¦           57e3796bafff99e5524b11184ebb4ce0.php
+¦   ¦           59653f02774f5f50b0c2e57850282fe3.php
+¦   ¦           5974D.tmp
 ¦   ¦           597a49497fa28d171af38a15197349b0.php
 ¦   ¦           5a1320a82ae706470050537da7a53cb0.php
 ¦   ¦           5adc96e158616aa6453d298cbe4e82dd.php
 ¦   ¦           5f1145a93ca5b08b56580e9f9bab8beb.php
+¦   ¦           5f4face2f0bf18e1553897c670dbe738.php
 ¦   ¦           6018f6b61f811abb1745bf25c36b04c3.php
 ¦   ¦           612906668b7acea9325a0f12538aa6f9.php
 ¦   ¦           6302ca43d495a686eec324f1a552212d.php
 ¦   ¦           6356c40f8d3ed34d589e4a579ba545fb.php
 ¦   ¦           64a3b522b0f6c9f04beaf9f96e773491.php
 ¦   ¦           671a56e949f3a1441d6a3f8f1cf8cc58.php
+¦   ¦           67e86eedb425e8324a4ded1e58aa062f.php
 ¦   ¦           6ae988ddc97123e41cd9b9692a105ddf.php
 ¦   ¦           6e06109a85ad60816ca30cd110a9824e.php
 ¦   ¦           7529b3fe1e0c25050941e6f27ae5ae52.php
@@ -6968,10 +7064,12 @@ D:.
 ¦   ¦           ca910c77612d8a826aeb950313175587.php
 ¦   ¦           ce2ef76c37638fc7bdb11ad04a7f830b.php
 ¦   ¦           d0fd84d6e5047b2fbd07b73b54fd5c5e.php
+¦   ¦           d732843177fa875cb8e6c1341c6c9c36.php
 ¦   ¦           da1e667d4a72f2b0eafc69793f1af170.php
 ¦   ¦           dfcf6413b0f0508b6c51ae76098fd273.php
 ¦   ¦           e5cfd1637440f8e4ed24678c94ba5ba4.php
 ¦   ¦           ea014e6af7438ad576887af0dce3535e.php
+¦   ¦           eb5ced2e7ad15e6e61a83458156c414f.php
 ¦   ¦           ee0e8f9c15f07684259824033b7001e1.php
 ¦   ¦           f12cd4c0d6f900ed1d6f37ec4ce9b7b4.php
 ¦   ¦           f2ea2b6013a5eb4df371ba236de46cbc.php
@@ -7004,6 +7102,109 @@ D:.
 +---vendor
     ¦   autoload.php
     ¦   
+    +---andreapollastri
+    ¦   +---checkpoint
+    ¦       ¦   .gitattributes
+    ¦       ¦   .gitignore
+    ¦       ¦   CHANGELOG.md
+    ¦       ¦   composer.json
+    ¦       ¦   LICENSE
+    ¦       ¦   netlify.toml
+    ¦       ¦   phpunit.xml
+    ¦       ¦   README.md
+    ¦       ¦   SECURITY.md
+    ¦       ¦   
+    ¦       +---config
+    ¦       ¦       checkpoint.php
+    ¦       ¦       
+    ¦       +---docs
+    ¦       ¦       404.html
+    ¦       ¦       apple-touch-icon.png
+    ¦       ¦       favicon-16.png
+    ¦       ¦       favicon-32.png
+    ¦       ¦       favicon.svg
+    ¦       ¦       index.html
+    ¦       ¦       
+    ¦       +---src
+    ¦       ¦   ¦   CheckpointServiceProvider.php
+    ¦       ¦   ¦   Scanner.php
+    ¦       ¦   ¦   ScanPaths.php
+    ¦       ¦   ¦   
+    ¦       ¦   +---Checks
+    ¦       ¦   ¦       AbandonedPackagesCheck.php
+    ¦       ¦   ¦       AbstractCheck.php
+    ¦       ¦   ¦       CheckResult.php
+    ¦       ¦   ¦       CommandInjectionCheck.php
+    ¦       ¦   ¦       ComposerAuditCheck.php
+    ¦       ¦   ¦       ComposerConfigCheck.php
+    ¦       ¦   ¦       CorsConfigCheck.php
+    ¦       ¦   ¦       CsrfCheck.php
+    ¦       ¦   ¦       DebugFunctionsCheck.php
+    ¦       ¦   ¦       EnvironmentCheck.php
+    ¦       ¦   ¦       EolVersionCheck.php
+    ¦       ¦   ¦       FilePermissionsCheck.php
+    ¦       ¦   ¦       GitIgnoreCheck.php
+    ¦       ¦   ¦       HardcodedSecretsCheck.php
+    ¦       ¦   ¦       InsecureDeserializationCheck.php
+    ¦       ¦   ¦       InsecureRngCheck.php
+    ¦       ¦   ¦       MassAssignmentCheck.php
+    ¦       ¦   ¦       NpmAuditCheck.php
+    ¦       ¦   ¦       OpenRedirectCheck.php
+    ¦       ¦   ¦       OutdatedPackagesCheck.php
+    ¦       ¦   ¦       PackageFreshnessCheck.php
+    ¦       ¦   ¦       PathTraversalCheck.php
+    ¦       ¦   ¦       SensitiveExposureCheck.php
+    ¦       ¦   ¦       SessionSecurityCheck.php
+    ¦       ¦   ¦       SqlInjectionCheck.php
+    ¦       ¦   ¦       SsrfCheck.php
+    ¦       ¦   ¦       SupplyChainToolingCheck.php
+    ¦       ¦   ¦       SuspiciousVendorAutoloadCheck.php
+    ¦       ¦   ¦       TlsVerificationCheck.php
+    ¦       ¦   ¦       WeakCryptographyCheck.php
+    ¦       ¦   ¦       XssCheck.php
+    ¦       ¦   ¦       XxeCheck.php
+    ¦       ¦   ¦       
+    ¦       ¦   +---Commands
+    ¦       ¦           GithubPipelineCommand.php
+    ¦       ¦           GitlabPipelineCommand.php
+    ¦       ¦           InstallHooksCommand.php
+    ¦       ¦           ScanCommand.php
+    ¦       ¦           
+    ¦       +---stubs
+    ¦       ¦       github-workflow.yml
+    ¦       ¦       gitlab-ci.yml
+    ¦       ¦       
+    ¦       +---tests
+    ¦           ¦   TestCase.php
+    ¦           ¦   
+    ¦           +---Concerns
+    ¦           ¦       CreatesWorkspace.php
+    ¦           ¦       
+    ¦           +---Feature
+    ¦           ¦       ScanCommandTest.php
+    ¦           ¦       
+    ¦           +---Unit
+    ¦               ¦   CheckResultTest.php
+    ¦               ¦   ScannerTest.php
+    ¦               ¦   ScanPathsTest.php
+    ¦               ¦   
+    ¦               +---Checks
+    ¦                       AbandonedPackagesCheckTest.php
+    ¦                       AbstractCheckTest.php
+    ¦                       AuditFailureTest.php
+    ¦                       ComposerConfigCheckTest.php
+    ¦                       DebugFunctionsCheckTest.php
+    ¦                       EnvironmentCheckTest.php
+    ¦                       EolVersionCheckTest.php
+    ¦                       GitIgnoreCheckTest.php
+    ¦                       HardcodedSecretsCheckTest.php
+    ¦                       MassAssignmentCheckTest.php
+    ¦                       OutdatedPackagesCheckTest.php
+    ¦                       PackageFreshnessCheckTest.php
+    ¦                       SqlInjectionCheckTest.php
+    ¦                       TlsVerificationCheckTest.php
+    ¦                       XxeCheckTest.php
+    ¦                       
     +---bin
     ¦       carbon
     ¦       carbon.bat
@@ -8928,6 +9129,45 @@ D:.
     ¦                   FontFactory.php
     ¦                   Line.php
     ¦                   TextBlock.php
+    ¦                   
+    +---jaydeep
+    ¦   +---laravel-guarddog
+    ¦       ¦   CHANGELOG.md
+    ¦       ¦   composer.json
+    ¦       ¦   LICENSE.md
+    ¦       ¦   README.md
+    ¦       ¦   
+    ¦       +---config
+    ¦       ¦       guarddog.php
+    ¦       ¦       
+    ¦       +---docs
+    ¦       ¦       console-output.png
+    ¦       ¦       security-report.png
+    ¦       ¦       
+    ¦       +---resources
+    ¦       ¦   +---views
+    ¦       ¦           report.blade.php
+    ¦       ¦           
+    ¦       +---src
+    ¦           ¦   GuardDogServiceProvider.php
+    ¦           ¦   
+    ¦           +---Commands
+    ¦           ¦       GuardDogScanCommand.php
+    ¦           ¦       
+    ¦           +---Core
+    ¦           ¦       ScannerManager.php
+    ¦           ¦       SecurityScoreCalculator.php
+    ¦           ¦       
+    ¦           +---Report
+    ¦           ¦       ConsoleReporter.php
+    ¦           ¦       HtmlReportGenerator.php
+    ¦           ¦       
+    ¦           +---Scanners
+    ¦                   CSRFScanner.php
+    ¦                   EnvScanner.php
+    ¦                   RouteScanner.php
+    ¦                   SQLScanner.php
+    ¦                   UploadScanner.php
     ¦                   
     +---jean85
     ¦   +---pretty-package-versions
@@ -12219,6 +12459,46 @@ D:.
     ¦           +---Console
     ¦                   TinkerCommand.php
     ¦                   
+    +---laravel-notification-channels
+    ¦   +---webpush
+    ¦       ¦   .editorconfig
+    ¦       ¦   CHANGELOG.md
+    ¦       ¦   composer.json
+    ¦       ¦   CONTRIBUTING.md
+    ¦       ¦   LICENSE.md
+    ¦       ¦   README.md
+    ¦       ¦   rector.php
+    ¦       ¦   
+    ¦       +---.github
+    ¦       ¦   +---workflows
+    ¦       ¦           tests.yml
+    ¦       ¦           
+    ¦       +---config
+    ¦       ¦       webpush.php
+    ¦       ¦       
+    ¦       +---migrations
+    ¦       ¦       create_push_subscriptions_table.php.stub
+    ¦       ¦       increase_push_subscriptions_endpoint_length.php.stub
+    ¦       ¦       
+    ¦       +---src
+    ¦           ¦   DeclarativeWebPushMessage.php
+    ¦           ¦   HasPushSubscriptions.php
+    ¦           ¦   PushSubscription.php
+    ¦           ¦   ReportHandler.php
+    ¦           ¦   ReportHandlerInterface.php
+    ¦           ¦   VapidKeysGenerateCommand.php
+    ¦           ¦   WebPushChannel.php
+    ¦           ¦   WebPushMessage.php
+    ¦           ¦   WebPushMessageInterface.php
+    ¦           ¦   WebPushServiceProvider.php
+    ¦           ¦   
+    ¦           +---Events
+    ¦           ¦       NotificationFailed.php
+    ¦           ¦       NotificationSent.php
+    ¦           ¦       
+    ¦           +---Exceptions
+    ¦                   MessageValidationFailed.php
+    ¦                   
     +---league
     ¦   +---commonmark
     ¦   ¦   ¦   .phpstorm.meta.php
@@ -12894,6 +13174,22 @@ D:.
     ¦       ¦       
     ¦       +---KeyValuePair
     ¦               Converter.php
+    ¦               
+    +---minishlink
+    ¦   +---web-push
+    ¦       ¦   composer.json
+    ¦       ¦   LICENSE
+    ¦       ¦   
+    ¦       +---src
+    ¦               ContentEncoding.php
+    ¦               Encryption.php
+    ¦               MessageSentReport.php
+    ¦               Notification.php
+    ¦               Subscription.php
+    ¦               SubscriptionInterface.php
+    ¦               Utils.php
+    ¦               VAPID.php
+    ¦               WebPush.php
     ¦               
     +---mockery
     ¦   +---mockery
@@ -14859,6 +15155,82 @@ D:.
     ¦                   NoPreReleaseSuffixException.php
     ¦                   UnsupportedVersionConstraintException.php
     ¦                   
+    +---php-http
+    ¦   +---discovery
+    ¦   ¦   ¦   .php-cs-fixer.php
+    ¦   ¦   ¦   CHANGELOG.md
+    ¦   ¦   ¦   composer.json
+    ¦   ¦   ¦   LICENSE
+    ¦   ¦   ¦   README.md
+    ¦   ¦   ¦   
+    ¦   ¦   +---src
+    ¦   ¦       ¦   ClassDiscovery.php
+    ¦   ¦       ¦   Exception.php
+    ¦   ¦       ¦   HttpAsyncClientDiscovery.php
+    ¦   ¦       ¦   HttpClientDiscovery.php
+    ¦   ¦       ¦   MessageFactoryDiscovery.php
+    ¦   ¦       ¦   NotFoundException.php
+    ¦   ¦       ¦   Psr17Factory.php
+    ¦   ¦       ¦   Psr17FactoryDiscovery.php
+    ¦   ¦       ¦   Psr18Client.php
+    ¦   ¦       ¦   Psr18ClientDiscovery.php
+    ¦   ¦       ¦   StreamFactoryDiscovery.php
+    ¦   ¦       ¦   UriFactoryDiscovery.php
+    ¦   ¦       ¦   
+    ¦   ¦       +---Composer
+    ¦   ¦       ¦       Plugin.php
+    ¦   ¦       ¦       
+    ¦   ¦       +---Exception
+    ¦   ¦       ¦       ClassInstantiationFailedException.php
+    ¦   ¦       ¦       DiscoveryFailedException.php
+    ¦   ¦       ¦       NoCandidateFoundException.php
+    ¦   ¦       ¦       NotFoundException.php
+    ¦   ¦       ¦       PuliUnavailableException.php
+    ¦   ¦       ¦       StrategyUnavailableException.php
+    ¦   ¦       ¦       
+    ¦   ¦       +---Strategy
+    ¦   ¦               CommonClassesStrategy.php
+    ¦   ¦               CommonPsr17ClassesStrategy.php
+    ¦   ¦               DiscoveryStrategy.php
+    ¦   ¦               MockClientStrategy.php
+    ¦   ¦               PuliBetaStrategy.php
+    ¦   ¦               
+    ¦   +---httplug
+    ¦   ¦   ¦   .php-cs-fixer.dist.php
+    ¦   ¦   ¦   CHANGELOG.md
+    ¦   ¦   ¦   composer.json
+    ¦   ¦   ¦   LICENSE
+    ¦   ¦   ¦   puli.json
+    ¦   ¦   ¦   README.md
+    ¦   ¦   ¦   
+    ¦   ¦   +---src
+    ¦   ¦       ¦   Exception.php
+    ¦   ¦       ¦   HttpAsyncClient.php
+    ¦   ¦       ¦   HttpClient.php
+    ¦   ¦       ¦   
+    ¦   ¦       +---Exception
+    ¦   ¦       ¦       HttpException.php
+    ¦   ¦       ¦       NetworkException.php
+    ¦   ¦       ¦       RequestAwareTrait.php
+    ¦   ¦       ¦       RequestException.php
+    ¦   ¦       ¦       TransferException.php
+    ¦   ¦       ¦       
+    ¦   ¦       +---Promise
+    ¦   ¦               HttpFulfilledPromise.php
+    ¦   ¦               HttpRejectedPromise.php
+    ¦   ¦               
+    ¦   +---promise
+    ¦       ¦   CHANGELOG.md
+    ¦       ¦   composer.json
+    ¦       ¦   LICENSE
+    ¦       ¦   phpstan.neon.dist
+    ¦       ¦   README.md
+    ¦       ¦   
+    ¦       +---src
+    ¦               FulfilledPromise.php
+    ¦               Promise.php
+    ¦               RejectedPromise.php
+    ¦               
     +---phpoption
     ¦   +---phpoption
     ¦       ¦   composer.json
@@ -17779,6 +18151,433 @@ D:.
     ¦                           BoundedOrderedMap.php
     ¦                           Filesize.php
     ¦                           
+    +---spomky-labs
+    ¦   +---base64url
+    ¦   ¦   ¦   composer.json
+    ¦   ¦   ¦   LICENSE
+    ¦   ¦   ¦   
+    ¦   ¦   +---.github
+    ¦   ¦   ¦       FUNDING.yml
+    ¦   ¦   ¦       
+    ¦   ¦   +---src
+    ¦   ¦           Base64Url.php
+    ¦   ¦           
+    ¦   +---pki-framework
+    ¦       ¦   composer.json
+    ¦       ¦   LICENSE
+    ¦       ¦   README.md
+    ¦       ¦   SECURITY.md
+    ¦       ¦   
+    ¦       +---src
+    ¦           +---ASN1
+    ¦           ¦   ¦   DERData.php
+    ¦           ¦   ¦   Element.php
+    ¦           ¦   ¦   
+    ¦           ¦   +---Component
+    ¦           ¦   ¦       Identifier.php
+    ¦           ¦   ¦       Length.php
+    ¦           ¦   ¦       
+    ¦           ¦   +---Exception
+    ¦           ¦   ¦       DecodeException.php
+    ¦           ¦   ¦       
+    ¦           ¦   +---Feature
+    ¦           ¦   ¦       ElementBase.php
+    ¦           ¦   ¦       Encodable.php
+    ¦           ¦   ¦       Stringable.php
+    ¦           ¦   ¦       
+    ¦           ¦   +---Type
+    ¦           ¦   ¦   ¦   BaseString.php
+    ¦           ¦   ¦   ¦   BaseTime.php
+    ¦           ¦   ¦   ¦   PrimitiveString.php
+    ¦           ¦   ¦   ¦   PrimitiveType.php
+    ¦           ¦   ¦   ¦   StringType.php
+    ¦           ¦   ¦   ¦   Structure.php
+    ¦           ¦   ¦   ¦   TaggedType.php
+    ¦           ¦   ¦   ¦   TimeType.php
+    ¦           ¦   ¦   ¦   UniversalClass.php
+    ¦           ¦   ¦   ¦   UnspecifiedType.php
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---Constructed
+    ¦           ¦   ¦   ¦       ConstructedString.php
+    ¦           ¦   ¦   ¦       Sequence.php
+    ¦           ¦   ¦   ¦       Set.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---Primitive
+    ¦           ¦   ¦   ¦       BitString.php
+    ¦           ¦   ¦   ¦       BMPString.php
+    ¦           ¦   ¦   ¦       Boolean.php
+    ¦           ¦   ¦   ¦       CharacterString.php
+    ¦           ¦   ¦   ¦       Enumerated.php
+    ¦           ¦   ¦   ¦       EOC.php
+    ¦           ¦   ¦   ¦       GeneralizedTime.php
+    ¦           ¦   ¦   ¦       GeneralString.php
+    ¦           ¦   ¦   ¦       GraphicString.php
+    ¦           ¦   ¦   ¦       IA5String.php
+    ¦           ¦   ¦   ¦       Integer.php
+    ¦           ¦   ¦   ¦       NullType.php
+    ¦           ¦   ¦   ¦       Number.php
+    ¦           ¦   ¦   ¦       NumericString.php
+    ¦           ¦   ¦   ¦       ObjectDescriptor.php
+    ¦           ¦   ¦   ¦       ObjectIdentifier.php
+    ¦           ¦   ¦   ¦       OctetString.php
+    ¦           ¦   ¦   ¦       PrintableString.php
+    ¦           ¦   ¦   ¦       Real.php
+    ¦           ¦   ¦   ¦       RelativeOID.php
+    ¦           ¦   ¦   ¦       T61String.php
+    ¦           ¦   ¦   ¦       UniversalString.php
+    ¦           ¦   ¦   ¦       UTCTime.php
+    ¦           ¦   ¦   ¦       UTF8String.php
+    ¦           ¦   ¦   ¦       VideotexString.php
+    ¦           ¦   ¦   ¦       VisibleString.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---Tagged
+    ¦           ¦   ¦           ApplicationType.php
+    ¦           ¦   ¦           ContextSpecificType.php
+    ¦           ¦   ¦           DERTaggedType.php
+    ¦           ¦   ¦           ExplicitlyTaggedType.php
+    ¦           ¦   ¦           ExplicitTagging.php
+    ¦           ¦   ¦           ImplicitlyTaggedType.php
+    ¦           ¦   ¦           ImplicitTagging.php
+    ¦           ¦   ¦           PrivateType.php
+    ¦           ¦   ¦           TaggedTypeWrap.php
+    ¦           ¦   ¦           
+    ¦           ¦   +---Util
+    ¦           ¦           BigInt.php
+    ¦           ¦           Flags.php
+    ¦           ¦           
+    ¦           +---CryptoBridge
+    ¦           ¦   ¦   Crypto.php
+    ¦           ¦   ¦   
+    ¦           ¦   +---Crypto
+    ¦           ¦           OpenSSLCrypto.php
+    ¦           ¦           
+    ¦           +---CryptoEncoding
+    ¦           ¦       PEM.php
+    ¦           ¦       PEMBundle.php
+    ¦           ¦       
+    ¦           +---CryptoTypes
+    ¦           ¦   +---AlgorithmIdentifier
+    ¦           ¦   ¦   ¦   AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦   AlgorithmIdentifierFactory.php
+    ¦           ¦   ¦   ¦   AlgorithmIdentifierProvider.php
+    ¦           ¦   ¦   ¦   GenericAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦   SpecificAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---Asymmetric
+    ¦           ¦   ¦   ¦       ECPublicKeyAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       Ed25519AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       Ed448AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       RFC8410EdAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       RFC8410XAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       RSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       RSAPSSSSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       X25519AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       X448AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---Cipher
+    ¦           ¦   ¦   ¦       AES128CBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       AES192CBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       AES256CBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       AESCBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       BlockCipherAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       CipherAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       DESCBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       DESEDE3CBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       RC2CBCAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---Feature
+    ¦           ¦   ¦   ¦       AlgorithmIdentifierType.php
+    ¦           ¦   ¦   ¦       AsymmetricCryptoAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       EncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       HashAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       PRFAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SignatureAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---Hash
+    ¦           ¦   ¦   ¦       HMACWithSHA1AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       HMACWithSHA224AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       HMACWithSHA256AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       HMACWithSHA384AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       HMACWithSHA512AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       MD5AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       RFC4231HMACAlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SHA1AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SHA224AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SHA256AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SHA2AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SHA384AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       SHA512AlgorithmIdentifier.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---Signature
+    ¦           ¦   ¦           ECDSAWithSHA1AlgorithmIdentifier.php
+    ¦           ¦   ¦           ECDSAWithSHA224AlgorithmIdentifier.php
+    ¦           ¦   ¦           ECDSAWithSHA256AlgorithmIdentifier.php
+    ¦           ¦   ¦           ECDSAWithSHA384AlgorithmIdentifier.php
+    ¦           ¦   ¦           ECDSAWithSHA512AlgorithmIdentifier.php
+    ¦           ¦   ¦           ECSignatureAlgorithmIdentifier.php
+    ¦           ¦   ¦           MD2WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           MD4WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           MD5WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           RFC3279RSASignatureAlgorithmIdentifier.php
+    ¦           ¦   ¦           RFC4055RSASignatureAlgorithmIdentifier.php
+    ¦           ¦   ¦           RSASignatureAlgorithmIdentifier.php
+    ¦           ¦   ¦           SHA1WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           SHA224WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           SHA256WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           SHA384WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           SHA512WithRSAEncryptionAlgorithmIdentifier.php
+    ¦           ¦   ¦           
+    ¦           ¦   +---Asymmetric
+    ¦           ¦   ¦   ¦   OneAsymmetricKey.php
+    ¦           ¦   ¦   ¦   PrivateKey.php
+    ¦           ¦   ¦   ¦   PrivateKeyInfo.php
+    ¦           ¦   ¦   ¦   PublicKey.php
+    ¦           ¦   ¦   ¦   PublicKeyInfo.php
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---Attribute
+    ¦           ¦   ¦   ¦       OneAsymmetricKeyAttributes.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---EC
+    ¦           ¦   ¦   ¦       ECConversion.php
+    ¦           ¦   ¦   ¦       ECPrivateKey.php
+    ¦           ¦   ¦   ¦       ECPublicKey.php
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---RFC8410
+    ¦           ¦   ¦   ¦   ¦   RFC8410PrivateKey.php
+    ¦           ¦   ¦   ¦   ¦   RFC8410PublicKey.php
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Curve25519
+    ¦           ¦   ¦   ¦   ¦       Curve25519PrivateKey.php
+    ¦           ¦   ¦   ¦   ¦       Curve25519PublicKey.php
+    ¦           ¦   ¦   ¦   ¦       Ed25519PrivateKey.php
+    ¦           ¦   ¦   ¦   ¦       Ed25519PublicKey.php
+    ¦           ¦   ¦   ¦   ¦       X25519PrivateKey.php
+    ¦           ¦   ¦   ¦   ¦       X25519PublicKey.php
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Curve448
+    ¦           ¦   ¦   ¦           Ed448PrivateKey.php
+    ¦           ¦   ¦   ¦           Ed448PublicKey.php
+    ¦           ¦   ¦   ¦           X448PrivateKey.php
+    ¦           ¦   ¦   ¦           X448PublicKey.php
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---RSA
+    ¦           ¦   ¦           RSAPrivateKey.php
+    ¦           ¦   ¦           RSAPublicKey.php
+    ¦           ¦   ¦           RSASSAPSSPrivateKey.php
+    ¦           ¦   ¦           
+    ¦           ¦   +---Signature
+    ¦           ¦           ECSignature.php
+    ¦           ¦           Ed25519Signature.php
+    ¦           ¦           Ed448Signature.php
+    ¦           ¦           GenericSignature.php
+    ¦           ¦           RSASignature.php
+    ¦           ¦           Signature.php
+    ¦           ¦           
+    ¦           +---X501
+    ¦           ¦   +---ASN1
+    ¦           ¦   ¦   ¦   Attribute.php
+    ¦           ¦   ¦   ¦   AttributeType.php
+    ¦           ¦   ¦   ¦   AttributeTypeAndValue.php
+    ¦           ¦   ¦   ¦   Name.php
+    ¦           ¦   ¦   ¦   RDN.php
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---AttributeValue
+    ¦           ¦   ¦   ¦   ¦   AttributeValue.php
+    ¦           ¦   ¦   ¦   ¦   CommonNameValue.php
+    ¦           ¦   ¦   ¦   ¦   CountryNameValue.php
+    ¦           ¦   ¦   ¦   ¦   DescriptionValue.php
+    ¦           ¦   ¦   ¦   ¦   GivenNameValue.php
+    ¦           ¦   ¦   ¦   ¦   LocalityNameValue.php
+    ¦           ¦   ¦   ¦   ¦   NameValue.php
+    ¦           ¦   ¦   ¦   ¦   OrganizationalUnitNameValue.php
+    ¦           ¦   ¦   ¦   ¦   OrganizationNameValue.php
+    ¦           ¦   ¦   ¦   ¦   PseudonymValue.php
+    ¦           ¦   ¦   ¦   ¦   SerialNumberValue.php
+    ¦           ¦   ¦   ¦   ¦   StateOrProvinceNameValue.php
+    ¦           ¦   ¦   ¦   ¦   SurnameValue.php
+    ¦           ¦   ¦   ¦   ¦   TitleValue.php
+    ¦           ¦   ¦   ¦   ¦   UnknownAttributeValue.php
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Feature
+    ¦           ¦   ¦   ¦           DirectoryString.php
+    ¦           ¦   ¦   ¦           PrintableStringValue.php
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---Collection
+    ¦           ¦   ¦           AttributeCollection.php
+    ¦           ¦   ¦           SequenceOfAttributes.php
+    ¦           ¦   ¦           SetOfAttributes.php
+    ¦           ¦   ¦           
+    ¦           ¦   +---DN
+    ¦           ¦   ¦       DNParser.php
+    ¦           ¦   ¦       
+    ¦           ¦   +---MatchingRule
+    ¦           ¦   ¦       BinaryMatch.php
+    ¦           ¦   ¦       CaseExactMatch.php
+    ¦           ¦   ¦       CaseIgnoreMatch.php
+    ¦           ¦   ¦       MatchingRule.php
+    ¦           ¦   ¦       StringPrepMatchingRule.php
+    ¦           ¦   ¦       
+    ¦           ¦   +---StringPrep
+    ¦           ¦       ¦   CheckBidiStep.php
+    ¦           ¦       ¦   InsignificantNonSubstringSpaceStep.php
+    ¦           ¦       ¦   MapStep.php
+    ¦           ¦       ¦   NormalizeStep.php
+    ¦           ¦       ¦   PrepareStep.php
+    ¦           ¦       ¦   ProhibitStep.php
+    ¦           ¦       ¦   StringPreparer.php
+    ¦           ¦       ¦   TranscodeStep.php
+    ¦           ¦       ¦   
+    ¦           ¦       +---Exception
+    ¦           ¦               StringPreparationException.php
+    ¦           ¦               
+    ¦           +---X509
+    ¦               +---AttributeCertificate
+    ¦               ¦   ¦   AttCertIssuer.php
+    ¦               ¦   ¦   AttCertValidityPeriod.php
+    ¦               ¦   ¦   AttributeCertificate.php
+    ¦               ¦   ¦   AttributeCertificateInfo.php
+    ¦               ¦   ¦   Attributes.php
+    ¦               ¦   ¦   Holder.php
+    ¦               ¦   ¦   IssuerSerial.php
+    ¦               ¦   ¦   ObjectDigestInfo.php
+    ¦               ¦   ¦   V2Form.php
+    ¦               ¦   ¦   
+    ¦               ¦   +---Attribute
+    ¦               ¦   ¦       AccessIdentityAttributeValue.php
+    ¦               ¦   ¦       AuthenticationInfoAttributeValue.php
+    ¦               ¦   ¦       ChargingIdentityAttributeValue.php
+    ¦               ¦   ¦       GroupAttributeValue.php
+    ¦               ¦   ¦       IetfAttrSyntax.php
+    ¦               ¦   ¦       IetfAttrValue.php
+    ¦               ¦   ¦       RoleAttributeValue.php
+    ¦               ¦   ¦       SvceAuthInfo.php
+    ¦               ¦   ¦       
+    ¦               ¦   +---Validation
+    ¦               ¦       ¦   ACValidationConfig.php
+    ¦               ¦       ¦   ACValidator.php
+    ¦               ¦       ¦   
+    ¦               ¦       +---Exception
+    ¦               ¦               ACValidationException.php
+    ¦               ¦               
+    ¦               +---Certificate
+    ¦               ¦   ¦   Certificate.php
+    ¦               ¦   ¦   CertificateBundle.php
+    ¦               ¦   ¦   CertificateChain.php
+    ¦               ¦   ¦   Extensions.php
+    ¦               ¦   ¦   TBSCertificate.php
+    ¦               ¦   ¦   Time.php
+    ¦               ¦   ¦   UniqueIdentifier.php
+    ¦               ¦   ¦   Validity.php
+    ¦               ¦   ¦   
+    ¦               ¦   +---Extension
+    ¦               ¦       ¦   AAControlsExtension.php
+    ¦               ¦       ¦   AuthorityInformationAccessExtension.php
+    ¦               ¦       ¦   AuthorityKeyIdentifierExtension.php
+    ¦               ¦       ¦   BasicConstraintsExtension.php
+    ¦               ¦       ¦   CertificatePoliciesExtension.php
+    ¦               ¦       ¦   CRLDistributionPointsExtension.php
+    ¦               ¦       ¦   ExtendedKeyUsageExtension.php
+    ¦               ¦       ¦   Extension.php
+    ¦               ¦       ¦   FreshestCRLExtension.php
+    ¦               ¦       ¦   InhibitAnyPolicyExtension.php
+    ¦               ¦       ¦   IssuerAlternativeNameExtension.php
+    ¦               ¦       ¦   KeyUsageExtension.php
+    ¦               ¦       ¦   NameConstraintsExtension.php
+    ¦               ¦       ¦   NoRevocationAvailableExtension.php
+    ¦               ¦       ¦   PolicyConstraintsExtension.php
+    ¦               ¦       ¦   PolicyMappingsExtension.php
+    ¦               ¦       ¦   SubjectAlternativeNameExtension.php
+    ¦               ¦       ¦   SubjectDirectoryAttributesExtension.php
+    ¦               ¦       ¦   SubjectInformationAccessExtension.php
+    ¦               ¦       ¦   SubjectKeyIdentifierExtension.php
+    ¦               ¦       ¦   TargetInformationExtension.php
+    ¦               ¦       ¦   UnknownExtension.php
+    ¦               ¦       ¦   
+    ¦               ¦       +---AccessDescription
+    ¦               ¦       ¦       AccessDescription.php
+    ¦               ¦       ¦       AuthorityAccessDescription.php
+    ¦               ¦       ¦       SubjectAccessDescription.php
+    ¦               ¦       ¦       
+    ¦               ¦       +---CertificatePolicy
+    ¦               ¦       ¦       CPSQualifier.php
+    ¦               ¦       ¦       DisplayText.php
+    ¦               ¦       ¦       NoticeReference.php
+    ¦               ¦       ¦       PolicyInformation.php
+    ¦               ¦       ¦       PolicyQualifierInfo.php
+    ¦               ¦       ¦       UserNoticeQualifier.php
+    ¦               ¦       ¦       
+    ¦               ¦       +---DistributionPoint
+    ¦               ¦       ¦       DistributionPoint.php
+    ¦               ¦       ¦       DistributionPointName.php
+    ¦               ¦       ¦       FullName.php
+    ¦               ¦       ¦       ReasonFlags.php
+    ¦               ¦       ¦       RelativeName.php
+    ¦               ¦       ¦       
+    ¦               ¦       +---NameConstraints
+    ¦               ¦       ¦       GeneralSubtree.php
+    ¦               ¦       ¦       GeneralSubtrees.php
+    ¦               ¦       ¦       
+    ¦               ¦       +---PolicyMappings
+    ¦               ¦       ¦       PolicyMapping.php
+    ¦               ¦       ¦       
+    ¦               ¦       +---Target
+    ¦               ¦               Target.php
+    ¦               ¦               TargetGroup.php
+    ¦               ¦               TargetName.php
+    ¦               ¦               Targets.php
+    ¦               ¦               
+    ¦               +---CertificationPath
+    ¦               ¦   ¦   CertificationPath.php
+    ¦               ¦   ¦   
+    ¦               ¦   +---Exception
+    ¦               ¦   ¦       PathBuildingException.php
+    ¦               ¦   ¦       PathValidationException.php
+    ¦               ¦   ¦       
+    ¦               ¦   +---PathBuilding
+    ¦               ¦   ¦       CertificationPathBuilder.php
+    ¦               ¦   ¦       
+    ¦               ¦   +---PathValidation
+    ¦               ¦   ¦       NameConstraintsMatcher.php
+    ¦               ¦   ¦       PathValidationConfig.php
+    ¦               ¦   ¦       PathValidationResult.php
+    ¦               ¦   ¦       PathValidator.php
+    ¦               ¦   ¦       SignaturePolicy.php
+    ¦               ¦   ¦       ValidatorState.php
+    ¦               ¦   ¦       
+    ¦               ¦   +---Policy
+    ¦               ¦           PolicyNode.php
+    ¦               ¦           PolicyTree.php
+    ¦               ¦           
+    ¦               +---CertificationRequest
+    ¦               ¦   ¦   Attributes.php
+    ¦               ¦   ¦   CertificationRequest.php
+    ¦               ¦   ¦   CertificationRequestInfo.php
+    ¦               ¦   ¦   
+    ¦               ¦   +---Attribute
+    ¦               ¦           ExtensionRequestValue.php
+    ¦               ¦           
+    ¦               +---Exception
+    ¦               ¦       X509ValidationException.php
+    ¦               ¦       
+    ¦               +---Feature
+    ¦               ¦       DateTimeHelper.php
+    ¦               ¦       SignedDER.php
+    ¦               ¦       
+    ¦               +---GeneralName
+    ¦                       DirectoryName.php
+    ¦                       DNSName.php
+    ¦                       EDIPartyName.php
+    ¦                       GeneralName.php
+    ¦                       GeneralNames.php
+    ¦                       IPAddress.php
+    ¦                       IPv4Address.php
+    ¦                       IPv6Address.php
+    ¦                       OtherName.php
+    ¦                       RegisteredID.php
+    ¦                       RFC822Name.php
+    ¦                       UniformResourceIdentifier.php
+    ¦                       X400Address.php
+    ¦                       
     +---staabm
     ¦   +---side-effects-detector
     ¦       ¦   composer.json
@@ -19662,210 +20461,468 @@ D:.
     ¦                   Str.php
     ¦                   
     +---voku
-        +---portable-ascii
-            ¦   .deepsource.toml
-            ¦   CHANGELOG.md
+    ¦   +---portable-ascii
+    ¦       ¦   .deepsource.toml
+    ¦       ¦   CHANGELOG.md
+    ¦       ¦   composer.json
+    ¦       ¦   LICENSE.txt
+    ¦       ¦   README.md
+    ¦       ¦   
+    ¦       +---src
+    ¦           +---voku
+    ¦               +---helper
+    ¦                   ¦   ASCII.php
+    ¦                   ¦   
+    ¦                   +---data
+    ¦                           ascii_by_languages.php
+    ¦                           ascii_extras_by_languages.php
+    ¦                           ascii_language_max_key.php
+    ¦                           ascii_ord.php
+    ¦                           x000.php
+    ¦                           x001.php
+    ¦                           x002.php
+    ¦                           x003.php
+    ¦                           x004.php
+    ¦                           x005.php
+    ¦                           x006.php
+    ¦                           x007.php
+    ¦                           x009.php
+    ¦                           x00a.php
+    ¦                           x00b.php
+    ¦                           x00c.php
+    ¦                           x00d.php
+    ¦                           x00e.php
+    ¦                           x00f.php
+    ¦                           x010.php
+    ¦                           x011.php
+    ¦                           x012.php
+    ¦                           x013.php
+    ¦                           x014.php
+    ¦                           x015.php
+    ¦                           x016.php
+    ¦                           x017.php
+    ¦                           x018.php
+    ¦                           x01d.php
+    ¦                           x01e.php
+    ¦                           x01f.php
+    ¦                           x020.php
+    ¦                           x021.php
+    ¦                           x022.php
+    ¦                           x023.php
+    ¦                           x024.php
+    ¦                           x025.php
+    ¦                           x026.php
+    ¦                           x027.php
+    ¦                           x028.php
+    ¦                           x029.php
+    ¦                           x02a.php
+    ¦                           x02c.php
+    ¦                           x02e.php
+    ¦                           x02f.php
+    ¦                           x030.php
+    ¦                           x031.php
+    ¦                           x032.php
+    ¦                           x033.php
+    ¦                           x04d.php
+    ¦                           x04e.php
+    ¦                           x04f.php
+    ¦                           x050.php
+    ¦                           x051.php
+    ¦                           x052.php
+    ¦                           x053.php
+    ¦                           x054.php
+    ¦                           x055.php
+    ¦                           x056.php
+    ¦                           x057.php
+    ¦                           x058.php
+    ¦                           x059.php
+    ¦                           x05a.php
+    ¦                           x05b.php
+    ¦                           x05c.php
+    ¦                           x05d.php
+    ¦                           x05e.php
+    ¦                           x05f.php
+    ¦                           x060.php
+    ¦                           x061.php
+    ¦                           x062.php
+    ¦                           x063.php
+    ¦                           x064.php
+    ¦                           x065.php
+    ¦                           x066.php
+    ¦                           x067.php
+    ¦                           x068.php
+    ¦                           x069.php
+    ¦                           x06a.php
+    ¦                           x06b.php
+    ¦                           x06c.php
+    ¦                           x06d.php
+    ¦                           x06e.php
+    ¦                           x06f.php
+    ¦                           x070.php
+    ¦                           x071.php
+    ¦                           x072.php
+    ¦                           x073.php
+    ¦                           x074.php
+    ¦                           x075.php
+    ¦                           x076.php
+    ¦                           x077.php
+    ¦                           x078.php
+    ¦                           x079.php
+    ¦                           x07a.php
+    ¦                           x07b.php
+    ¦                           x07c.php
+    ¦                           x07d.php
+    ¦                           x07e.php
+    ¦                           x07f.php
+    ¦                           x080.php
+    ¦                           x081.php
+    ¦                           x082.php
+    ¦                           x083.php
+    ¦                           x084.php
+    ¦                           x085.php
+    ¦                           x086.php
+    ¦                           x087.php
+    ¦                           x088.php
+    ¦                           x089.php
+    ¦                           x08a.php
+    ¦                           x08b.php
+    ¦                           x08c.php
+    ¦                           x08d.php
+    ¦                           x08e.php
+    ¦                           x08f.php
+    ¦                           x090.php
+    ¦                           x091.php
+    ¦                           x092.php
+    ¦                           x093.php
+    ¦                           x094.php
+    ¦                           x095.php
+    ¦                           x096.php
+    ¦                           x097.php
+    ¦                           x098.php
+    ¦                           x099.php
+    ¦                           x09a.php
+    ¦                           x09b.php
+    ¦                           x09c.php
+    ¦                           x09d.php
+    ¦                           x09e.php
+    ¦                           x09f.php
+    ¦                           x0a0.php
+    ¦                           x0a1.php
+    ¦                           x0a2.php
+    ¦                           x0a3.php
+    ¦                           x0a4.php
+    ¦                           x0ac.php
+    ¦                           x0ad.php
+    ¦                           x0ae.php
+    ¦                           x0af.php
+    ¦                           x0b0.php
+    ¦                           x0b1.php
+    ¦                           x0b2.php
+    ¦                           x0b3.php
+    ¦                           x0b4.php
+    ¦                           x0b5.php
+    ¦                           x0b6.php
+    ¦                           x0b7.php
+    ¦                           x0b8.php
+    ¦                           x0b9.php
+    ¦                           x0ba.php
+    ¦                           x0bb.php
+    ¦                           x0bc.php
+    ¦                           x0bd.php
+    ¦                           x0be.php
+    ¦                           x0bf.php
+    ¦                           x0c0.php
+    ¦                           x0c1.php
+    ¦                           x0c2.php
+    ¦                           x0c3.php
+    ¦                           x0c4.php
+    ¦                           x0c5.php
+    ¦                           x0c6.php
+    ¦                           x0c7.php
+    ¦                           x0c8.php
+    ¦                           x0c9.php
+    ¦                           x0ca.php
+    ¦                           x0cb.php
+    ¦                           x0cc.php
+    ¦                           x0cd.php
+    ¦                           x0ce.php
+    ¦                           x0cf.php
+    ¦                           x0d0.php
+    ¦                           x0d1.php
+    ¦                           x0d2.php
+    ¦                           x0d3.php
+    ¦                           x0d4.php
+    ¦                           x0d5.php
+    ¦                           x0d6.php
+    ¦                           x0d7.php
+    ¦                           x0f9.php
+    ¦                           x0fa.php
+    ¦                           x0fb.php
+    ¦                           x0fc.php
+    ¦                           x0fd.php
+    ¦                           x0fe.php
+    ¦                           x0ff.php
+    ¦                           x1d4.php
+    ¦                           x1d5.php
+    ¦                           x1d6.php
+    ¦                           x1d7.php
+    ¦                           x1f1.php
+    ¦                           
+    +---web-token
+        +---jwt-library
             ¦   composer.json
-            ¦   LICENSE.txt
+            ¦   LICENSE
             ¦   README.md
             ¦   
-            +---src
-                +---voku
-                    +---helper
-                        ¦   ASCII.php
-                        ¦   
-                        +---data
-                                ascii_by_languages.php
-                                ascii_extras_by_languages.php
-                                ascii_language_max_key.php
-                                ascii_ord.php
-                                x000.php
-                                x001.php
-                                x002.php
-                                x003.php
-                                x004.php
-                                x005.php
-                                x006.php
-                                x007.php
-                                x009.php
-                                x00a.php
-                                x00b.php
-                                x00c.php
-                                x00d.php
-                                x00e.php
-                                x00f.php
-                                x010.php
-                                x011.php
-                                x012.php
-                                x013.php
-                                x014.php
-                                x015.php
-                                x016.php
-                                x017.php
-                                x018.php
-                                x01d.php
-                                x01e.php
-                                x01f.php
-                                x020.php
-                                x021.php
-                                x022.php
-                                x023.php
-                                x024.php
-                                x025.php
-                                x026.php
-                                x027.php
-                                x028.php
-                                x029.php
-                                x02a.php
-                                x02c.php
-                                x02e.php
-                                x02f.php
-                                x030.php
-                                x031.php
-                                x032.php
-                                x033.php
-                                x04d.php
-                                x04e.php
-                                x04f.php
-                                x050.php
-                                x051.php
-                                x052.php
-                                x053.php
-                                x054.php
-                                x055.php
-                                x056.php
-                                x057.php
-                                x058.php
-                                x059.php
-                                x05a.php
-                                x05b.php
-                                x05c.php
-                                x05d.php
-                                x05e.php
-                                x05f.php
-                                x060.php
-                                x061.php
-                                x062.php
-                                x063.php
-                                x064.php
-                                x065.php
-                                x066.php
-                                x067.php
-                                x068.php
-                                x069.php
-                                x06a.php
-                                x06b.php
-                                x06c.php
-                                x06d.php
-                                x06e.php
-                                x06f.php
-                                x070.php
-                                x071.php
-                                x072.php
-                                x073.php
-                                x074.php
-                                x075.php
-                                x076.php
-                                x077.php
-                                x078.php
-                                x079.php
-                                x07a.php
-                                x07b.php
-                                x07c.php
-                                x07d.php
-                                x07e.php
-                                x07f.php
-                                x080.php
-                                x081.php
-                                x082.php
-                                x083.php
-                                x084.php
-                                x085.php
-                                x086.php
-                                x087.php
-                                x088.php
-                                x089.php
-                                x08a.php
-                                x08b.php
-                                x08c.php
-                                x08d.php
-                                x08e.php
-                                x08f.php
-                                x090.php
-                                x091.php
-                                x092.php
-                                x093.php
-                                x094.php
-                                x095.php
-                                x096.php
-                                x097.php
-                                x098.php
-                                x099.php
-                                x09a.php
-                                x09b.php
-                                x09c.php
-                                x09d.php
-                                x09e.php
-                                x09f.php
-                                x0a0.php
-                                x0a1.php
-                                x0a2.php
-                                x0a3.php
-                                x0a4.php
-                                x0ac.php
-                                x0ad.php
-                                x0ae.php
-                                x0af.php
-                                x0b0.php
-                                x0b1.php
-                                x0b2.php
-                                x0b3.php
-                                x0b4.php
-                                x0b5.php
-                                x0b6.php
-                                x0b7.php
-                                x0b8.php
-                                x0b9.php
-                                x0ba.php
-                                x0bb.php
-                                x0bc.php
-                                x0bd.php
-                                x0be.php
-                                x0bf.php
-                                x0c0.php
-                                x0c1.php
-                                x0c2.php
-                                x0c3.php
-                                x0c4.php
-                                x0c5.php
-                                x0c6.php
-                                x0c7.php
-                                x0c8.php
-                                x0c9.php
-                                x0ca.php
-                                x0cb.php
-                                x0cc.php
-                                x0cd.php
-                                x0ce.php
-                                x0cf.php
-                                x0d0.php
-                                x0d1.php
-                                x0d2.php
-                                x0d3.php
-                                x0d4.php
-                                x0d5.php
-                                x0d6.php
-                                x0d7.php
-                                x0f9.php
-                                x0fa.php
-                                x0fb.php
-                                x0fc.php
-                                x0fd.php
-                                x0fe.php
-                                x0ff.php
-                                x1d4.php
-                                x1d5.php
-                                x1d6.php
-                                x1d7.php
-                                x1f1.php
-                                
+            +---.github
+            ¦   ¦   CONTRIBUTING.md
+            ¦   ¦   FUNDING.yml
+            ¦   ¦   PULL_REQUEST_TEMPLATE.md
+            ¦   ¦   stale.yml
+            ¦   ¦   
+            ¦   +---workflows
+            ¦           auto-switch-default-branch.yml
+            ¦           
+            +---Checker
+            ¦       AlgorithmChecker.php
+            ¦       AudienceChecker.php
+            ¦       CallableChecker.php
+            ¦       ClaimChecker.php
+            ¦       ClaimCheckerManager.php
+            ¦       ClaimCheckerManagerFactory.php
+            ¦       ClaimExceptionInterface.php
+            ¦       ExpirationTimeChecker.php
+            ¦       HeaderChecker.php
+            ¦       HeaderCheckerManager.php
+            ¦       HeaderCheckerManagerFactory.php
+            ¦       InvalidClaimException.php
+            ¦       InvalidHeaderException.php
+            ¦       IsEqualChecker.php
+            ¦       IssuedAtChecker.php
+            ¦       IssuerChecker.php
+            ¦       MissingMandatoryClaimException.php
+            ¦       MissingMandatoryHeaderParameterException.php
+            ¦       NotBeforeChecker.php
+            ¦       TokenTypeSupport.php
+            ¦       UnencodedPayloadChecker.php
+            ¦       
+            +---Console
+            ¦       AddKeyIntoKeysetCommand.php
+            ¦       EcKeyGeneratorCommand.php
+            ¦       EcKeysetGeneratorCommand.php
+            ¦       GeneratorCommand.php
+            ¦       GetThumbprintCommand.php
+            ¦       JKULoaderCommand.php
+            ¦       KeyAnalyzerCommand.php
+            ¦       KeyFileLoaderCommand.php
+            ¦       KeysetAnalyzerCommand.php
+            ¦       MergeKeysetCommand.php
+            ¦       NoneKeyGeneratorCommand.php
+            ¦       ObjectOutputCommand.php
+            ¦       OctKeyGeneratorCommand.php
+            ¦       OctKeysetGeneratorCommand.php
+            ¦       OkpKeyGeneratorCommand.php
+            ¦       OkpKeysetGeneratorCommand.php
+            ¦       OptimizeRsaKeyCommand.php
+            ¦       P12CertificateLoaderCommand.php
+            ¦       PemConverterCommand.php
+            ¦       Pkcs8ConverterCommand.php
+            ¦       PublicKeyCommand.php
+            ¦       PublicKeysetCommand.php
+            ¦       RotateKeysetCommand.php
+            ¦       RsaKeyGeneratorCommand.php
+            ¦       RsaKeysetGeneratorCommand.php
+            ¦       SecretKeyGeneratorCommand.php
+            ¦       X509CertificateLoaderCommand.php
+            ¦       X5ULoaderCommand.php
+            ¦       
+            +---Core
+            ¦   ¦   Algorithm.php
+            ¦   ¦   AlgorithmManager.php
+            ¦   ¦   AlgorithmManagerFactory.php
+            ¦   ¦   JWK.php
+            ¦   ¦   JWKSet.php
+            ¦   ¦   JWT.php
+            ¦   ¦   
+            ¦   +---Util
+            ¦       ¦   Base64UrlSafe.php
+            ¦       ¦   BigInteger.php
+            ¦       ¦   ECKey.php
+            ¦       ¦   ECSignature.php
+            ¦       ¦   Hash.php
+            ¦       ¦   JsonConverter.php
+            ¦       ¦   KeyChecker.php
+            ¦       ¦   OKPKey.php
+            ¦       ¦   RSAKey.php
+            ¦       ¦   
+            ¦       +---Ecc
+            ¦               BrainpoolCurve.php
+            ¦               Curve.php
+            ¦               EcDH.php
+            ¦               Math.php
+            ¦               ModularArithmetic.php
+            ¦               NistCurve.php
+            ¦               Point.php
+            ¦               PrivateKey.php
+            ¦               PublicKey.php
+            ¦               
+            +---Encryption
+            ¦   ¦   JWE.php
+            ¦   ¦   JWEBuilder.php
+            ¦   ¦   JWEBuilderFactory.php
+            ¦   ¦   JWEDecrypter.php
+            ¦   ¦   JWEDecrypterFactory.php
+            ¦   ¦   JWELoader.php
+            ¦   ¦   JWELoaderFactory.php
+            ¦   ¦   JWETokenSupport.php
+            ¦   ¦   Recipient.php
+            ¦   ¦   
+            ¦   +---Algorithm
+            ¦   ¦   ¦   ContentEncryptionAlgorithm.php
+            ¦   ¦   ¦   KeyEncryptionAlgorithm.php
+            ¦   ¦   ¦   
+            ¦   ¦   +---ContentEncryption
+            ¦   ¦   ¦       A128CBCHS256.php
+            ¦   ¦   ¦       A128GCM.php
+            ¦   ¦   ¦       A192CBCHS384.php
+            ¦   ¦   ¦       A192GCM.php
+            ¦   ¦   ¦       A256CBCHS512.php
+            ¦   ¦   ¦       A256GCM.php
+            ¦   ¦   ¦       AESCBCHS.php
+            ¦   ¦   ¦       AESGCM.php
+            ¦   ¦   ¦       
+            ¦   ¦   +---KeyEncryption
+            ¦   ¦       ¦   A128GCMKW.php
+            ¦   ¦       ¦   A128KW.php
+            ¦   ¦       ¦   A192GCMKW.php
+            ¦   ¦       ¦   A192KW.php
+            ¦   ¦       ¦   A256GCMKW.php
+            ¦   ¦       ¦   A256KW.php
+            ¦   ¦       ¦   AbstractECDH.php
+            ¦   ¦       ¦   AbstractECDHAESKW.php
+            ¦   ¦       ¦   AESGCMKW.php
+            ¦   ¦       ¦   AESKW.php
+            ¦   ¦       ¦   Dir.php
+            ¦   ¦       ¦   DirectEncryption.php
+            ¦   ¦       ¦   ECDHES.php
+            ¦   ¦       ¦   ECDHESA128KW.php
+            ¦   ¦       ¦   ECDHESA192KW.php
+            ¦   ¦       ¦   ECDHESA256KW.php
+            ¦   ¦       ¦   ECDHESAESKW.php
+            ¦   ¦       ¦   ECDHSS.php
+            ¦   ¦       ¦   ECDHSSA128KW.php
+            ¦   ¦       ¦   ECDHSSA192KW.php
+            ¦   ¦       ¦   ECDHSSA256KW.php
+            ¦   ¦       ¦   ECDHSSAESKW.php
+            ¦   ¦       ¦   KeyAgreement.php
+            ¦   ¦       ¦   KeyAgreementWithKeyWrapping.php
+            ¦   ¦       ¦   KeyEncryption.php
+            ¦   ¦       ¦   KeyWrapping.php
+            ¦   ¦       ¦   PBES2AESKW.php
+            ¦   ¦       ¦   PBES2HS256A128KW.php
+            ¦   ¦       ¦   PBES2HS384A192KW.php
+            ¦   ¦       ¦   PBES2HS512A256KW.php
+            ¦   ¦       ¦   RSA.php
+            ¦   ¦       ¦   RSA15.php
+            ¦   ¦       ¦   RSAOAEP.php
+            ¦   ¦       ¦   RSAOAEP256.php
+            ¦   ¦       ¦   
+            ¦   ¦       +---Util
+            ¦   ¦               ConcatKDF.php
+            ¦   ¦               RSACrypt.php
+            ¦   ¦               
+            ¦   +---Serializer
+            ¦           CompactSerializer.php
+            ¦           JSONFlattenedSerializer.php
+            ¦           JSONGeneralSerializer.php
+            ¦           JWESerializer.php
+            ¦           JWESerializerManager.php
+            ¦           JWESerializerManagerFactory.php
+            ¦           
+            +---KeyManagement
+            ¦   ¦   JKUFactory.php
+            ¦   ¦   JWKFactory.php
+            ¦   ¦   UrlKeySetFactory.php
+            ¦   ¦   X5UFactory.php
+            ¦   ¦   
+            ¦   +---Analyzer
+            ¦   ¦       AlgorithmAnalyzer.php
+            ¦   ¦       ES256KeyAnalyzer.php
+            ¦   ¦       ES384KeyAnalyzer.php
+            ¦   ¦       ES512KeyAnalyzer.php
+            ¦   ¦       ESKeyAnalyzer.php
+            ¦   ¦       HS256KeyAnalyzer.php
+            ¦   ¦       HS384KeyAnalyzer.php
+            ¦   ¦       HS512KeyAnalyzer.php
+            ¦   ¦       HSKeyAnalyzer.php
+            ¦   ¦       KeyAnalyzer.php
+            ¦   ¦       KeyAnalyzerManager.php
+            ¦   ¦       KeyIdentifierAnalyzer.php
+            ¦   ¦       KeysetAnalyzer.php
+            ¦   ¦       KeysetAnalyzerManager.php
+            ¦   ¦       Message.php
+            ¦   ¦       MessageBag.php
+            ¦   ¦       MixedKeyTypes.php
+            ¦   ¦       MixedPublicAndPrivateKeys.php
+            ¦   ¦       NoneAnalyzer.php
+            ¦   ¦       OctAnalyzer.php
+            ¦   ¦       RsaAnalyzer.php
+            ¦   ¦       UsageAnalyzer.php
+            ¦   ¦       ZxcvbnKeyAnalyzer.php
+            ¦   ¦       
+            ¦   +---KeyConverter
+            ¦           ECKey.php
+            ¦           KeyConverter.php
+            ¦           RSAKey.php
+            ¦           
+            +---NestedToken
+            ¦       NestedTokenBuilder.php
+            ¦       NestedTokenBuilderFactory.php
+            ¦       NestedTokenLoader.php
+            ¦       NestedTokenLoaderFactory.php
+            ¦       
+            +---Signature
+                ¦   JWS.php
+                ¦   JWSBuilder.php
+                ¦   JWSBuilderFactory.php
+                ¦   JWSLoader.php
+                ¦   JWSLoaderFactory.php
+                ¦   JWSTokenSupport.php
+                ¦   JWSVerifier.php
+                ¦   JWSVerifierFactory.php
+                ¦   Signature.php
+                ¦   
+                +---Algorithm
+                ¦   ¦   ECDSA.php
+                ¦   ¦   EdDSA.php
+                ¦   ¦   ES256.php
+                ¦   ¦   ES384.php
+                ¦   ¦   ES512.php
+                ¦   ¦   HMAC.php
+                ¦   ¦   HS256.php
+                ¦   ¦   HS384.php
+                ¦   ¦   HS512.php
+                ¦   ¦   MacAlgorithm.php
+                ¦   ¦   None.php
+                ¦   ¦   PS256.php
+                ¦   ¦   PS384.php
+                ¦   ¦   PS512.php
+                ¦   ¦   RS256.php
+                ¦   ¦   RS384.php
+                ¦   ¦   RS512.php
+                ¦   ¦   RSAPKCS1.php
+                ¦   ¦   RSAPSS.php
+                ¦   ¦   SignatureAlgorithm.php
+                ¦   ¦   
+                ¦   +---Util
+                ¦           RSA.php
+                ¦           
+                +---Serializer
+                        CompactSerializer.php
+                        JSONFlattenedSerializer.php
+                        JSONGeneralSerializer.php
+                        JWSSerializer.php
+                        JWSSerializerManager.php
+                        JWSSerializerManagerFactory.php
+                        Serializer.php
+                        
