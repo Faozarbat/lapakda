@@ -92,7 +92,7 @@
 
     <!-- HEADER -->
     <header class="bg-white sticky top-0 z-40 border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
+        <div class="max-w-3xl mx-auto px-5 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-[#B9232D] flex items-center justify-center text-white font-extrabold text-xl shadow-sm">
                     L
@@ -126,7 +126,7 @@
 
     <!-- TOP BANNER PWA (Masa Tunggu 24 Jam) -->
     <div x-show="showTopBanner" x-cloak class="bg-[#B9232D] text-white border-b border-red-800">
-        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+        <div class="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
             <div class="flex items-center gap-2">
                 <div class="w-6 h-6 bg-white text-[#B9232D] rounded-md flex items-center justify-center font-extrabold text-[10px] flex-shrink-0">L</div>
                 <p class="text-[11px] font-bold leading-tight">Install Aplikasi LapakDA</p>
@@ -138,7 +138,7 @@
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto px-5 pt-5">
+    <main class="max-w-3xl mx-auto px-4 pt-5">
         
         <!-- Sapaan & Pencarian -->
         <div class="mb-6">

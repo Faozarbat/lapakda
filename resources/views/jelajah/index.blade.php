@@ -55,7 +55,7 @@
 
     <!-- HEADER -->
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
@@ -76,7 +76,7 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 pt-4">
+    <main class="max-w-3xl mx-auto px-4 pt-4">
         
         <!-- SEARCH BAR GLOBAL -->
         <form action="{{ route('search.index') }}" method="GET" class="relative group mb-3">
@@ -265,7 +265,7 @@
             <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
         </div>
 
-        <div class="px-5 pb-6">
+        <div class="px-4 pb-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-base font-extrabold text-gray-900">Pilih Kecamatan</h3>
                 <button @click="filterOpen = false" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">
