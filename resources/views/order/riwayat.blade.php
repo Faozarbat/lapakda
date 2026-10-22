@@ -92,7 +92,7 @@
                             </div>
                             <a href="{{ route('chat.show', $order->id) }}" class="relative flex items-center justify-center gap-2 w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-100 transition-colors">
                                 Buka Chat / Tanya Penjual
-                                <span id="chat-badge-{{ $order->id }}" class="bg-[#B9232D] text-white text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}">
+                                <span id="chat-badge-{{ $order->id }}" class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}">
                                     {{ $order->unread_count }}
                                 </span>
                             </a>
@@ -171,7 +171,7 @@
                             <div class="flex gap-2">
                                 <a href="{{ route('chat.show', $order->id) }}" class="relative flex items-center justify-center gap-2 flex-1 bg-[#B9232D] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-red-800 transition-colors">
                                     Chat
-                                    <span id="chat-badge-{{ $order->id }}" class="bg-white text-[#B9232D] text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}">
+                                    <span id="chat-badge-{{ $order->id }}" class="bg-white text-blue-600 text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}">
                                         {{ $order->unread_count }}
                                     </span>
                                 </a>
@@ -202,7 +202,8 @@
                 currentLatestOrderId = data.latest_order_id;
             });
 
-            setInterval(() => {
+            // Fungsi untuk cek data
+            function checkRiwayatUpdates() {
                 fetch("{{ route('api.badge.count') }}")
                     .then(res => res.json())
                     .then(data => {
@@ -233,7 +234,17 @@
                         }
                     })
                     .catch(err => console.error('Polling error', err));
-            }, 10000); // Cek setiap 10 detik
+            }
+
+            // Panggil saat pertama dimuat
+            checkRiwayatUpdates();
+
+            // Panggil saat kembali dari Back button browser
+            window.addEventListener('pageshow', function(event) {
+                checkRiwayatUpdates();
+            });
+
+            setInterval(checkRiwayatUpdates, 3000); // Cek setiap 3 detik
         });
     </script>
     @endauth

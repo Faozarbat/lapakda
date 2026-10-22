@@ -49,7 +49,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 @auth
-                    <span id="nav-badge" class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white {{ (isset($totalBadge) && $totalBadge > 0) ? '' : 'hidden' }}">
+                    <span id="nav-badge" class="absolute -top-1.5 -right-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white {{ (isset($totalBadge) && $totalBadge > 0) ? '' : 'hidden' }}">
                         {{ $totalBadge > 9 ? '9+' : $totalBadge }}
                     </span>
                 @endauth
@@ -75,20 +75,38 @@
                 .then(res => res.json())
                 .then(data => {
                     const badge = document.getElementById('nav-badge');
-                    if (!badge) return;
-                    
-                    if (data.total > 0) {
-                        badge.textContent = data.total > 9 ? '9+' : data.total;
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
+                    if (badge) {
+                        if (data.total > 0) {
+                            badge.textContent = data.total > 9 ? '9+' : data.total;
+                            badge.classList.remove('hidden');
+                            
+                            // Tampilkan angka di ikon aplikasi PWA
+                            if ('setAppBadge' in navigator) {
+                                navigator.setAppBadge(data.total).catch(console.error);
+                            }
+                        } else {
+                            badge.classList.add('hidden');
+                            
+                            // Hapus badge di ikon aplikasi PWA
+                            if ('clearAppBadge' in navigator) {
+                                navigator.clearAppBadge().catch(console.error);
+                            }
+                        }
                     }
                 })
                 .catch(err => console.error('Failed to fetch badge count', err));
         }
         
-        // Cek setiap 15 detik
-        setInterval(updateNavBadge, 2000);
+        // Panggil saat pertama dimuat
+        updateNavBadge();
+        
+        // Panggil saat kembali dari Back button browser (Mengatasi masalah tidak reset di prod)
+        window.addEventListener('pageshow', function(event) {
+            updateNavBadge();
+        });
+
+        // Cek setiap 3 detik
+        setInterval(updateNavBadge, 3000);
     });
 </script>
 @endauth
