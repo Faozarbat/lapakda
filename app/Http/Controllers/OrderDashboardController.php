@@ -25,7 +25,15 @@ class OrderDashboardController extends Controller
         $totalSemua = array_sum($counts);
 
         // Query pesanan
-        $query = $store->orders()->with(['items', 'user'])->latest();
+        $query = $store->orders()
+            ->with(['items', 'user'])
+            ->withCount(['messages as unread_count' => function($q) {
+                $q->where('is_read', false)
+                  ->where(function($sub) {
+                      $sub->where('user_id', '!=', auth()->id())->orWhereNull('user_id');
+                  });
+            }])
+            ->latest();
 
         if ($statusFilter !== 'semua') {
             $query->where('status', $statusFilter);
@@ -44,6 +52,12 @@ class OrderDashboardController extends Controller
         // Query pesanan dari semua toko tersebut
         $query = Order::whereIn('store_id', $storeIds)
             ->with(['items', 'store', 'user'])
+            ->withCount(['messages as unread_count' => function($q) {
+                $q->where('is_read', false)
+                  ->where(function($sub) {
+                      $sub->where('user_id', '!=', auth()->id())->orWhereNull('user_id');
+                  });
+            }])
             ->latest();
 
         // Filter status (opsional, biar rapi)

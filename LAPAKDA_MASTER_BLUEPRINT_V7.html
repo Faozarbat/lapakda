@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LapakDA — Ultimate Technical Master Blueprint</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F8F9FA;
+            --text: #1F2937;
+            --primary: #B9232D;
+            --primary-light: #FFF5F5;
+            --border: #E5E7EB;
+            --code-bg: #1F2937;
+            --code-text: #F3F4F6;
+            --sidebar-bg: #FFFFFF;
+            --sidebar-width: 320px;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #111827;
+                --text: #F9FAFB;
+                --border: #374151;
+                --sidebar-bg: #1F2937;
+                --code-bg: #0F172A;
+                --primary-light: #3F1A1C;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 16px;
+            display: flex;
+        }
+        
+        /* === SIDEBAR === */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            padding: 24px 0;
+            flex-shrink: 0;
+        }
+        .sidebar h2 {
+            font-size: 1.2rem;
+            padding: 0 24px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .sidebar .group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6B7280;
+            padding: 0 24px;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .sidebar a {
+            display: block;
+            padding: 8px 24px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+        .sidebar a.sub { padding-left: 40px; font-size: 0.85rem; color: #4B5563; }
+
+        /* === MAIN CONTENT === */
+        .main {
+            flex-grow: 1;
+            padding: 50px 60px;
+            max-width: 1100px;
+            overflow-x: hidden;
+        }
+        .cover {
+            background: linear-gradient(135deg, #7F1D1D, var(--primary));
+            padding: 50px;
+            border-radius: 24px;
+            color: white;
+            margin-bottom: 50px;
+            box-shadow: 0 20px 40px -15px rgba(185, 35, 45, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .cover::after {
+            content: 'V7.0';
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            font-size: 10rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.05);
+            pointer-events: none;
+        }
+        .cover h1 { font-size: 3rem; margin-bottom: 15px; font-weight: 800; line-height: 1.1; }
+        .cover p { font-size: 1.2rem; opacity: 0.9; max-width: 600px; }
+        .cover .meta { margin-top: 30px; display: flex; gap: 40px; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; }
+        .cover .meta div { display: flex; flex-direction: column; }
+        .cover .meta strong { opacity: 0.7; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;}
+        
+        h2.section-title {
+            font-size: 2rem;
+            color: var(--primary);
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 12px;
+            margin: 60px 0 30px 0;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        h2.section-title .num {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+        
+        h3.sub-title { font-size: 1.4rem; margin: 40px 0 20px 0; font-weight: 700; color: #111827; }
+        h4 { font-size: 1.1rem; margin: 25px 0 15px 0; font-weight: 700; color: var(--primary); }
+        p { margin-bottom: 18px; color: #374151; }
+        ul, ol { margin-bottom: 25px; padding-left: 24px; }
+        li { margin-bottom: 10px; }
+        
+        /* === TABLES === */
+        .table-responsive { overflow-x: auto; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; background: var(--sidebar-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        th, td { border: 1px solid var(--border); padding: 14px 18px; text-align: left; vertical-align: top; }
+        th { background: var(--primary-light); color: var(--primary); font-weight: 700; white-space: nowrap; }
+        tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+        
+        /* === CODE BLOCKS === */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 24px;
+            border-radius: 14px;
+            overflow-x: auto;
+            margin-bottom: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 10px 20px -10px rgba(0,0,0,0.2);
+        }
+        pre code { background: none; color: inherit; padding: 0; font-weight: 400; font-size: 1em; }
+
+        /* === ALERTS === */
+        .alert {
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 6px solid;
+            font-size: 0.95rem;
+            background: var(--sidebar-bg);
+        }
+        .alert-warning { border-color: var(--warning); background: #FFFBEB; color: #92400E; }
+        .alert-danger { border-color: var(--danger); background: #FEF2F2; color: #991B1B; }
+        .alert-info { border-color: var(--info); background: #EFF6FF; color: #1E40AF; }
+        .alert-success { border-color: var(--success); background: #ECFDF5; color: #065F46; }
+        
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-primary { background: var(--primary); color: white; }
+        .badge-success { background: var(--success); color: white; }
+
+        /* === ACCORDION === */
+        details { background: var(--sidebar-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        summary { padding: 18px 24px; font-weight: 700; cursor: pointer; background: var(--bg); display: flex; align-items: center; font-size: 1.05rem; transition: background 0.2s; }
+        summary:hover { background: var(--primary-light); color: var(--primary); }
+        summary::-webkit-details-marker { display: none; }
+        summary::before { content: '▼'; margin-right: 15px; font-size: 0.8em; color: var(--primary); transition: transform 0.3s; }
+        details[open] summary::before { transform: rotate(180deg); }
+        details[open] summary { border-bottom: 1px solid var(--border); background: var(--primary-light); color: var(--primary); }
+        .details-content { padding: 24px; }
+
+        @media (max-width: 1024px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            .main { padding: 30px 20px; }
+            .cover h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <h2>LapakDA Blueprint</h2>
+        
+        <div class="group-title">BAGIAN I: FONDASI</div>
+        <a href="#pendahuluan">1. Pendahuluan & Aturan Emas</a>
+        <a href="#tech-stack" class="sub">Tech Stack & Arsitektur</a>
+        <a href="#database" class="sub">Skema Database (ERD)</a>
+        
+        <div class="group-title">BAGIAN II: ALUR BISNIS</div>
+        <a href="#alur-pembeli">2. Alur Pembeli & Guest</a>
+        <a href="#alur-penjual">3. Alur Penjual & Admin</a>
+        <a href="#alur-auth">4. Otentikasi & Normalisasi</a>
+
+        <div class="group-title">BAGIAN III: DEEP DIVE</div>
+        <a href="#deep-chat">5. Sistem Chat Privat</a>
+        <a href="#deep-order">6. Logika Order & Cart</a>
+        <a href="#deep-pwa">7. PWA & WebPush</a>
+
+        <div class="group-title">BAGIAN IV: BEDAH FILE</div>
+        <a href="#file-chat">8. ChatController.php</a>
+        <a href="#file-order">9. OrderController.php</a>
+        <a href="#file-store">10. Store.php (Model)</a>
+        
+        <div class="group-title">BAGIAN V: MAINTENANCE</div>
+        <a href="#troubleshoot">11. Troubleshooting & Setup</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        
+        <div class="cover">
+            <h1>LapakDA Master Blueprint</h1>
+            <p>Dokumen Referensi Teknis Omnibus (As-Built Documentation) untuk keberlangsungan proyek jangka panjang.</p>
+            <div class="meta">
+                <div><strong>Versi</strong> 7.0.0 (Ultimate)</div>
+                <div><strong>Terakhir Update</strong> 22 Oktober 2026</div>
+                <div><strong>Status</strong> <span class="badge badge-success">Production Ready</span></div>
+            </div>
+        </div>
+
+        <div class="alert alert-danger">
+            <strong>⚠️ GOLDEN RULES (ATURAN MUTLAK):</strong><br>
+            1. <strong>Jangan Menebak:</strong> Selalu cek dokumentasi ini atau buka file asli di VS Code sebelum mengubah kode.<br>
+            2. <strong>Metode Ganti:</strong> Gunakan instruksi "Cari baris X, ganti dengan Y". Jangan menimpa seluruh file jika hanya mengubah 1 baris.<br>
+            3. <strong>Timezone:</strong> Server menggunakan UTC. Logika bisnis (seperti <code>isOpenNow</code>) WAJIB dikonversi ke WIB (<code>now('Asia/Jakarta')</code>).<br>
+            4. <strong>UI/UX:</strong> Dilarang menggunakan <code>alert()</code> atau <code>confirm()</code> bawaan browser. Gunakan Alpine.js Toast (<code>window.dispatchEvent(new CustomEvent('show-toast'))</code>).<br>
+            5. <strong>Keamanan:</strong> Guest (tanpa login) TIDAK BOLEH bisa chat. Fitur chat diproteksi ganda (Backend Guard & Frontend UI).
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN I: FONDASI -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="pendahuluan"><span class="num">1</span> Pendahuluan & Arsitektur</h2>
+        <p>LapakDA adalah platform katalog online untuk UMKM (Resto & Toko). Aplikasi ini didesain agar pembeli bisa berbelanja tanpa harus mendaftar (Guest Mode), namun untuk fitur komunikasi (Chat), pendaftaran (Login) diwajibkan.</p>
+        
+        <h3 class="sub-title" id="tech-stack">Tech Stack & Arsitektur</h3>
+        <div class="table-responsive">
+            <table>
+                <tr><th>Komponen</th><th>Teknologi</th><th>Keterangan</th></tr>
+                <tr><td>Backend Framework</td><td>Laravel 11/13</td><td>PHP 8.3+. Menggunakan Eloquent ORM untuk relasi database.</td></tr>
+                <tr><td>Frontend</td><td>Blade, Alpine.js, Tailwind CSS</td><td>Reaktif (SPA-like) tanpa Vue/React. Interaksi cepat via Alpine.</td></tr>
+                <tr><td>Database</td><td>MySQL</td><td>Mendukung JSON column (untuk jam operasional) & Soft Deletes.</td></tr>
+                <tr><td>Image Processing</td><td>Intervention Image v3</td><td>GD Driver. Resize, pad, dan convert otomatis ke WebP.</td></tr>
+                <tr><td>Notifikasi</td><td>WebPush (VAPID)</td><td>Notifikasi native ke HP (PWA) via Service Worker.</td></tr>
+                <tr><td>Keamanan File</td><td>Laravel Storage (Local)</td><td>File tidak diakses publik langsung, menggunakan route terproteksi.</td></tr>
+            </table>
+        </div>
+
+        <h3 class="sub-title" id="database">Skema Database (ERD - Entity Relationship Diagram)</h3>
+        <p>Berikut adalah bedah lengkap seluruh tabel yang menyusun aplikasi LapakDA.</p>
+        
+        <details open>
+            <summary>Tabel <code>users</code></summary>
+            <div class="details-content">
+                <p>Menyimpan data Penjual, Pembeli, dan Admin. Login utama menggunakan nomor HP (tanpa email).</p>
+                <ul>
+                    <li><code>id</code>: Primary Key.</li>
+                    <li><code>name</code>: Nama lengkap user.</li>
+                    <li><code>nomor_hp</code>: Unik. Dinormalisasi ke format <code>628xxx</code>.</li>
+                    <li><code>password</code>: Hash password (default acak jika daftar via Guest).</li>
+                    <li><code>is_admin</code>: Boolean. Jika 1, bisa akses panel admin.</li>
+                    <li><code>password_set_at</code>: Waktu user mengatur password sendiri (bukan default).</li>
+                    <li><code>last_latitude</code> & <code>last_longitude</code>: Menyimpan lokasi terakhir (untuk checkout delivery).</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Tabel <code>stores</code></summary>
+            <div class="details-content">
+                <p>Data toko/resto milik Penjual.</p>
+                <ul>
+                    <li><code>owner_id</code>: Foreign Key ke <code>users.id</code>.</li>
+                    <li><code>nama</code>, <code>slug</code>: Nama toko dan URL friendly.</li>
+                    <li><code>kategori</code>: Enum ('resto', 'store').</li>
+                    <li><code>jam_operasional</code>: JSON. Menyimpan jam buka/tutup per hari.</li>
+                    <li><code>active_until</code>: Tanggal kedaluwarsa langganan (subscription).</li>
+                    <li><code>open_fee_paid</code>: Boolean. Menandai apakah biaya buka toko (untuk toko ke-2 dst) sudah lunas.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Tabel <code>orders</code> & <code>order_items</code></summary>
+            <div class="details-content">
+                <p>Data transaksi pesanan.</p>
+                <ul>
+                    <li><code>user_id</code>: Bisa NULL jika pembeli adalah Guest.</li>
+                    <li><code>session_id</code>: Digunakan untuk melacak pesanan Guest.</li>
+                    <li><code>status</code>: 'menunggu_konfirmasi', 'dikonfirmasi', 'selesai', 'dibatalkan'.</li>
+                    <li><code>chat_expires_at</code>: Waktu kedaluwarsa chat (5 jam setelah pesanan selesai).</li>
+                    <li><code>order_items</code>: Menyimpan <code>harga_saat_beli</code> (snapshot) agar histori tidak berubah jika harga produk naik.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Tabel <code>order_messages</code></summary>
+            <div class="details-content">
+                <p>Tabel khusus untuk Fitur Chat Privat.</p>
+                <ul>
+                    <li><code>order_id</code>: Foreign Key ke <code>orders.id</code>.</li>
+                    <li><code>user_id</code>: Pengirim pesan (bisa NULL jika Guest yang kirim).</li>
+                    <li><code>message</code>: Teks pesan.</li>
+                    <li><code>image_path</code>: Path gambar (jika mengirim foto).</li>
+                    <li><code>is_read</code>: Boolean (0 = Belum dibaca, 1 = Sudah dibaca). Menjadi kunci Badge Merah.</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN II: ALUR BISNIS -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="alur-pembeli"><span class="num">2</span> Alur Bisnis (End-to-End)</h2>
+        
+        <h3 class="sub-title">Alur Pembeli & Guest</h3>
+        <p>Pembeli dapat berbelanja tanpa akun. Data keranjang disimpan berdasarkan <code>session_id</code> browser.</p>
+        
+        <div class="alert alert-info">
+            <strong>Guest Register (Penting):</strong> Jika Guest mendaftar akun di tengah proses checkout, logika di <code>GuestAuthController@register</code> akan memindahkan seluruh pesanan dari <code>session_id</code> lama ke <code>user_id</code> baru. Guest tidak kehilangan pesanan.
+        </div>
+
+        <h4>Metode Checkout</h4>
+        <p>Di halaman checkout, user memilih:</p>
+        <ul>
+            <li><strong>Via WA:</strong> Redirect ke <code>wa.me</code> dengan ringkasan pesanan. Bisa dilakukan Guest.</li>
+            <li><strong>Via Chat App:</strong> Redirect ke halaman chat internal. Wajib Login.</li>
+        </ul>
+
+        <h3 class="sub-title" id="alur-penjual">Alur Penjual & Admin</h3>
+        <p>Penjual mengelola pesanan di Dashboard. Pesanan berstatus <code>menunggu_konfirmasi</code> akan memicu Push Notification ke HP Penjual. Penjual bisa mengubah status menjadi <code>dikonfirmasi</code> lalu <code>selesai</code>.</p>
+        <p>Admin (SaaS) mengelola platform secara global di <code>AdminDashboardController</code>, memverifikasi pembayaran langganan toko, dan mengelola voucher.</p>
+
+        <h3 class="sub-title" id="alur-auth">Otentikasi & Normalisasi No HP</h3>
+        <p>LapakDA menggunakan <code>PhoneNumber::normalize()</code> untuk menyeragamkan input user (misal: <code>0812...</code> menjadi <code>62812...</code>). Ini penting agar integrasi WhatsApp OTP berjalan lancar.</p>
+        <pre><code>// app/Support/PhoneNumber.php
+public static function normalize(string $nomor): string
+{
+    $bersih = preg_replace('/[^\d+]/', '', $nomor);
+    $bersih = ltrim($bersih, '+');
+
+    if (str_starts_with($bersih, '0')) {
+        return '62' . substr($bersih, 1); // 08xx -> 628xx
+    }
+    if (str_starts_with($bersih, '62')) {
+        return $bersih;
+    }
+    return '62' . $bersih;
+}</code></pre>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN III: DEEP DIVE FITUR -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="deep-chat"><span class="num">3</span> Sistem Chat Privat & Timer</h2>
+        <p>Fitur ini adalah fitur paling kompleks dengan aturan ketat:</p>
+        <ol>
+            <li>Hanya bisa diakses oleh Pembeli (login) dan Penjual.</li>
+            <li>Jika pesanan selesai, Penjual dilarang chat duluan (harus menunggu Pembeli).</li>
+            <li>Jika Pembeli chat, Timer 5 Jam (<code>chat_expires_at</code>) berjalan.</li>
+            <li>Jika Timer habis, chat menjadi <em>read-only</em> (input hilang).</li>
+        </ol>
+        
+        <h4>Mekanisme Polling & Unread Count</h4>
+        <p>Frontend menggunakan <code>setInterval</code> setiap 3 detik untuk memanggil fungsi <code>fetchMessages()</code>. Saat endpoint ini dipanggil, backend akan menandai pesan lawan bicara sebagai <code>is_read = 1</code>.</p>
+        <pre><code>// Di dalam ChatController@fetchMessages
+$this->markMessagesAsRead($order); 
+// ... lalu kembalikan data JSON pesan</code></pre>
+
+        <h2 class="section-title" id="deep-pwa"><span class="num">4</span> PWA & WebPush Notification</h2>
+        <p>Aplikasi ini dapat di-install ke Home Screen HP (PWA). Ikon aplikasi akan menampilkan *Badge* angka jika ada chat/pesanan baru menggunakan API <code>navigator.setAppBadge()</code>.</p>
+        
+        <div class="alert alert-warning">
+            <strong>Pentingnya Notification Badge:</strong> Di file <code>sw.js</code> dan class Notification, properti <code>badge</code> harus mengarah ke gambar monokrom (putih polos transparan). Jika menggunakan ikon berwarna, Android akan menampilkannya sebagai kotak abu-abu.
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN IV: BEDAH FILE (CODE ASLI) -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="file-chat"><span class="num">5</span> Bedah File: ChatController.php</h2>
+        <p>Ini adalah kode utuh dari <code>app/Http/Controllers/ChatController.php</code>. Semua logika validasi timer dan notifikasi ada di sini.</p>
+
+        <pre><code>&lt;?php
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use App\Models\OrderMessage;
+use App\Notifications\NewChatNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Str;
+
+class ChatController extends Controller
+{
+    public function show(Order $order)
+    {
+        $this->authorizeChat($order);
+        $this->markMessagesAsRead($order); // Tandai dibaca saat room dibuka
+
+        $messages = $order->messages;
+        $lawanBicara = (Auth::id() === $order->user_id) ? $order->store->owner : $order->user;
+
+        return view('chat.show', compact('order', 'messages', 'lawanBicara'));
+    }
+
+    public function send(Request $request, Order $order)
+    {
+        $this->authorizeChat($order);
+
+        // --- VALIDASI TIMER & ATURAN CHAT (Hardening) ---
+        if ($order->status === 'selesai') {
+            // 1. Tolak jika sesi sudah berakhir (lewat 5 jam)
+            if ($order->chat_expires_at !== null && now()->greaterThan($order->chat_expires_at)) {
+                return response()->json(['error' => 'Sesi obrolan telah berakhir (melebihi 5 jam).'], 403);
+            }
+            
+            // 2. Tolak jika Penjual mencoba chat duluan
+            if (is_null($order->chat_expires_at) && Auth::id() === $order->store->owner_id) {
+                return response()->json(['error' => 'Tunggu pembeli mengirim pesan terlebih dahulu.'], 403);
+            }
+        }
+        // ------------------------------------
+
+        $request->validate([
+            'message' => 'nullable|string|max:1000',
+            'image' => 'nullable|image|max:5120',
+        ]);
+
+        if (!$request->filled('message') && !$request->hasFile('image')) {
+            return response()->json(['error' => 'Pesan tidak boleh kosong'], 422);
+        }
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $this->prosesDanSimpanFoto($request->file('image'));
+        }
+
+        // Simpan pesan
+        $msg = OrderMessage::create([
+            'order_id' => $order->id,
+            'user_id' => Auth::id(), // Bisa NULL jika guest
+            'message' => $request->message,
+            'image_path' => $imagePath,
+        ]);
+
+        // --- LOGIKA NOTIFIKASI CHAT ---
+        $isSeller = Auth::id() === $order->store->owner_id;
+        $recipient = $isSeller ? $order->user : $order->store->owner;
+        
+        // Tentukan nama pengirim (Gunakan nama toko jika pengirim adalah penjual)
+        $senderName = Auth::check() ? Auth::user()->name : 'Pembeli (Guest)';
+        if (Auth::id() === $order->store->owner_id) {
+            $senderName = $order->store->nama;
+        }
+
+        // Kirim push notification jika penerima valid (Pembeli login / Penjual punya akun)
+        if ($recipient) {
+            $recipient->notify(new NewChatNotification($msg, $order, $senderName));
+        }
+        // ------------------------------
+
+        // Logika Timer 5 Jam (Hanya memicu jika order selesai & belum ada timer)
+        if ($order->status === 'selesai' && is_null($order->chat_expires_at)) {
+            $order->update([
+                'chat_expires_at' => now()->addHours(5),
+                'chat_initiated_by' => Auth::id() === $order->user_id ? 'buyer' : 'seller'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $msg->load('user')
+        ]);
+    }
+
+    public function fetchMessages(Order $order)
+    {
+        $this->authorizeChat($order);
+        $this->markMessagesAsRead($order);
+        
+        $messages = $order->messages()->with('user')->get()->map(function($msg) use ($order) {
+            // Tentukan nama tampilan: Nama Toko (jika penjual) atau Nama User/Guest
+            if ($msg->user_id === $order->store->owner_id) {
+                $msg->display_name = $order->store->nama;
+            } else {
+                $msg->display_name = $msg->user ? $msg->user->name : 'Pembeli (Guest)';
+            }
+            return $msg;
+        });
+        
+        return response()->json($messages);
+    }
+
+    public function badgeCount()
+    {
+        $authId = Auth::id();
+        $storeIds = Auth::user()->stores()->pluck('id');
+        
+        $pendingCount = Order::whereIn('store_id', $storeIds)->where('status', 'menunggu_konfirmasi')->count();
+        
+        $unreadChatCount = OrderMessage::whereHas('order', function($q) use ($authId, $storeIds) {
+            $q->where('user_id', $authId)->orWhereIn('store_id', $storeIds);
+        })->where('is_read', false)
+          ->where(function($q) use ($authId) {
+              $q->where('user_id', '!=', $authId)->orWhereNull('user_id');
+          })->count();
+
+        // Ambil jumlah unread per order_id untuk update badge di halaman riwayat
+        $unreadPerOrder = OrderMessage::whereHas('order', function($q) use ($authId, $storeIds) {
+            $q->where('user_id', $authId)->orWhereIn('store_id', $storeIds);
+        })->where('is_read', false)
+          ->where(function($q) use ($authId) {
+              $q->where('user_id', '!=', $authId)->orWhereNull('user_id');
+          })
+          ->selectRaw('order_id, count(*) as count')
+          ->groupBy('order_id')
+          ->pluck('count', 'order_id');
+
+        // Ambil ID order terbaru untuk deteksi orderan masuk (khusus penjual)
+        $latestOrderId = Order::whereIn('store_id', $storeIds)->max('id') ?? 0;
+          
+        return response()->json([
+            'total' => $pendingCount + $unreadChatCount,
+            'unread_per_order' => $unreadPerOrder,
+            'latest_order_id' => $latestOrderId
+        ]);
+    }
+
+    private function authorizeChat(Order $order)
+    {
+        $isBuyer = Auth::id() === $order->user_id;
+        $isSeller = Auth::id() === $order->store->owner_id;
+        
+        // Cek Fallback: Jika pesanan ini milik Guest (user_id null), cocokkan session_id
+        $isGuestBuyer = is_null($order->user_id) && session()->getId() === $order->session_id;
+
+        if (!$isBuyer && !$isSeller && !$isGuestBuyer) {
+            abort(403, 'Anda tidak berhak mengakses obrolan ini.');
+        }
+    }
+
+    private function markMessagesAsRead(Order $order): void
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $order->messages()
+            ->where('user_id', '!=', Auth::id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+    }
+
+    private function prosesDanSimpanFoto($file): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file);
+        $image->scaleDown(width: 800, height: 800);
+        $image->pad(800, 800, 'ffffff');
+        $namaFile = 'chat/' . Str::uuid() . '.webp';
+        Storage::disk('public')->put($namaFile, (string) $image->toWebp(80));
+        return $namaFile;
+    }
+}
+</code></pre>
+        <h2 class="section-title" id="file-order"><span class="num">6</span> Bedah File: OrderController.php</h2>
+        <p>File ini adalah pusat transaksi. Mengatur Checkout, Idempotency (anti double-submit), pemisahan Dine-in/Takeaway, dan Redirect ke WA.</p>
+
+        <details>
+            <summary>Klik untuk melihat kode utuh OrderController.php</summary>
+            <div class="details-content">
+                <pre><code>&lt;?php
+namespace App\Http\Controllers;
+
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\Store;
+use App\Notifications\NewOrderNotification;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+
+class OrderController extends Controller
+{
+    public function checkout(Request $request, Store $store)
+    {
+        // 1. Cegah Seller checkout di toko sendiri
+        if (auth()->check() && auth()->id() === $store->owner_id) {
+            return redirect()->route('store.show', [$store->kecamatan->slug, $store->slug])
+                ->with('error', 'Anda tidak dapat melakukan checkout di toko Anda sendiri.');
+        }
+
+        // 2. Ambil Cart berdasarkan session_id
+        $cart = $this->ambilCartAtauNull($request, $store);
+
+        // 3. Cek Toko Buka/Tutup (Model Store)
+        if (!$store->isOpenNow()) {
+            return redirect()->route('cart.show', $store->id)
+                ->with('error', 'Maaf, toko sedang tutup. Silakan pesan kembali pada jam operasional.');
+        }
+
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect()->route('store.show', [$store->kecamatan->slug, $store->slug])
+                ->with('error', 'Keranjang kamu kosong, tambahkan produk dulu.');
+        }
+
+        // 4. Cek ketersediaan produk
+        if ($redirect = $this->cekProdukMasihTersedia($cart, $store)) {
+            return $redirect;
+        }
+
+        return view('checkout.show', [
+            'store' => $store,
+            'cart' => $cart,
+            'idempotencyKey' => (string) Str::uuid(), // Kunci unik untuk mencegah double submit
+            'savedAddress' => auth()->check() ? auth()->user() : null,
+        ]);
+    }
+
+    public function store(Request $request, Store $store)
+    {
+        if (auth()->check() && auth()->id() === $store->owner_id) {
+            return redirect()->route('store.show', [$store->kecamatan->slug, $store->slug])
+                ->with('error', 'Anda tidak dapat melakukan checkout di toko Anda sendiri.');
+        }
+
+        // Validasi Input
+        $validated = $request->validate([
+            'idempotency_key' => 'required|string',
+            'checkout_method' => 'required|in:wa,chat', // Pilihan WA atau Chat
+            'fulfillment_type' => 'required|in:self_pickup,delivery',
+            'dine_in_qty' => 'required_if:fulfillment_type,self_pickup|array',
+            'dine_in_qty.*' => 'integer|min:0',
+            'table_number' => 'nullable|string|max:50',
+            'delivery_latitude' => 'required_if:fulfillment_type,delivery|nullable|numeric',
+            'delivery_longitude' => 'required_if:fulfillment_type,delivery|nullable|numeric',
+            'delivery_note' => 'nullable|string|max:255',
+        ]);
+
+        // HARDENING: Cegah Guest pakai Chat
+        if ($validated['checkout_method'] === 'chat' && !auth()->check()) {
+            return back()->withErrors(['checkout_method' => 'Silakan login terlebih dahulu untuk menggunakan fitur Chat.'])->withInput();
+        }
+
+        // IDEMPOTENCY KEY (Mencegah klik ganda)
+        $cacheKey = 'checkout_idempotency:' . $validated['idempotency_key'];
+        $hasilSebelumnya = Cache::get($cacheKey);
+        if ($hasilSebelumnya) {
+            return redirect()->away($hasilSebelumnya); // Langsung redirect ke hasil sebelumnya
+        }
+
+        $cart = $this->ambilCartAtauNull($request, $store);
+
+        if (!$store->isOpenNow()) {
+            return redirect()->route('cart.show', $store->id)->with('error', 'Maaf, toko sedang tutup.');
+        }
+
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect()->route('store.show', [$store->kecamatan->slug, $store->slug])->with('error', 'Keranjang kosong.');
+        }
+
+        if ($redirect = $this->cekProdukMasihTersedia($cart, $store)) {
+            return $redirect;
+        }
+
+        // Logika Pemisahan Dine-in / Takeaway (Khusus Resto)
+        $cartItems = array_values($cart->items->all());
+        $adaDineIn = false;
+
+        if ($store->kategori === 'resto' && $validated['fulfillment_type'] === 'self_pickup') {
+            foreach ($cartItems as $index => $item) {
+                $dineInQty = max(0, min((int) ($validated['dine_in_qty'][$index] ?? 0), $item->qty));
+                if ($dineInQty > 0) {
+                    $adaDineIn = true;
+                }
+            }
+        }
+
+        $wajibIsiMeja = $store->has_table_number && $adaDineIn;
+
+        if ($wajibIsiMeja && empty($validated['table_number'])) {
+            return back()->withErrors(['table_number' => 'Nomor meja wajib diisi.'])->withInput();
+        }
+
+        // SIMPAN ORDER
+        $order = Order::create([
+            'store_id' => $store->id,
+            'user_id' => auth()->check() ? auth()->id() : null, // NULL jika Guest
+            'session_id' => $request->session()->getId(),
+            'nomor_order' => 'TEMP-' . Str::random(10),
+            'fulfillment_type' => $validated['fulfillment_type'],
+            'delivery_latitude' => $validated['delivery_latitude'] ?? null,
+            'delivery_longitude' => $validated['delivery_longitude'] ?? null,
+            'delivery_note' => $validated['delivery_note'] ?? null,
+            'status' => 'menunggu_konfirmasi',
+            'payment_status' => 'unpaid',
+            'payment_method' => 'cod',
+            'platform_fee' => 0,
+        ]);
+
+        // Generate Nomor Order Unik
+        $order->update([
+            'nomor_order' => 'LPK-' . str_pad((string) $order->id, 4, '0', STR_PAD_LEFT),
+        ]);
+
+        // Simpan alamat terakhir user (jika login & delivery)
+        if (auth()->check() && $validated['fulfillment_type'] === 'delivery') {
+            auth()->user()->update([
+                'last_latitude' => $validated['delivery_latitude'],
+                'last_longitude' => $validated['delivery_longitude'],
+                'last_delivery_note' => $validated['delivery_note'],
+            ]);
+        }
+
+        // SIMPAN ITEMS (Memisahkan Dine-in dan Takeaway jika resto)
+        foreach ($cartItems as $index => $item) {
+            if ($validated['fulfillment_type'] === 'delivery') {
+                $order->items()->create([
+                    'product_id' => $item->product_id,
+                    'nama_produk_saat_beli' => $item->product->nama,
+                    'harga_saat_beli' => $item->product->harga,
+                    'qty' => $item->qty,
+                    'consumption_type' => null,
+                    'table_number' => null,
+                ]);
+                continue;
+            }
+
+            $dineInQty = ($store->kategori === 'resto') ? max(0, min((int) ($validated['dine_in_qty'][$index] ?? 0), $item->qty)) : 0;
+            $takeawayQty = $item->qty - $dineInQty;
+
+            if ($dineInQty > 0) {
+                $order->items()->create([
+                    'product_id' => $item->product_id,
+                    'nama_produk_saat_beli' => $item->product->nama,
+                    'harga_saat_beli' => $item->product->harga,
+                    'qty' => $dineInQty,
+                    'consumption_type' => 'dine_in',
+                    'table_number' => $wajibIsiMeja ? $validated['table_number'] : null,
+                ]);
+            }
+
+            if ($takeawayQty > 0) {
+                $order->items()->create([
+                    'product_id' => $item->product_id,
+                    'nama_produk_saat_beli' => $item->product->nama,
+                    'harga_saat_beli' => $item->product->harga,
+                    'qty' => $takeawayQty,
+                    'consumption_type' => 'takeaway',
+                    'table_number' => null,
+                ]);
+            }
+        }
+
+        $order->load('items');
+        
+        // Push Notification ke HP Penjual
+        if ($store->owner) {
+            $store->owner->notify(new NewOrderNotification($order, $store));
+        }
+
+        // Susun Pesan WA
+        $pesanWA = $this->susunRingkasanWA($order, $store);
+        $waUrl = 'https://wa.me/' . $store->nomor_wa . '?text=' . urlencode($pesanWA);
+
+        // Tentukan Redirect URL berdasarkan pilihan
+        $redirectUrl = ($validated['checkout_method'] === 'chat') 
+            ? route('chat.show', $order->id) 
+            : $waUrl;
+
+        // Simpan URL di Cache (Idempotency)
+        Cache::put($cacheKey, $redirectUrl, now()->addHour());
+
+        // Kosongkan Cart
+        $cart->items()->delete();
+        $cart->delete();
+
+        if ($validated['checkout_method'] === 'chat') {
+            return redirect()->route('order.riwayat')->with('success', 'Pesanan berhasil dibuat! Silakan buka chat dari daftar pesanan di bawah.');
+        }
+
+        return redirect()->away($waUrl);
+    }
+
+    public function riwayat(Request $request)
+    {
+        $myOrders = collect();
+        $incomingOrders = collect();
+
+        if (auth()->check()) {
+            $authId = auth()->id();
+
+            // Ambil riwayat belanja (Pembeli) + Unread Count untuk Badge di UI
+            $myOrders = Order::where(function($query) use ($request) {
+                    $query->where('user_id', auth()->id())
+                          ->orWhere('session_id', $request->session()->getId());
+                })
+                ->with(['store', 'items', 'review'])
+                ->withCount(['messages as unread_count' => function($q) use ($authId) {
+                    $q->where('is_read', false)
+                      ->where(function($sub) use ($authId) {
+                          $sub->where('user_id', '!=', $authId)->orWhereNull('user_id');
+                      });
+                }])
+                ->latest()
+                ->get();
+                
+            // Jika user punya toko, ambil pesanan masuk (sebagai penjual)
+            if (auth()->user()->stores->isNotEmpty()) {
+                $storeIds = auth()->user()->stores->pluck('id');
+                $incomingOrders = Order::whereIn('store_id', $storeIds)
+                    ->with(['items', 'store', 'user'])
+                    ->withCount(['messages as unread_count' => function($q) use ($authId) {
+                        $q->where('is_read', false)
+                          ->where(function($sub) use ($authId) {
+                              $sub->where('user_id', '!=', $authId)->orWhereNull('user_id');
+                          });
+                    }])
+                    ->latest()
+                    ->get();
+            }
+        } else {
+            // Jika guest, cari berdasarkan session_id
+            $myOrders = Order::where('session_id', $request->session()->getId())
+                ->with(['store', 'items', 'review'])
+                ->latest()
+                ->get();
+        }
+
+        return view('order.riwayat', compact('myOrders', 'incomingOrders'));
+    }
+
+    private function ambilCartAtauNull(Request $request, Store $store): ?Cart
+    {
+        return Cart::where('session_id', $request->session()->getId())
+            ->where('store_id', $store->id)
+            ->with('items.product')
+            ->first();
+    }
+
+    private function cekProdukMasihTersedia(Cart $cart, Store $store): ?RedirectResponse
+    {
+        $tidakTersedia = $cart->items->filter(fn ($item) => ! $item->product->status_tersedia);
+
+        if ($tidakTersedia->isEmpty()) {
+            return null;
+        }
+
+        $namaProduk = $tidakTersedia->pluck('product.nama')->implode(', ');
+
+        return redirect()
+            ->route('cart.show', $store->id)
+            ->with('error', "Produk berikut sudah tidak tersedia, silakan hapus dari keranjang: {$namaProduk}");
+    }
+
+    private function susunRingkasanWA(Order $order, Store $store): string
+    {
+        $baris = [];
+        $baris[] = "Halo {$store->nama}, saya mau pesan (Order #{$order->nomor_order}):";
+        $baris[] = '';
+
+        $total = 0;
+        foreach ($order->items as $item) {
+            $subtotal = $item->harga_saat_beli * $item->qty;
+            $total += $subtotal;
+
+            $keterangan = match ($item->consumption_type) {
+                'dine_in' => ' (Makan di tempat)',
+                'takeaway' => ' (Bungkus)',
+                default => '',
+            };
+
+            $baris[] = "- {$item->nama_produk_saat_beli} x{$item->qty} = Rp"
+                . number_format($subtotal, 0, ',', '.') . $keterangan;
+        }
+
+        $baris[] = '';
+        $baris[] = 'Total: Rp' . number_format($total, 0, ',', '.');
+
+        return implode("\n", $baris);
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <h2 class="section-title" id="file-store"><span class="num">7</span> Bedah File: Store.php (Model)</h2>
+        <p>Model ini menyimpan logika operasional toko yang sangat krusial.</p>
+        
+        <details open>
+            <summary>Fungsi <code>isOpenNow()</code> (Logika Buka/Tutup)</summary>
+            <div class="details-content">
+                <p>Menangani JSON <code>jam_operasional</code> dan mengonversi waktu server ke WIB.</p>
+                <pre><code>public function isOpenNow()
+{
+    if (empty($this->jam_operasional)) return true;
+
+    $waktuSekarang = now('Asia/Jakarta'); // Wajib WIB
+    $days = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+    $hariIni = $days[$waktuSekarang->dayOfWeek]; 
+    
+    $jadwalHariIni = $this->jam_operasional[$hariIni] ?? null;
+
+    if (!$jadwalHariIni || ($jadwalHariIni['libur'] ?? false)) {
+        return false; 
+    }
+
+    $jamBuka = $jadwalHariIni['buka'] ?? '00:00';
+    $jamTutup = $jadwalHariIni['tutup'] ?? '23:59';
+    $jamSekarang = $waktuSekarang->format('H:i');
+
+    if ($jamBuka <= $jamTutup) {
+        return $jamSekarang >= $jamBuka && $jamSekarang <= $jamTutup;
+    } else {
+        // Handle tutup lewat tengah malam (misal 18:00 - 02:00)
+        return $jamSekarang >= $jamBuka || $jamSekarang <= $jamTutup;
+    }
+}</code></pre>
+            </div>
+        </details>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN IV: SISA CONTROLLER -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="file-controllers"><span class="num">9</span> Bedah File: Sisa Controllers</h2>
+
+        <details>
+            <summary>CartController.php (Keranjang Belanja)</summary>
+            <div class="details-content">
+                <p>Menggunakan <code>session_id</code> untuk melacak keranjang Guest. Memastikan 1 toko = 1 keranjang.</p>
+                <pre><code>&lt;?php
+namespace App\Http\Controllers;
+
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Product;
+use App\Models\Store;
+use Illuminate\Http\Request;
+
+class CartController extends Controller
+{
+    public function add(Request $request, Product $product)
+    {
+        $sessionId = $request->session()->getId();
+
+        $cart = Cart::firstOrCreate([
+            'session_id' => $sessionId,
+            'store_id' => $product->store_id,
+        ]);
+
+        $request->validate(['qty' => 'nullable|integer|min:0|max:99']);
+        $qty = $request->input('qty', 1);
+
+        $item = $cart->items()->where('product_id', $product->id)->first();
+
+        if ($item) {
+            if ($qty <= 0) {
+                $item->delete();
+            } else {
+                $item->update(['qty' => $qty]);
+            }
+        } elseif ($qty > 0) {
+            $cart->items()->create([
+                'product_id' => $product->id,
+                'qty' => $qty,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'cart_count' => (int) $cart->items()->sum('qty'),
+        ]);
+    }
+
+    public function index(Request $request)
+    {
+        $carts = Cart::where('session_id', $request->session()->getId())
+            ->with(['items.product', 'store.kecamatan'])
+            ->get();
+
+        return view('cart.index', compact('carts'));
+    }
+
+    public function show(Request $request, Store $store)
+    {
+        $sessionId = $request->session()->getId();
+        $cart = Cart::where('session_id', $sessionId)
+            ->where('store_id', $store->id)
+            ->with('items.product')
+            ->first();
+
+        return view('cart.show', compact('store', 'cart'));
+    }
+
+    public function updateQty(Request $request, CartItem $cartItem)
+    {
+        $request->validate(['qty' => 'required|integer|min:1|max:99']);
+        $this->pastikanMilikSesiIni($request, $cartItem);
+        $cartItem->update(['qty' => $request->integer('qty')]);
+        return response()->json(['success' => true]);
+    }
+
+    public function remove(Request $request, CartItem $cartItem)
+    {
+        $this->pastikanMilikSesiIni($request, $cartItem);
+        $cartItem->delete();
+        return response()->json(['success' => true]);
+    }
+
+    private function pastikanMilikSesiIni(Request $request, CartItem $cartItem): void
+    {
+        abort_unless(
+            $cartItem->cart->session_id === $request->session()->getId(),
+            403,
+            'Cart ini bukan milik sesi kamu.'
+        );
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <details>
+            <summary>StoreController.php (Pendaftaran & Edit Toko)</summary>
+            <div class="details-content">
+                <p>Menangani logika kompleks Voucher, Open Fee (biaya buka), dan konversi JSON Jam Operasional.</p>
+                <pre><code>&lt;?php
+namespace App\Http\Controllers;
+
+use App\Models\Kecamatan;
+use App\Models\Store;
+use App\Models\Setting;
+use App\Models\Voucher;
+use App\Models\VoucherUsage;
+use App\Models\Subscription;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class StoreController extends Controller
+{
+    public function create()
+    {
+        $kecamatans = Kecamatan::orderBy('nama')->get();
+        $storeCount = auth()->user()->stores()->count();
+        $isFirstStore = $storeCount === 0;
+        $openFee = $isFirstStore ? 0 : Setting::getVal('open_fee_price', 20000);
+        $monthlyFee = Setting::getVal('monthly_price', 10000);
+
+        return view('store.create', compact('kecamatans', 'isFirstStore', 'openFee', 'monthlyFee'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'kategori' => 'required|in:resto,store',
+            'kecamatan_id' => 'required|exists:kecamatans,id',
+            'alamat' => 'required|string|max:255',
+            'nomor_wa' => 'required|string|max:20',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'voucher_code' => 'nullable|string|max:50',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_background' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+        ]);
+
+        $slug = Str::slug($validated['nama']);
+        $sudahAda = Store::where('kecamatan_id', $validated['kecamatan_id'])
+            ->where('slug', $slug)->exists();
+
+        if ($sudahAda) {
+            return back()->withErrors(['nama' => 'Nama toko ini sudah dipakai di kecamatan yang sama.'])->withInput();
+        }
+
+        $user = auth()->user();
+        $isFirstStore = $user->stores()->count() === 0;
+        $openFeeAmount = $isFirstStore ? 0 : Setting::getVal('open_fee_price', 20000);
+
+        $voucher = null;
+        $activeUntil = null;
+        $subStatus = 'active';
+
+        if ($request->filled('voucher_code')) {
+            $code = strtoupper(trim($request->voucher_code));
+            $voucher = Voucher::where('code', $code)->where('is_active', true)->first();
+
+            if (!$voucher) return back()->withErrors(['voucher_code' => 'Kode voucher tidak ditemukan atau tidak aktif.'])->withInput();
+            if ($voucher->valid_until && $voucher->valid_until->isPast()) return back()->withErrors(['voucher_code' => 'Kode voucher sudah kedaluwarsa.'])->withInput();
+            if (VoucherUsage::where('user_id', $user->id)->exists()) return back()->withErrors(['voucher_code' => 'Anda sudah pernah menggunakan voucher sebelumnya.'])->withInput();
+
+            $activeUntil = now()->addMonths($voucher->free_months);
+            $subStatus = 'trial';
+        } else {
+            $activeUntil = now()->addMonth();
+        }
+
+        DB::transaction(function () use ($request, $validated, $slug, $user, $openFeeAmount, $voucher, $activeUntil, $subStatus) {
+            
+            $fotoProfilPath = $request->hasFile('foto_profil') ? $request->file('foto_profil')->store('stores/profil', 'public') : null;
+            $fotoBackgroundPath = $request->hasFile('foto_background') ? $request->file('foto_background')->store('stores/background', 'public') : null;
+
+            $store = Store::create([
+                'owner_id' => $user->id,
+                'kecamatan_id' => $validated['kecamatan_id'],
+                'nama' => $validated['nama'],
+                'slug' => $slug,
+                'foto_profil' => $fotoProfilPath,
+                'foto_background' => $fotoBackgroundPath,
+                'kategori' => $validated['kategori'],
+                'nomor_wa' => Store::normalisasiNomorWa($validated['nomor_wa']),
+                'alamat' => $validated['alamat'],
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+                'has_table_number' => false,
+                'status_aktif' => true,
+                'active_until' => $activeUntil,
+                'subscription_status' => $subStatus,
+                'subscription_started_at' => now(),
+                'voucher_id' => $voucher ? $voucher->id : null,
+                'open_fee_paid' => $openFeeAmount === 0,
+            ]);
+
+            if ($voucher) {
+                VoucherUsage::create([
+                    'voucher_id' => $voucher->id, 'user_id' => $user->id, 'store_id' => $store->id,
+                ]);
+            }
+
+            if ($openFeeAmount > 0) {
+                Subscription::create([
+                    'store_id' => $store->id, 'user_id' => $user->id, 'type' => 'open_fee',
+                    'amount' => $openFeeAmount, 'status' => 'pending', 'notes' => 'Biaya pembukaan resto ke-2 dst.',
+                ]);
+            }
+        });
+
+        $store = Store::where('owner_id', $user->id)->latest()->first();
+        return redirect()->route('store.show', [$store->kecamatan->slug, $store->slug])->with('success', 'Toko berhasil didaftarkan!');
+    }
+
+    public function update(Request $request, Store $store)
+    {
+        $this->authorize('update', $store);
+
+        $validated = $request->validate([
+            'alamat' => 'required|string|max:255',
+            'nomor_wa' => 'required|string|max:20',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'has_table_number' => 'nullable|boolean',
+            'status_aktif' => 'nullable|boolean',
+            'jam' => 'nullable|array',
+            'jam.*.libur' => 'nullable|boolean',
+            'jam.*.buka' => 'nullable|string',
+            'jam.*.tutup' => 'nullable|string',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_background' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+        ]);
+
+        $hariList = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+        $jamOperasional = [];
+        foreach ($hariList as $hari) {
+            $libur = $request->boolean("jam.$hari.libur");
+            $jamOperasional[$hari] = $libur ? ['libur' => true] : [
+                'libur' => false, 'buka' => $request->input("jam.$hari.buka", '08:00'), 'tutup' => $request->input("jam.$hari.tutup", '22:00'),
+            ];
+        }
+
+        if ($request->hasFile('foto_profil')) {
+            if ($store->foto_profil && Storage::disk('public')->exists($store->foto_profil)) {
+                Storage::disk('public')->delete($store->foto_profil);
+            }
+            $store->foto_profil = $request->file('foto_profil')->store('stores/profil', 'public');
+        }
+
+        if ($request->hasFile('foto_background')) {
+            if ($store->foto_background && Storage::disk('public')->exists($store->foto_background)) {
+                Storage::disk('public')->delete($store->foto_background);
+            }
+            $store->foto_background = $request->file('foto_background')->store('stores/background', 'public');
+        }
+
+        $store->update([
+            'alamat' => $validated['alamat'],
+            'nomor_wa' => Store::normalisasiNomorWa($validated['nomor_wa']),
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'has_table_number' => $request->boolean('has_table_number'),
+            'status_aktif' => $request->boolean('status_aktif'),
+            'jam_operasional' => $jamOperasional,
+            'foto_profil' => $store->foto_profil,
+            'foto_background' => $store->foto_background,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Info toko berhasil diperbarui.');
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <details>
+            <summary>GuestAuthController.php (Migrasi Session Guest)</summary>
+            <div class="details-content">
+                <pre><code>&lt;?php
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\Order;
+use App\Support\PhoneNumber;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+class GuestAuthController extends Controller
+{
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'nomor_hp' => 'required|string|max:20',
+        ]);
+
+        $nomor = PhoneNumber::normalize($request->nomor_hp);
+
+        $user = User::where('nomor_hp', $nomor)->first();
+
+        if ($user) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Nomor WA ini sudah terdaftar. Silakan login melalui menu Masuk.'
+            ], 403);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'nomor_hp' => $nomor,
+            'password' => Hash::make(Str::random(16)),
+        ]);
+
+        // TANGKAP ID SESSION LAMA SEBELUM LOGIN
+        $oldSessionId = $request->session()->getId();
+
+        Auth::login($user);
+
+        // PINDAHKAN RIWAYAT GUEST KE USER INI
+        Order::where('session_id', $oldSessionId)
+            ->whereNull('user_id')
+            ->update(['user_id' => $user->id]);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Berhasil masuk! Pesananmu sekarang tersimpan.'
+        ]);
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <!-- BAGIAN V: SISA MODEL -->
+        <h2 class="section-title" id="file-models"><span class="num">10</span> Bedah File: Sisa Models</h2>
+
+        <details>
+            <summary>User.php (Model User)</summary>
+            <div class="details-content">
+                <pre><code>&lt;?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use NotificationChannels\WebPush\HasPushSubscriptions;
+
+class User extends Authenticatable
+{
+    use HasFactory, Notifiable, HasPushSubscriptions;
+
+    protected $fillable = [
+        'name', 'nomor_hp', 'email', 'password', 'last_latitude', 'last_longitude',
+        'last_delivery_note', 'is_admin', 'password_set_at',
+    ];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_admin' => 'boolean',
+        'password_set_at' => 'datetime',
+    ];
+
+    public function stores(): HasMany
+    {
+        return $this->hasMany(Store::class, 'owner_id');
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <details>
+            <summary>Product.php (Model Produk)</summary>
+            <div class="details-content">
+                <pre><code>&lt;?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Product extends Model
+{
+    protected $fillable = [
+        'store_id', 'nama', 'harga', 'stok', 'foto', 'deskripsi', 'kategori_produk', 'status_tersedia',
+    ];
+
+    protected $casts = [
+        'harga' => 'integer',
+        'status_tersedia' => 'boolean',
+    ];
+
+    public function store(): BelongsTo { return $this->belongsTo(Store::class); }
+    public function cartItems(): HasMany { return $this->hasMany(CartItem::class); }
+    public function orderItems(): HasMany { return $this->hasMany(OrderItem::class); }
+
+    public function scopeTersedia($query)
+    {
+        return $query->where('status_tersedia', true);
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <details>
+            <summary>Cart.php & CartItem.php</summary>
+            <div class="details-content">
+                <pre><code>// Cart.php
+class Cart extends Model
+{
+    protected $fillable = ['session_id', 'store_id'];
+    public function store(): BelongsTo { return $this->belongsTo(Store::class); }
+    public function items(): HasMany { return $this->hasMany(CartItem::class); }
+}
+
+// CartItem.php
+class CartItem extends Model
+{
+    protected $fillable = ['cart_id', 'product_id', 'qty'];
+    protected $casts = ['qty' => 'integer'];
+
+    public function cart(): BelongsTo { return $this->belongsTo(Cart::class); }
+    public function product(): BelongsTo { return $this->belongsTo(Product::class); }
+    
+    public function getSubtotalAttribute(): int
+    {
+        return $this->product->harga * $this->qty;
+    }
+}
+</code></pre>
+            </div>
+        </details>
+
+        <!-- ========================================== -->
+        <!-- BAGIAN VI: FRONTEND VIEWS (BLADE) -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="file-views"><span class="num">11</span> Frontend Views (Blade & Alpine)</h2>
+        <p>Ini adalah kode asli dari antarmuka pengguna. Menggunakan Tailwind CSS untuk desain dan Alpine.js untuk reaktivitas data (seperti buka/tutup modal, polling chat, dll).</p>
+
+        <details>
+            <summary>chat/show.blade.php (Halaman Chat Privat)</summary>
+            <div class="details-content">
+                <p>Menggunakan layout full-page (bukan modal). Memiliki script polling 3 detik dan form input yang disembunyikan jika timer habis.</p>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"&gt;
+    &lt;meta name="theme-color" content="#B9232D"&gt;
+    &lt;meta name="csrf-token" content="{{ csrf_token() }}"&gt;
+    &lt;title&gt;Chat — {{ $order->nomor_order }}&lt;/title&gt;
+    &lt;link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"&gt;
+    &lt;style&gt;
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    &lt;/style&gt;
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+&lt;/head&gt;
+&lt;body class="bg-[#E5DDD5] text-gray-800 antialiased" x-data="{ toastShow: false, toastMessage: '' }" @show-toast.window="toastMessage = $event.detail.message; toastShow = true; setTimeout(() => { toastShow = false; }, 4000)"&gt;
+
+    &lt;!-- TOAST NOTIFICATION --&gt;
+    &lt;div x-show="toastShow" x-transition class="fixed top-20 left-4 right-4 z-[60] flex justify-center pointer-events-none" x-cloak&gt;
+        &lt;div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 w-full max-w-sm pointer-events-auto"&gt;
+            &lt;div class="bg-red-500/20 p-1.5 rounded-lg flex-shrink-0"&gt;
+                &lt;svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"&gt;&lt;path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /&gt;&lt;/svg&gt;
+            &lt;/div&gt;
+            &lt;p class="text-sm font-medium flex-1" x-text="toastMessage"&gt;&lt;/p&gt;
+            &lt;button @click="toastShow = false" class="text-gray-400 hover:text-white"&gt;&lt;svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"&gt;&lt;path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /&gt;&lt;/svg&gt;&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- HEADER --&gt;
+    &lt;header class="bg-[#B9232D] text-white shadow-md z-20 fixed top-0 left-0 right-0"&gt;
+        &lt;div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"&gt;
+            &lt;div class="flex items-center gap-3"&gt;
+                &lt;a href="{{ route('order.riwayat') }}" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"&gt;
+                    &lt;svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"&gt;&lt;path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /&gt;&lt;/svg&gt;
+                &lt;/a&gt;
+                &lt;div class="flex flex-col"&gt;
+                    &lt;h1 class="font-bold text-sm leading-tight"&gt;{{ $lawanBicara->name ?? 'Pengguna' }}&lt;/h1&gt;
+                    &lt;span class="text-[10px] text-red-100"&gt;Order #{{ $order->nomor_order }}&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="text-right"&gt;
+                &lt;span class="text-[10px] font-bold bg-white/20 px-2 py-1 rounded-md"&gt;{{ $order->store->nama }}&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;!-- AREA CHAT --&gt;
+    &lt;main class="h-screen overflow-y-auto p-4 pt-20 pb-24 hide-scrollbar" id="chat-container"&gt;
+        &lt;div class="max-w-3xl mx-auto space-y-4 pb-4" id="chat-messages"&gt;
+            @foreach($messages as $msg)
+                @php $isMe = auth()->id() === $msg->user_id; @endphp
+                &lt;div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}"&gt;
+                    &lt;div class="max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm {{ $isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none' }}"&gt;
+                        @if(!$isMe)
+                            @php
+                                $senderName = ($msg->user_id === $order->store->owner_id) ? $order->store->nama : ($msg->user->name ?? 'Pembeli (Guest)');
+                            @endphp
+                            &lt;p class="text-[10px] font-bold text-[#B9232D] mb-1"&gt;{{ $senderName }}&lt;/p&gt;
+                        @endif
+                        @if($msg->image_path)
+                            &lt;img src="{{ Storage::url($msg->image_path) }}" class="w-full max-w-[200px] rounded-lg mb-2 cursor-pointer" onclick="window.open(this.src, '_blank')"&gt;
+                        @endif
+                        @if($msg->message)
+                            &lt;p class="text-sm text-gray-800 break-words"&gt;{{ $msg->message }}&lt;/p&gt;
+                        @endif
+                        &lt;p class="text-[9px] text-gray-500 text-right mt-1"&gt;{{ $msg->created_at->format('H:i') }}&lt;/p&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            @endforeach
+        &lt;/div&gt;
+    &lt;/main&gt;
+
+    &lt;!-- FORM INPUT & LOGIKA TIMER --&gt;
+    @php
+        $canChat = true;
+        $alasanTutup = '';
+        if ($order->status === 'selesai') {
+            if ($order->chat_expires_at !== null && now()->greaterThan($order->chat_expires_at)) {
+                $canChat = false;
+                $alasanTutup = 'Sesi obrolan telah berakhir (melebihi 5 jam).';
+            } elseif (is_null($order->chat_expires_at) && auth()->id() === $order->store->owner_id) {
+                $canChat = false;
+                $alasanTutup = 'Tunggu pembeli mengirim pesan terlebih dahulu.';
+            }
+        }
+    @endphp
+
+    &lt;div class="bg-white border-t border-gray-200 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] fixed bottom-0 left-0 right-0 z-30"&gt;
+        &lt;div class="max-w-3xl mx-auto"&gt;
+            @if($canChat)
+                &lt;form id="chat-form" class="flex items-center gap-2"&gt;
+                    &lt;label class="cursor-pointer p-2 text-gray-500 hover:text-[#B9232D] transition-colors rounded-full hover:bg-gray-100"&gt;
+                        &lt;svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /&gt;&lt;/svg&gt;
+                        &lt;input type="file" id="chat-image" name="image" accept="image/*" class="hidden"&gt;
+                    &lt;/label&gt;
+                    &lt;input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-grow bg-gray-100 border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#B9232D]"&gt;
+                    &lt;button type="submit" class="w-11 h-11 bg-[#B9232D] text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-800 transition-colors flex-shrink-0"&gt;
+                        &lt;svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-1" viewBox="0 0 24 24" fill="currentColor"&gt;&lt;path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/&gt;&lt;/svg&gt;
+                    &lt;/button&gt;
+                &lt;/form&gt;
+            @else
+                &lt;div class="text-center py-2 text-sm font-bold text-gray-500 bg-gray-100 rounded-xl"&gt;
+                    {{ $alasanTutup }}
+                &lt;/div&gt;
+            @endif
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        const orderId = {{ $order->id }};
+        const authId = {{ auth()->id() }};
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatContainer = document.getElementById('chat-container');
+        const messagesDiv = document.getElementById('chat-messages');
+        const imageInput = document.getElementById('chat-image');
+        let selectedFile = null;
+
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Handle Kirim Pesan
+        if(chatForm) {
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const text = chatInput.value.trim();
+                if(!text && !selectedFile) return;
+
+                const formData = new FormData();
+                formData.append('message', text);
+                if(selectedFile) formData.append('image', selectedFile);
+
+                fetch(`/chat/${orderId}/send`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Terjadi kesalahan sistem.');
+                    return data;
+                })
+                .then(data => {
+                    chatInput.value = '';
+                    selectedFile = null;
+                    if(imageInput) imageInput.value = '';
+                    fetchMessages(); 
+                })
+                .catch(err => {
+                    window.dispatchEvent(new CustomEvent('show-toast', { detail: { message: err.message } }));
+                    if (text) chatInput.value = text;
+                });
+            });
+        }
+
+        // Polling Chat
+        function fetchMessages() {
+            fetch(`/chat/${orderId}/fetch`)
+            .then(res => res.json())
+            .then(messages => renderMessages(messages));
+        }
+        setInterval(fetchMessages, 3000);
+
+        function renderMessages(messages) {
+            let html = '';
+            messages.forEach(msg => {
+                const isMe = msg.user_id === authId;
+                const nameHtml = !isMe ? `&lt;p class="text-[10px] font-bold text-[#B9232D] mb-1"&gt;${msg.display_name}&lt;/p&gt;` : '';
+                const imgHtml = msg.image_path ? `&lt;img src="/storage/${msg.image_path}" class="w-full max-w-[200px] rounded-lg mb-2"&gt;` : '';
+                const textHtml = msg.message ? `&lt;p class="text-sm text-gray-800 break-words"&gt;${msg.message}&lt;/p&gt;` : '';
+                const date = new Date(msg.created_at);
+                const time = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
+
+                html += `
+                    &lt;div class="flex ${isMe ? 'justify-end' : 'justify-start'}"&gt;
+                        &lt;div class="max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm ${isMe ? 'bg-[#DCF8C6] rounded-tr-none' : 'bg-white rounded-tl-none'}"&gt;
+                            ${nameHtml}${imgHtml}${textHtml}
+                            &lt;p class="text-[9px] text-gray-500 text-right mt-1"&gt;${time}&lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                `;
+            });
+            if(messagesDiv.children.length !== messages.length) {
+                messagesDiv.innerHTML = html;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+            </div>
+        </details>
+
+        <details>
+            <summary>order/riwayat.blade.php (Halaman Riwayat Pesanan)</summary>
+            <div class="details-content">
+                <p>Halaman ini menggunakan Alpine.js (`x-data="{ activeTab: 'pembeli' }"`) untuk berpindah tab antara Pembeli dan Penjual. Terdapat juga logika polling untuk update badge merah dan notifikasi pesanan baru.</p>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"&gt;
+    &lt;title&gt;Pesanan — LapakDA&lt;/title&gt;
+    &lt;link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"&gt;
+    &lt;style&gt; body { font-family: 'Plus Jakarta Sans', sans-serif; } [x-cloak] { display: none !important; } &lt;/style&gt;
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+&lt;/head&gt;
+&lt;body class="bg-[#F8F9FA] text-gray-800 antialiased pb-24" x-data="{ activeTab: 'pembeli', toastShow: false, toastMessage: '' }" @show-toast.window="toastMessage = $event.detail.message; toastShow = true; setTimeout(() => { toastShow = false; }, 5000)"&gt;
+
+    &lt;!-- TOAST NOTIFICATION --&gt;
+    &lt;div x-show="toastShow" x-transition class="fixed top-20 left-4 right-4 z-[60] flex justify-center pointer-events-none" x-cloak&gt;
+        &lt;div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 w-full max-w-sm pointer-events-auto"&gt;
+            &lt;div class="bg-red-500/20 p-1.5 rounded-lg flex-shrink-0"&gt;
+                &lt;svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"&gt;&lt;path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /&gt;&lt;/svg&gt;
+            &lt;/div&gt;
+            &lt;p class="text-sm font-medium flex-1" x-text="toastMessage"&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- HEADER --&gt;
+    &lt;header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100"&gt;
+        &lt;div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"&gt;
+            &lt;a href="{{ route('home') }}" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-700"&gt;&lt;svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"&gt;&lt;path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" /&gt;&lt;/svg&gt;&lt;/a&gt;
+            &lt;h1 class="font-bold text-base text-gray-900 absolute left-1/2 -translate-x-1/2"&gt;Pesanan&lt;/h1&gt;
+            &lt;div class="w-10"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;main class="max-w-3xl mx-auto px-4 pt-6"&gt;
+        &lt;!-- TAB MENU --&gt;
+        @if(auth()->check() && auth()->user()->stores->isNotEmpty())
+        &lt;div class="flex bg-gray-100 p-1 rounded-2xl mb-6"&gt;
+            &lt;button @click="activeTab = 'pembeli'" :class="activeTab === 'pembeli' ? 'bg-white text-[#B9232D] shadow-sm' : 'text-gray-500'" class="flex-1 py-2.5 text-sm font-bold rounded-xl transition-all"&gt;Pesanan Saya&lt;/button&gt;
+            &lt;button @click="activeTab = 'penjual'" :class="activeTab === 'penjual' ? 'bg-white text-[#B9232D] shadow-sm' : 'text-gray-500'" class="flex-1 py-2.5 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2"&gt;
+                Pesanan Masuk
+                @if(isset($incomingOrders) && $incomingOrders->where('status', 'menunggu_konfirmasi')->count() > 0)
+                    &lt;span class="bg-[#B9232D] text-white text-[10px] px-1.5 py-0.5 rounded-full"&gt;{{ $incomingOrders->where('status', 'menunggu_konfirmasi')->count() }}&lt;/span&gt;
+                @endif
+            &lt;/button&gt;
+        &lt;/div&gt;
+        @endif
+
+        &lt;!-- TAB 1: PEMBELI --&gt;
+        &lt;div x-show="activeTab === 'pembeli'" x-transition.opacity&gt;
+            @if($myOrders->isEmpty())
+                &lt;p class="text-center text-gray-500"&gt;Belum ada pesanan.&lt;/p&gt;
+            @else
+                &lt;div class="space-y-4"&gt;
+                    @foreach($myOrders as $order)
+                        &lt;div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm"&gt;
+                            &lt;div class="flex justify-between items-start border-b border-gray-100 pb-3 mb-3"&gt;
+                                &lt;div&gt;
+                                    &lt;span class="text-[10px] font-bold text-gray-400"&gt;{{ $order->created_at->format('d M Y, H:i') }}&lt;/span&gt;
+                                    &lt;h3 class="font-extrabold text-gray-900 text-base mt-0.5"&gt;{{ $order->store->nama }}&lt;/h3&gt;
+                                &lt;/div&gt;
+                                &lt;div class="text-right"&gt;
+                                    &lt;span class="bg-gray-100 text-gray-700 text-[9px] font-bold px-2 py-1 rounded-md uppercase"&gt;{{ str_replace('_', ' ', $order->status) }}&lt;/span&gt;
+                                    &lt;p class="text-xs font-bold text-[#B9232D] mt-1"&gt;#{{ $order->nomor_order }}&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;a href="{{ route('chat.show', $order->id) }}" class="relative flex items-center justify-center gap-2 w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-100 transition-colors"&gt;
+                                Buka Chat / Tanya Penjual
+                                &lt;span id="chat-badge-{{ $order->id }}" class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}"&gt;
+                                    {{ $order->unread_count }}
+                                &lt;/span&gt;
+                            &lt;/a&gt;
+                        &lt;/div&gt;
+                    @endforeach
+                &lt;/div&gt;
+            @endif
+        &lt;/div&gt;
+
+        &lt;!-- TAB 2: PENJUAL --&gt;
+        @if(auth()->check() && auth()->user()->stores->isNotEmpty())
+        &lt;div x-show="activeTab === 'penjual'" x-cloak x-transition.opacity&gt;
+            @if($incomingOrders->isEmpty())
+                &lt;p class="text-center text-gray-500"&gt;Belum ada pesanan masuk.&lt;/p&gt;
+            @else
+                &lt;div class="space-y-4"&gt;
+                    @foreach($incomingOrders as $order)
+                        &lt;div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4"&gt;
+                            &lt;div class="flex justify-between items-start mb-2"&gt;
+                                &lt;div&gt;
+                                    &lt;h3 class="font-extrabold text-gray-900 text-base"&gt;#{{ $order->nomor_order }}&lt;/h3&gt;
+                                    &lt;p class="text-[11px] text-gray-500"&gt;{{ $order->created_at->format('d M Y, H:i') }}&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="flex gap-2 mt-3"&gt;
+                                &lt;a href="{{ route('chat.show', $order->id) }}" class="relative flex items-center justify-center gap-2 flex-1 bg-[#B9232D] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-red-800 transition-colors"&gt;
+                                    Chat
+                                    &lt;span id="chat-badge-{{ $order->id }}" class="bg-white text-[#B9232D] text-[10px] px-2 py-0.5 rounded-full {{ $order->unread_count > 0 ? '' : 'hidden' }}"&gt;{{ $order->unread_count }}&lt;/span&gt;
+                                &lt;/a&gt;
+                                &lt;a href="{{ route('dashboard.order.index', $order->store_id) }}" class="flex-1 text-center bg-gray-100 text-gray-700 text-xs font-bold py-2.5 rounded-xl"&gt;Kelola&lt;/a&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    @endforeach
+                &lt;/div&gt;
+            @endif
+        &lt;/div&gt;
+        @endif
+    &lt;/main&gt;
+
+    &lt;!-- BOTTOM NAVIGATION --&gt;
+    &lt;div class="fixed bottom-6 left-4 right-4 z-40 flex justify-center pointer-events-none"&gt;
+        @include('layouts.navigation')
+    &lt;/div&gt;
+
+    @auth
+    &lt;script&gt;
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentLatestOrderId = 0;
+            fetch("{{ route('api.badge.count') }}").then(res => res.json()).then(data => {
+                currentLatestOrderId = data.latest_order_id;
+            });
+
+            function checkRiwayatUpdates() {
+                fetch("{{ route('api.badge.count') }}")
+                    .then(res => res.json())
+                    .then(data => {
+                        for (const [orderId, count] of Object.entries(data.unread_per_order)) {
+                            let badge = document.getElementById(`chat-badge-${orderId}`);
+                            if (badge) {
+                                if (count > 0) {
+                                    badge.textContent = count;
+                                    badge.classList.remove('hidden');
+                                } else {
+                                    badge.classList.add('hidden');
+                                }
+                            }
+                        }
+                        if (currentLatestOrderId > 0 && data.latest_order_id > currentLatestOrderId) {
+                            currentLatestOrderId = data.latest_order_id;
+                            window.dispatchEvent(new CustomEvent('show-toast', { detail: { message: 'Ada pesanan baru masuk!' } }));
+                        }
+                    }).catch(err => console.error('Polling error', err));
+            }
+
+            checkRiwayatUpdates();
+            window.addEventListener('pageshow', checkRiwayatUpdates);
+            setInterval(checkRiwayatUpdates, 10000);
+        });
+    &lt;/script&gt;
+    @endauth
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+            </div>
+        </details>
+
+        <details>
+            <summary>layouts/navigation.blade.php (Bottom Nav + Badge PWA)</summary>
+            <div class="details-content">
+                <p>Memiliki script untuk mendeteksi `setAppBadge` PWA dan polling API `route('api.badge.count')`.</p>
+                <pre><code>@auth
+    @php
+        $storeIds = auth()->user()->stores()->pluck('id');
+        $pendingCount = \App\Models\Order::whereIn('store_id', $storeIds)->where('status', 'menunggu_konfirmasi')->count();
+        $authId = auth()->id();
+        $unreadChatCount = \App\Models\OrderMessage::whereHas('order', function($q) use ($authId, $storeIds) {
+            $q->where('user_id', $authId)->orWhereIn('store_id', $storeIds);
+        })->where('is_read', false)->where(function($q) use ($authId) {
+              $q->where('user_id', '!=', $authId)->orWhereNull('user_id');
+        })->count();
+        $totalBadge = $pendingCount + $unreadChatCount;
+    @endphp
+@endauth
+
+&lt;div class="fixed bottom-4 left-4 right-4 z-50 flex justify-center pointer-events-none"&gt;
+    &lt;nav class="bg-white/90 backdrop-blur-xl border border-gray-200/60 rounded-[2rem] shadow-lg px-1 py-1.5 flex items-center justify-between w-full max-w-md pointer-events-auto"&gt;
+        &lt;!-- Menu Menu Lainnya... --&gt;
+        &lt;a href="{{ route('order.riwayat') }}" class="flex-1 flex flex-col items-center justify-center gap-1 py-2 relative"&gt;
+            &lt;div class="relative"&gt;
+                &lt;svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /&gt;&lt;/svg&gt;
+                @auth
+                    &lt;span id="nav-badge" class="absolute -top-1.5 -right-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white {{ (isset($totalBadge) && $totalBadge > 0) ? '' : 'hidden' }}"&gt;
+                        {{ $totalBadge > 9 ? '9+' : $totalBadge }}
+                    &lt;/span&gt;
+                @endauth
+            &lt;/div&gt;
+            &lt;span class="text-[10px] font-medium"&gt;Pesanan&lt;/span&gt;
+        &lt;/a&gt;
+    &lt;/nav&gt;
+&lt;/div&gt;
+
+@auth
+&lt;script&gt;
+    document.addEventListener('DOMContentLoaded', function() {
+        function updateNavBadge() {
+            fetch("{{ route('api.badge.count') }}")
+                .then(res => res.json())
+                .then(data => {
+                    const badge = document.getElementById('nav-badge');
+                    if (badge) {
+                        if (data.total > 0) {
+                            badge.textContent = data.total > 9 ? '9+' : data.total;
+                            badge.classList.remove('hidden');
+                            if ('setAppBadge' in navigator) navigator.setAppBadge(data.total).catch(console.error);
+                        } else {
+                            badge.classList.add('hidden');
+                            if ('clearAppBadge' in navigator) navigator.clearAppBadge().catch(console.error);
+                        }
+                    }
+                }).catch(err => console.error(err));
+        }
+        updateNavBadge();
+        window.addEventListener('pageshow', updateNavBadge);
+        setInterval(updateNavBadge, 15000);
+    });
+&lt;/script&gt;
+@endauth
+</code></pre>
+            </div>
+        </details>
+
+        <!-- FINAL SECTION -->
+        <h2 class="section-title" id="troubleshoot-final"><span class="num">12</span> Troubleshooting & Setup</h2>
+        <table>
+            <tr><th>Error</th><th>Penyebab</th><th>Solusi</th></tr>
+            <tr>
+                <td><code>No application encryption key</code></td>
+                <td>File <code>.env</code> kosong atau hilang.</td>
+                <td>Jalankan <code>php artisan key:generate</code> lalu <code>php artisan config:clear</code>.</td>
+            </tr>
+            <tr>
+                <td>Gambar tidak muncul (Blank)</td>
+                <td>Folder storage tidak di-link.</td>
+                <td>Jalankan <code>php artisan storage:link</code>.</td>
+            </tr>
+            <tr>
+                <td>Notif WebPush kotak abu-abu</td>
+                <td><code>badge</code> di <code>sw.js</code> pakai gambar berwarna.</td>
+                <td>Ganti ke <code>notification-badge.png</code> (putih transparan).</td>
+            </tr>
+        </table>
+
+        <div class="alert alert-warning">
+            <strong>Langkah Instalasi di Lokal (Laragon):</strong><br>
+            1. <code>composer install</code> & <code>npm install</code><br>
+            2. Copy <code>.env.example</code> ke <code>.env</code>, atur DB.<br>
+            3. <code>php artisan key:generate</code><br>
+            4. <code>php artisan migrate --seed</code><br>
+            5. <code>php artisan storage:link</code><br>
+            6. Jalankan <code>npm run dev</code> & <code>php artisan serve</code>.
+        </div>
+
+        <p style="text-align: center; margin-top: 50px; color: #6B7280; font-size: 0.9rem; padding-bottom: 50px;">
+            <em>Akhir Dokumen Ultimate LapakDA. Dibuat dengan presisi untuk kemudahan masa depan.</em>
+        </p>
+
+            <!-- ========================================== -->
+        <!-- BAGIAN VII: ROADMAP & TO-DO -->
+        <!-- ========================================== -->
+        <h2 class="section-title" id="roadmap"><span class="num">13</span> Roadmap & Fitur Belum Selesai (To-Do)</h2>
+        <p>Bagian ini mencatat fitur yang sudah direncanakan namun <strong>belum dieksekusi</strong> atau masih memerlukan tindak lanjut. Gunakan daftar ini sebagai panduan jika ingin melanjutkan pengembangan.</p>
+
+        <div class="table-responsive">
+            <table>
+                <tr>
+                    <th>Fitur / Tugas</th>
+                    <th>Status</th>
+                    <th>Detail & Instruksi (Cara Menyelesaikan)</th>
+                </tr>
+                <tr>
+                    <td><strong>Halaman Struk / Invoice Digital</strong></td>
+                    <td><span class="badge" style="background:#F59E0B; color:white;">Pending</span></td>
+                    <td>Membuat halaman detail pesanan (<code>/pesanan/{order}</code>) berisi QR Code, tombol <strong>Download PDF</strong> (menggunakan DomPDF), dan tombol <strong>Copy Link</strong> (via <code>navigator.clipboard</code>). UI mirip dengan modal QR yang sudah ada di <code>dashboard.blade.php</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Aset Visual WebPush (Notification Badge)</strong></td>
+                    <td><span class="badge" style="background:#EF4444; color:white;">Urgent</span></td>
+                    <td>Membuat gambar <code>notification-badge.png</code> (ukuran 96x96) berwarna <strong>putih polos transparan</strong> (monokrom). Letakkan di <code>public/icons/</code>. Lalu ubah properti <code>badge</code> di file <code>public/sw.js</code> dan class Notification agar tidak muncul kotak abu-abu di HP Android.</td>
+                </tr>
+                <tr>
+                    <td><strong>Pembersihan `alert()` Browser</strong></td>
+                    <td><span class="badge" style="background:#F59E0B; color:white;">Pending</span></td>
+                    <td>Di file <code>dashboard.blade.php</code> (bagian script notifikasi), masih terdapat fungsi <code>alert('Notifikasi diblokir...')</code>. Sesuai Aturan Emas, ganti ini dengan Alpine.js Toast: <code>window.dispatchEvent(new CustomEvent('show-toast', { detail: { message: '...' } }))</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Integrasi Modul Riksa Uji</strong></td>
+                    <td><span class="badge" style="background:#3B82F6; color:white;">Blueprint</span></td>
+                    <td>Integrasi dunia terpisah (tabel <code>rk_*</code>) untuk panel Admin Riksa, Finance Riksa, dan Teknis. (Lihat file terpisah: <em>Blueprint_Riksa_Uji_R1-R3.html</em>).</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>Catatan Developer:</strong> Jika Anda mengerjakan To-Do di atas, pastikan untuk meng-update file <code>LAPAKDA_ULTIMATE_DOCS.html</code> ini agar tetap sinkron dengan kondisi kode terbaru.
+        </div>
+
+    </main>
+</body>
+</html>
